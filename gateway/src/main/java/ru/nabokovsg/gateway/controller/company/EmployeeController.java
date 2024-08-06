@@ -45,7 +45,7 @@ public class EmployeeController {
 
     @Operation(summary = "Получение данных сотрудника")
     @GetMapping("/{id}")
-    public Mono<Object>ge(@PathVariable @NotNull @Positive @Parameter(description = "Идентификатор") Long id) {
+    public Mono<Object>get(@PathVariable @NotNull @Positive @Parameter(description = "Идентификатор") Long id) {
         return client.get(id);
     }
 

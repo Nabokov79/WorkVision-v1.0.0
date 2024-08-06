@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.nabokovsg.company.model.enums.DivisionType;
 
-import java.util.List;
-
 @Setter
 @Getter
 @AllArgsConstructor

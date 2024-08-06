@@ -44,9 +44,11 @@ CREATE TABLE IF NOT EXISTS DEPARTMENTS
     short_name    VARCHAR                                 NOT NULL,
     address_id    BIGINT                                  NOT NULL,
     division_type VARCHAR                                 NOT NULL,
+    branch_id     BIGINT                                  NOT NULL,
     CONSTRAINT pk_department PRIMARY KEY (id),
     CONSTRAINT UQ_DEPARTMENTS UNIQUE (full_name, short_name),
-    CONSTRAINT FK_DEPARTMENTS_ON_ADDRESSES FOREIGN KEY (address_id) REFERENCES addresses (id)
+    CONSTRAINT FK_DEPARTMENTS_ON_ADDRESSES FOREIGN KEY (address_id) REFERENCES addresses (id),
+    CONSTRAINT FK_DEPARTMENTS_ON_BRANCHES FOREIGN KEY (branch_id) REFERENCES branches (id)
 );
 
 CREATE TABLE IF NOT EXISTS HEAT_SUPPLY_AREAS
@@ -66,14 +68,11 @@ CREATE TABLE IF NOT EXISTS EXPLOITATION_REGIONS
     full_name           VARCHAR                                 NOT NULL,
     short_name          VARCHAR                                 NOT NULL,
     number              INTEGER                                 NOT NULL,
-    heat_supply_area_id BIGINT                                  NOT NULL,
     branch_id           BIGINT                                  NOT NULL,
     division_type       VARCHAR                                 NOT NULL,
     CONSTRAINT pk_exploitationRegion PRIMARY KEY (id),
     CONSTRAINT UQ_EXPLOITATION_REGIONS UNIQUE (full_name, short_name, number),
-    CONSTRAINT FK_EXPLOITATION_REGIONS_ON_HEAT_SUPPLY_AREAS
-        FOREIGN KEY (heat_supply_area_id) REFERENCES heat_supply_areas (id),
-            CONSTRAINT FK_EXPLOITATION_REGIONS_ON_BRANCHES FOREIGN KEY (branch_id) REFERENCES branches (id)
+    CONSTRAINT FK_EXPLOITATION_REGIONS_ON_BRANCHES FOREIGN KEY (branch_id) REFERENCES branches (id)
 );
 
 CREATE TABLE IF NOT EXISTS BUILDINGS

@@ -36,7 +36,7 @@ public class EquipmentTypeClient extends BaseClient {
     }
 
     public Flux<Object> getAll() {
-        return getAll(String.join(DELIMITER, API_PREFIX));
+        return getAll(String.join(DELIMITER, API_PREFIX, "all"));
     }
 
     public Mono<String> delete(Long id) {
