@@ -2,7 +2,6 @@ package ru.nabokovsg.laboratoryNK.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import ru.nabokovsg.laboratoryNK.dto.diagnosticDocument.DiagnosticDocumentDto;
 import ru.nabokovsg.laboratoryNK.dto.documentNkService.DocumentCreationDataDto;
 import ru.nabokovsg.laboratoryNK.model.DiagnosticDocument;
