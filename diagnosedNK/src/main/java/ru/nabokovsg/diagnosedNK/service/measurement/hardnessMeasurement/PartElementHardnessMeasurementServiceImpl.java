@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.hardnessMeasurement.HardnessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.hardnessMeasurement.PartElementHardnessMeasurementMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.ElementData;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.hardnessMeasurement.ElementHardnessMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.hardnessMeasurement.PartElementHardnessMeasurement;
 import ru.nabokovsg.diagnosedNK.repository.measurement.hardnessMeasurement.PartElementHardnessMeasurementRepository;
@@ -26,15 +25,16 @@ public class PartElementHardnessMeasurementServiceImpl implements PartElementHar
     @Override
     public PartElementHardnessMeasurement save(HardnessMeasurementDto measurementDto
                                              , ElementHardnessMeasurement elementMeasurement
-                                             , DiagnosticEquipmentData objectData
-                                             , ElementData objectElementData) {
+                                             , Set<EquipmentPartElement> partsElement) {
         PartElementHardnessMeasurement measurement = repository.findByPartElementId(measurementDto.getPartElementId());
+        EquipmentPartElement partElement = partsElement.stream()
+                .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
+                .get(measurementDto.getPartElementId());
         if (measurement == null) {
             measurement = repository.save(mapper.mapToPartElementHardnessMeasurement(elementMeasurement
-                                                                        , objectElementData
+                                                                        , partElement
                                                                         , measurementService.save(measurementDto
-                                                                                                , objectData
-                                                                                                , objectElementData)));
+                                                                                     , partElement.getStandardSize())));
         }
         return measurement;
     }
@@ -42,18 +42,19 @@ public class PartElementHardnessMeasurementServiceImpl implements PartElementHar
     @Override
     public Set<PartElementHardnessMeasurement> update(HardnessMeasurementDto measurementDto
                                                     , Set<PartElementHardnessMeasurement> partElementMeasurements
-                                                    , DiagnosticEquipmentData objectData
-                                                    , ElementData objectElementData) {
+                                                    , Set<EquipmentPartElement> partsElement) {
         Map<Long, PartElementHardnessMeasurement> partElements = partElementMeasurements
                 .stream()
                 .collect(Collectors.toMap(PartElementHardnessMeasurement::getPartElementId, p -> p));
+        EquipmentPartElement partElement = partsElement.stream()
+                .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
+                .get(measurementDto.getPartElementId());
         PartElementHardnessMeasurement partElementMeasurement = partElements.get(measurementDto.getPartElementId());
         partElements.put(partElementMeasurement.getPartElementId()
                 , repository.save(mapper.mapWithUltrasonicThicknessMeasurement(partElementMeasurement
-                        , measurementService.update(measurementDto
-                                , partElementMeasurement.getMeasurement()
-                                , objectData
-                                , objectElementData))));
+                                                  , measurementService.update(measurementDto
+                                                  , partElementMeasurement.getMeasurement()
+                                                  , partElement.getStandardSize()))));
         return new HashSet<>(partElements.values());
     }
 }

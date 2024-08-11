@@ -6,11 +6,11 @@ import ru.nabokovsg.diagnosedNK.dto.measurement.geodesy.GeodesicMeasurementsPoin
 import ru.nabokovsg.diagnosedNK.dto.measurement.geodesy.ResponseGeodesicMeasurementsPointDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy.GeodesicMeasurementsPointMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentDiagnosed;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableDeviationsGeodesy;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.GeodesicMeasurementsPointRepository;
-import ru.nabokovsg.diagnosedNK.service.diagnosticEquipmentData.DiagnosticEquipmentDataService;
+import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentDiagnosedService;
 import ru.nabokovsg.diagnosedNK.service.norms.AcceptableDeviationsGeodesyService;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
 
     private final GeodesicMeasurementsPointRepository repository;
     private final GeodesicMeasurementsPointMapper mapper;
-    private final DiagnosticEquipmentDataService diagnosticObjectDataService;
+    private final EquipmentDiagnosedService equipmentDiagnosedService;
     private final AcceptableDeviationsGeodesyService acceptableDeviationsGeodesyService;
     private final ReferencePointMeasurementService referencePointMeasurementService;
     private final PointDifferenceService pointDifferenceService;
@@ -38,7 +38,7 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
                                 .collect(Collectors.toMap(GeodesicMeasurementsPoint::getNumberMeasurementLocation, g -> g));
         measurements.put(measurementDto.getNumberMeasurementLocation()
                 , repository.save(mapper.mapToGeodesicMeasurementsPoint(measurementDto)));
-        calculated(measurementDto.getEquipmentId(), new ArrayList<>(measurements.values()));
+        calculated(measurementDto.getEquipmentId(), measurementDto.getFull(), new ArrayList<>(measurements.values()));
         return measurements.values()
                            .stream()
                            .map(mapper::mapToResponseGeodesicMeasurementsPointDto)
@@ -62,11 +62,12 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
         throw new NotFoundException(String.format("GeodesicMeasurement with id=%s not found for delete", id));
     }
 
-    private void calculated(Long equipmentId, List<GeodesicMeasurementsPoint> measurements) {
-        DiagnosticEquipmentData object = diagnosticObjectDataService.get(equipmentId);
-        if (measurements.size() == object.getGeodesyLocations()) {
+    private void calculated(Long equipmentId, boolean full, List<GeodesicMeasurementsPoint> measurements) {
+        EquipmentDiagnosed equipment = equipmentDiagnosedService.getById(equipmentId);
+        if (measurements.size() == equipment.getGeodesyLocations()) {
             measurements = calculationService.recalculateByTransition(measurements);
-            AcceptableDeviationsGeodesy acceptableDeviationsGeodesy = acceptableDeviationsGeodesyService.get(object);
+            AcceptableDeviationsGeodesy acceptableDeviationsGeodesy =
+                                                                acceptableDeviationsGeodesyService.get(equipment, full);
             referencePointMeasurementService.save(acceptableDeviationsGeodesy
                                                 , measurements.stream()
                                                               .filter(m -> m.getReferencePointValue() != null)

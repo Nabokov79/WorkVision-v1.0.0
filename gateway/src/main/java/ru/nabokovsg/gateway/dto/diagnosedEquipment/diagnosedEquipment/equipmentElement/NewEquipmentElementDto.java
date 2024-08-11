@@ -16,15 +16,15 @@ import ru.nabokovsg.gateway.dto.diagnosedEquipment.diagnosedEquipment.standardSi
 @Schema(description = "Данные для добавления информации об элементе к данным оборудования")
 public class NewEquipmentElementDto {
 
-    @Schema(description = "Индентификатор диагностируемого оборудования")
+    @Schema(description = "Идентификатор диагностируемого оборудования")
     @NotNull(message = "equipmentDiagnosed id should not be null")
     @Positive(message = "equipmentDiagnosed id can only be positive")
     private Long equipmentDiagnosedId;
-    @Schema(description = "Индентификатор элемента типа оборудования")
+    @Schema(description = "Идентификатор элемента типа оборудования")
     @NotNull(message = "element id should not be null")
     @Positive(message = "element id can only be positive")
     private Long elementId;
-    @Schema(description = "Индентификатор подэлемента типа оборудования")
+    @Schema(description = "Идентификатор подэлемента типа оборудования")
     private Long partElementId;
     @Schema(description = "Типоразмер элемента или подэлемента")
     private NewStandardSizeDto standardSize;

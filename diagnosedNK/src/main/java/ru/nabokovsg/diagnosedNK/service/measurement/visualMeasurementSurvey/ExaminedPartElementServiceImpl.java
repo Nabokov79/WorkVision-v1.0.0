@@ -12,7 +12,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.Examin
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.QExaminedPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.QVisualMeasuringSurvey;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.ExaminedPartElementRepository;
-import ru.nabokovsg.diagnosedNK.service.diagnosticEquipmentData.EquipmentStandardSizeService;
+import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentPartElementService;
 
 import java.util.Objects;
 
@@ -22,14 +22,14 @@ public class ExaminedPartElementServiceImpl implements ExaminedPartElementServic
 
     private final ExaminedPartElementRepository repository;
     private final ExaminedPartElementMapper mapper;
+    private final EquipmentPartElementService partElementService;
     private final EntityManager em;
-    private final EquipmentStandardSizeService standardSizeService;
 
     @Override
     public ExaminedPartElement get(Long equipmentId, Long partElementId) {
         return Objects.requireNonNullElseGet(getByPredicate(equipmentId, partElementId)
                                      , () -> repository.save(mapper.mapToExaminedPartElement(
-                                                            standardSizeService.getByPartElementId(partElementId))));
+                                                            partElementService.get(partElementId))));
     }
 
     @Override

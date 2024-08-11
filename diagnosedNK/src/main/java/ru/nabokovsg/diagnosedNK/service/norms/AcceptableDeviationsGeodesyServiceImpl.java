@@ -6,7 +6,7 @@ import ru.nabokovsg.diagnosedNK.dto.norms.geodesy.AcceptableDeviationsGeodesyDto
 import ru.nabokovsg.diagnosedNK.dto.norms.geodesy.ResponseAcceptableDeviationsGeodesyDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.norms.AcceptableDeviationsGeodesyMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentDiagnosed;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableDeviationsGeodesy;
 import ru.nabokovsg.diagnosedNK.repository.norms.AcceptableDeviationsGeodesyRepository;
 
@@ -60,9 +60,9 @@ public class AcceptableDeviationsGeodesyServiceImpl implements AcceptableDeviati
     }
 
     @Override
-    public AcceptableDeviationsGeodesy get(DiagnosticEquipmentData object) {
-        return repository.findByEquipmentTypeIdAndFullAndOld(object.getEquipmentTypeId()
-                                                           , object.getFull()
-                                                           , object.getOld());
+    public AcceptableDeviationsGeodesy get(EquipmentDiagnosed equipment, boolean full) {
+        return repository.findByEquipmentTypeIdAndFullAndOld(equipment.getEquipmentTypeId()
+                                                           , full
+                                                           , equipment.getOld());
     }
 }

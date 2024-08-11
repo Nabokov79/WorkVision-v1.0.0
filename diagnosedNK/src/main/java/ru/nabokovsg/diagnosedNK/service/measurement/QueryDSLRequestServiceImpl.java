@@ -7,10 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.identifiedDefect.IdentifiedDefectDto;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.QDiagnosticEquipmentData;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.QElementData;
+import ru.nabokovsg.diagnosedNK.model.equipment.*;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.*;
+import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.*;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.*;
 
 import java.util.HashSet;
@@ -49,18 +48,12 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     }
 
     @Override
-    public DiagnosticEquipmentData getDiagnosticEquipmentData(Long elementId, Long partElementId) {
-        QDiagnosticEquipmentData objectData = QDiagnosticEquipmentData.diagnosticEquipmentData;
-        QElementData elementData = QElementData.elementData;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(elementData.elementId.eq(elementId));
-        if (partElementId != null) {
-            builder.and(elementData.partElementId.eq(partElementId));
-        }
-        return new JPAQueryFactory(em).from(objectData)
-                .select(objectData)
-                .where(builder)
-                .fetchOne();
+    public Long getEquipmentTypeId(Long elementId) {
+        QEquipmentDiagnosed equipment = QEquipmentDiagnosed.equipmentDiagnosed;
+        return new JPAQueryFactory(em).from(equipment)
+                                      .select(equipment.equipmentTypeId)
+                                      .where(QEquipmentElement.equipmentElement.id.eq(elementId))
+                                      .fetchOne();
     }
 
     @Override
@@ -101,6 +94,28 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
                 .select(pointDifference)
                 .where(builder)
                 .fetch());
+    }
+
+    @Override
+    public UltrasonicThicknessMeasurement getUltrasonicThicknessMeasurement(UTPredicateData predicateData) {
+        QUltrasonicThicknessMeasurement measurement = QUltrasonicThicknessMeasurement
+                .ultrasonicThicknessMeasurement;
+        QUltrasonicThicknessElementMeasurement element = QUltrasonicThicknessElementMeasurement
+                .ultrasonicThicknessElementMeasurement;
+        QUltrasonicThicknessPartElementMeasurement partElement = QUltrasonicThicknessPartElementMeasurement
+                .ultrasonicThicknessPartElementMeasurement;
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(element.equipmentId.eq(predicateData.getEquipmentId()));
+        builder.and(element.elementId.eq(predicateData.getElementId()));
+        if (predicateData.getPartElementId() != null) {
+            builder.and(partElement.partElementId.eq(predicateData.getPartElementId()));
+        }
+        builder.and(measurement.measurementNumber.eq(predicateData.getMeasurementNumber()));
+        return new JPAQueryFactory(em)
+                            .from(measurement)
+                            .select(measurement)
+                            .where(builder)
+                            .fetchOne();
     }
 
     private BooleanBuilder getPredicate(Long equipmentId, Long elementId, Long partElementId) {

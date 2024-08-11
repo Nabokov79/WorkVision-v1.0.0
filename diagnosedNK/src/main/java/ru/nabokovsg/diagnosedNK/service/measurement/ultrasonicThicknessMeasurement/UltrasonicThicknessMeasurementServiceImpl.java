@@ -1,15 +1,14 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.ultrasonicThicknessMeasurement;
 
-import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.ElementData;
+import ru.nabokovsg.diagnosedNK.model.equipment.StandardSize;
 import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.*;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableThickness;
 import ru.nabokovsg.diagnosedNK.repository.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementRepository;
+import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.IdentifiedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.AcceptableThicknessService;
 
@@ -21,59 +20,39 @@ public class UltrasonicThicknessMeasurementServiceImpl implements UltrasonicThic
     private final UltrasonicThicknessMeasurementMapper mapper;
     private final AcceptableThicknessService acceptableThicknessService;
     private final IdentifiedDefectService identifiedDefectService;
-
+    private final QueryDSLRequestService requestService;
 
     @Override
-    public UltrasonicThicknessMeasurement save(UltrasonicThicknessMeasurementDto measurementDto
-                                             , DiagnosticEquipmentData objectData
-                                             , ElementData objectElementData) {
-        AcceptableThickness acceptableThickness = acceptableThicknessService.getByPredicate(
-                                                                                  objectData.getEquipmentTypeId()
-                                                                                , objectElementData.getElementId()
-                                                                                , objectElementData.getPartElementId()
-                                                                                , measurementDto.getDiameter());
+    public UltrasonicThicknessMeasurement save(UltrasonicThicknessMeasurementDto measurementDto, StandardSize standardSize) {
         UltrasonicThicknessMeasurement measurement = mapper.mapToUltrasonicThicknessMeasurement(measurementDto);
-        getAcceptableMin(measurement, acceptableThickness, objectElementData);
-        setResidualThickness(measurement
-                , identifiedDefectService.getMaxCorrosionValueByPredicate(measurementDto, objectData.getEquipmentId()));
-        setAcceptableMeasurement(measurement, acceptableThickness);
+        set(measurement, measurementDto, standardSize);
         return repository.save(measurement);
     }
 
     @Override
     public UltrasonicThicknessMeasurement update(UltrasonicThicknessMeasurementDto measurementDto
                                                , UltrasonicThicknessMeasurement measurement
-                                               , DiagnosticEquipmentData objectData
-                                               , ElementData objectElementData) {
+                                               , StandardSize standardSize) {
         measurement = mapper.mapToUpdateUltrasonicThicknessMeasurement(measurement, measurementDto);
-        AcceptableThickness acceptableThickness = acceptableThicknessService.getByPredicate(
-                                                                                  objectData.getEquipmentTypeId()
-                                                                                , objectElementData.getElementId()
-                                                                                , objectElementData.getPartElementId()
-                                                                                , measurementDto.getDiameter());
-        getAcceptableMin(measurement, acceptableThickness, objectElementData);
-        setResidualThickness(measurement
-                , identifiedDefectService.getMaxCorrosionValueByPredicate(measurementDto, objectData.getEquipmentId()));
-        setAcceptableMeasurement(measurement, acceptableThickness);
+        set(measurement, measurementDto, standardSize);
         return repository.save(measurement);
     }
 
-    @Override
-    public UltrasonicThicknessMeasurement getPredicateData(UTPredicateData predicateData) {
-        QUltrasonicThicknessMeasurement measurement = QUltrasonicThicknessMeasurement.ultrasonicThicknessMeasurement;
-        QUltrasonicThicknessElementMeasurement element = QUltrasonicThicknessElementMeasurement.ultrasonicThicknessElementMeasurement;
-        QUltrasonicThicknessPartElementMeasurement partElement = QUltrasonicThicknessPartElementMeasurement.ultrasonicThicknessPartElementMeasurement;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(element.equipmentId.eq(predicateData.getEquipmentId()));
-        builder.and(element.elementId.eq(predicateData.getElementId()));
-        if (predicateData.getPartElementId() != null) {
-            builder.and(partElement.partElementId.eq(predicateData.getPartElementId()));
-        }
-        builder.and(measurement.measurementNumber.eq(predicateData.getMeasurementNumber()));
-        return null;
+    private void set(UltrasonicThicknessMeasurement measurement, UltrasonicThicknessMeasurementDto measurementDto, StandardSize standardSize) {
+        AcceptableThickness acceptableThickness = acceptableThicknessService.getByPredicate(
+                                                      requestService.getEquipmentTypeId(measurementDto.getElementId())
+                                                    , measurementDto.getElementId()
+                                                    , measurementDto.getPartElementId()
+                                                    , measurementDto.getDiameter());
+        getAcceptableMin(measurement, acceptableThickness, standardSize);
+        setResidualThickness(measurement, measurementDto);
+        setAcceptableMeasurement(measurement, acceptableThickness);
     }
 
-    private void setResidualThickness(UltrasonicThicknessMeasurement measurement, Double maxCorrosion) {
+    private void setResidualThickness(UltrasonicThicknessMeasurement measurement
+                                    , UltrasonicThicknessMeasurementDto measurementDto) {
+        Double maxCorrosion = identifiedDefectService.getMaxCorrosionValueByPredicate(measurementDto
+                                                                                    , measurementDto.getEquipmentId());
         if (maxCorrosion != null) {
             measurement.setResidualThickness(measurement.getMinMeasurementValue() - maxCorrosion);
         } else {
@@ -83,9 +62,9 @@ public class UltrasonicThicknessMeasurementServiceImpl implements UltrasonicThic
 
     private void getAcceptableMin(UltrasonicThicknessMeasurement measurement
                                 , AcceptableThickness acceptableThickness
-                                , ElementData objectElementData) {
+                                , StandardSize standardSize) {
         if (acceptableThickness.getAcceptablePercent() != null) {
-            measurement.setMinAcceptableValue(objectElementData.getDesignThickness()
+            measurement.setMinAcceptableValue(standardSize.getDesignThickness()
                     * (acceptableThickness.getAcceptablePercent()/100));
         } else {
             measurement.setMinAcceptableValue(acceptableThickness.getMinThickness());

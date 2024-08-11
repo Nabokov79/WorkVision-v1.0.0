@@ -9,7 +9,7 @@ import ru.nabokovsg.diagnosedNK.dto.norms.acceptableHardness.AcceptableHardnessD
 import ru.nabokovsg.diagnosedNK.dto.norms.acceptableHardness.ResponseAcceptableHardnessDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.norms.AcceptableHardnessMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.ElementData;
+import ru.nabokovsg.diagnosedNK.model.equipment.StandardSize;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableHardness;
 import ru.nabokovsg.diagnosedNK.model.norms.QAcceptableHardness;
 import ru.nabokovsg.diagnosedNK.repository.norms.AcceptableHardnessRepository;
@@ -55,16 +55,19 @@ public class AcceptableHardnessServiceImpl implements AcceptableHardnessService 
     }
 
     @Override
-    public AcceptableHardness getByPredicate(Long equipmentTypeId, ElementData objectElementData) {
+    public AcceptableHardness getByPredicate(Long equipmentTypeId
+                                           , Long elementId
+                                           , Long partElementId
+                                           , StandardSize standardSize) {
         QAcceptableHardness acceptableHardness = QAcceptableHardness.acceptableHardness;
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(acceptableHardness.equipmentTypeId.eq(equipmentTypeId));
-        builder.and(acceptableHardness.elementId.eq(objectElementData.getElementTypeId()));
-        if (objectElementData.getPartElementId() != null) {
-            builder.and(acceptableHardness.partElementId.eq(objectElementData.getPartElementTypeId()));
+        builder.and(acceptableHardness.elementId.eq(elementId));
+        if (partElementId != null) {
+            builder.and(acceptableHardness.partElementId.eq(partElementId));
         }
-        if (objectElementData.getMaxDiameter() != null) {
-            builder.and(acceptableHardness.minAllowableDiameter.eq(objectElementData.getMinDiameter()));
+        if (standardSize.getMaxDiameter() != null) {
+            builder.and(acceptableHardness.minAllowableDiameter.eq(standardSize.getMinDiameter()));
         }
         AcceptableHardness acceptable = new JPAQueryFactory(em).from(acceptableHardness)
                 .select(acceptableHardness)

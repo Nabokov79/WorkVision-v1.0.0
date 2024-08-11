@@ -8,7 +8,7 @@ import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.VisualMeasuringSurveyMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.VisualMeasuringSurvey;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.VisualMeasuringSurveyRepository;
-import ru.nabokovsg.diagnosedNK.service.diagnosticEquipmentData.EquipmentStandardSizeService;
+import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class VisualMeasuringSurveyServiceImpl implements VisualMeasuringSurveySe
 
     private final VisualMeasuringSurveyRepository repository;
     private final VisualMeasuringSurveyMapper mapper;
-    private final EquipmentStandardSizeService standardSizeService;
+    private final EquipmentElementService elementService;
 
     @Override
     public List<ResponseVisualMeasuringSurveyDto> getAll(Long equipmentId) {
@@ -33,8 +33,7 @@ public class VisualMeasuringSurveyServiceImpl implements VisualMeasuringSurveySe
     public VisualMeasuringSurvey get(Long equipmentId, Long elementId) {
         return Objects.requireNonNullElseGet(
                         repository.findByEquipmentIdAndElementId(equipmentId, elementId)
-                , () -> repository.save(mapper.mapToVisualMeasuringSurvey(equipmentId
-                                                                    , standardSizeService.getByElementId(elementId))));
+                , () -> repository.save(mapper.mapToVisualMeasuringSurvey(equipmentId, elementService.get(elementId))));
     }
 
     @Override

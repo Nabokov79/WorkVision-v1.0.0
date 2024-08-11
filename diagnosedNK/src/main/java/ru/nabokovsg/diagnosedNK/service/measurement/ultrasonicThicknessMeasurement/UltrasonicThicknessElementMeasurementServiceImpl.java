@@ -6,14 +6,12 @@ import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.R
 import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessElementMeasurementMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.ElementData;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessElementMeasurement;
 import ru.nabokovsg.diagnosedNK.repository.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessElementMeasurementRepository;
-import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
+import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,57 +21,45 @@ public class UltrasonicThicknessElementMeasurementServiceImpl implements Ultraso
     private final UltrasonicThicknessElementMeasurementMapper mapper;
     private final UltrasonicThicknessPartElementMeasurementService partElementMeasurementService;
     private final UltrasonicThicknessMeasurementService measurementService;
-    private final QueryDSLRequestService requestService;
+    private final EquipmentElementService elementService;
 
     @Override
     public ResponseUltrasonicThicknessElementMeasurementDto save(UltrasonicThicknessMeasurementDto measurementDto) {
-        DiagnosticEquipmentData objectData = requestService.getDiagnosticEquipmentData(measurementDto.getElementId()
-                                                                                , measurementDto.getPartElementId());
-        ElementData objectElementData = objectData.getObjectStandardSizes()
-                                                    .stream()
-                                                    .collect(Collectors.toMap(ElementData::getElementId, o -> o))
-                                                    .get(measurementDto.getElementId());
-        UltrasonicThicknessElementMeasurement element = repository.findByEquipmentIdAndElementId(
+        UltrasonicThicknessElementMeasurement measurement = repository.findByEquipmentIdAndElementId(
                                                                                        measurementDto.getEquipmentId()
                                                                                      , measurementDto.getElementId());
-       if (element == null) {
-           element = mapper.mapToUltrasonicThicknessElementMeasurement(measurementDto.getEquipmentId()
-                                                                     , objectData.getEquipmentId()
-                                                                     , objectElementData);
+        EquipmentElement element = elementService.get(measurementDto.getElementId());
+       if (measurement == null) {
+           measurement = mapper.mapToUltrasonicThicknessElementMeasurement(measurementDto.getEquipmentId(), element);
            if (measurementDto.getPartElementId() == null) {
-               element = mapper.mapWithUltrasonicThicknessElementMeasurement(element
+               measurement = mapper.mapWithUltrasonicThicknessElementMeasurement(measurement
                                                                           , measurementService.save(measurementDto
-                                                                                                  , objectData
-                                                                                                  , objectElementData));
+                                                                          , element.getStandardSize()));
            }
-           element = repository.save(element);
+           measurement = repository.save(measurement);
            if (measurementDto.getPartElementId() != null) {
-               element.getPartElementMeasurements().add(partElementMeasurementService.save(measurementDto
-                                                                                         , element
-                                                                                         , objectData
-                                                                                         , objectElementData));
+               measurement.getPartElementMeasurements().add(partElementMeasurementService.save(measurementDto
+                                                                                         , measurement
+                                                                                         , element.getPartsElement()));
            }
-           return mapper.mapToResponseUltrasonicThicknessMeasurementDto(element);
+           return mapper.mapToResponseUltrasonicThicknessMeasurementDto(measurement);
        }
-        return update(measurementDto, element, objectData, objectElementData);
+        return update(measurementDto, measurement, element);
     }
 
     private ResponseUltrasonicThicknessElementMeasurementDto update(UltrasonicThicknessMeasurementDto measurementDto
-                                                           , UltrasonicThicknessElementMeasurement element
-                                                           , DiagnosticEquipmentData objectData
-                                                           , ElementData objectElementData) {
-        if (element.getMeasurement() == null) {
-            element.setPartElementMeasurements(partElementMeasurementService.update(measurementDto
-                                                                                 , element.getPartElementMeasurements()
-                                                                                 , objectData
-                                                                                 , objectElementData));
+                                                                 , UltrasonicThicknessElementMeasurement measurement
+                                                                 , EquipmentElement element) {
+        if (measurement.getMeasurement() == null) {
+            measurement.setPartElementMeasurements(partElementMeasurementService.update(measurementDto
+                                                                           , measurement.getPartElementMeasurements()
+            , element.getPartsElement()));
         } else {
-            element.setMeasurement(measurementService.update(measurementDto
-                                                           , element.getMeasurement()
-                                                           , objectData
-                                                           , objectElementData));
+            measurement.setMeasurement(measurementService.update(measurementDto
+                                                               , measurement.getMeasurement()
+                                                               , element.getStandardSize()));
         }
-        return mapper.mapToResponseUltrasonicThicknessMeasurementDto(element);
+        return mapper.mapToResponseUltrasonicThicknessMeasurementDto(measurement);
     }
 
     @Override

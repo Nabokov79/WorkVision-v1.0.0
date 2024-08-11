@@ -22,7 +22,7 @@ public class LaboratoryClient {
     private static final String DELIMITER = "/";
     private static final String API_PREFIX_EMPLOYEE = "/employee";
     private static final String API_PREFIX_BRANCH = "/branch";
-    private static final String API_PREFIX_EQUIPMENT = "/equipments";
+    private static final String API_PREFIX_EQUIPMENT = "/diagnosed/equipments";
     private static final String API_PREFIX_REPORT = "/document/survey/report";
     private static final String API_PREFIX_SURVEY_PROTOCOL = "/document/survey/protocol";
     private static final String API_PREFIX_CONTROL_PROTOCOL = "/document/control/protocol";

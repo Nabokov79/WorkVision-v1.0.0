@@ -21,8 +21,10 @@ public class UpdateEquipmentTypeDto {
     @Schema(description = "Наименование")
     @NotBlank(message = "equipmentName should not be blank")
     private String equipmentName;
+    @Schema(description = "Объем")
+    private Integer volume;
     @Schema(description = "Модель")
     private String model;
-    @Schema(description = "Ориентация оборудования")
+    @Schema(description = "Положение оборудования")
     private String orientation;
 }

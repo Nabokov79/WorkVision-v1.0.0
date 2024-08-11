@@ -27,7 +27,7 @@ public class NewEquipmentDto {
     private Integer stationaryNumber;
     @Schema(description = "Старый или новый бак-аккумулятор")
     private Boolean old;
-    @Schema(description = "Производственное помещение")
+    @Schema(description = "Расположение оборудования")
     private String room;
     @Schema(description = "Количество мест проведения измерений геодезии")
     private Integer geodesyLocations;

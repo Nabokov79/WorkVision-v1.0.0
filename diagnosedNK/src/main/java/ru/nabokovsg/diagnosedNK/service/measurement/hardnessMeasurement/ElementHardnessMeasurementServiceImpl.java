@@ -6,14 +6,12 @@ import ru.nabokovsg.diagnosedNK.dto.measurement.hardnessMeasurement.HardnessMeas
 import ru.nabokovsg.diagnosedNK.dto.measurement.hardnessMeasurement.ResponseElementHardnessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.hardnessMeasurement.ElementHardnessMeasurementMapper;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.DiagnosticEquipmentData;
-import ru.nabokovsg.diagnosedNK.model.diagnosticEquipmentData.ElementData;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.hardnessMeasurement.ElementHardnessMeasurement;
 import ru.nabokovsg.diagnosedNK.repository.measurement.hardnessMeasurement.ElementHardnessMeasurementRepository;
-import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
+import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,58 +19,46 @@ public class ElementHardnessMeasurementServiceImpl implements ElementHardnessMea
 
     private final ElementHardnessMeasurementRepository repository;
     private final ElementHardnessMeasurementMapper mapper;
-    private final QueryDSLRequestService requestService;
     private final HardnessMeasurementService measurementService;
     private final PartElementHardnessMeasurementService partElementHardnessMeasurementService;
+    private final EquipmentElementService elementService;
 
     @Override
     public ResponseElementHardnessMeasurementDto save(HardnessMeasurementDto measurementDto) {
-        DiagnosticEquipmentData objectData = requestService.getDiagnosticEquipmentData(measurementDto.getElementId()
-                                                                                , measurementDto.getPartElementId());
-        ElementData objectElementData = objectData.getObjectStandardSizes()
-                                                    .stream()
-                                                    .collect(Collectors.toMap(ElementData::getElementId, o -> o))
-                                                    .get(measurementDto.getElementId());
-        ElementHardnessMeasurement element = repository.findByEquipmentIdAndElementId(
+        EquipmentElement element = elementService.get(measurementDto.getElementId());
+        ElementHardnessMeasurement measurement = repository.findByEquipmentIdAndElementId(
                                                                                       measurementDto.getEquipmentId()
                                                                                     , measurementDto.getElementId());
-        if (element == null) {
-            element = mapper.mapToElementHardnessMeasurement(measurementDto.getEquipmentId()
-                    , objectData.getEquipmentId()
-                    , objectElementData);
+        if (measurement == null) {
+            measurement = mapper.mapToElementHardnessMeasurement(measurementDto.getEquipmentId(), element);
             if (measurementDto.getPartElementId() == null) {
-                element = mapper.mapWithHardnessMeasurement(element, measurementService.save(measurementDto
-                                                                                           , objectData
-                                                                                           , objectElementData));
+                measurement = mapper.mapWithHardnessMeasurement(measurement, measurementService.save(measurementDto
+                                                                                          , element.getStandardSize()));
             }
-            element = repository.save(element);
+            measurement = repository.save(measurement);
             if (measurementDto.getPartElementId() != null) {
-                element.getPartElementMeasurements().add(partElementHardnessMeasurementService.save(measurementDto
-                        , element
-                        , objectData
-                        , objectElementData));
+                measurement.getPartElementMeasurements().add(partElementHardnessMeasurementService.save(measurementDto
+                        , measurement
+                        , element.getPartsElement()));
             }
-            return mapper.mapToResponseElementHardnessMeasurementDto(element);
+            return mapper.mapToResponseElementHardnessMeasurementDto(measurement);
         }
-        return update(measurementDto, element, objectData, objectElementData);
+        return update(measurementDto, measurement, element);
     }
 
     private ResponseElementHardnessMeasurementDto update(HardnessMeasurementDto measurementDto
-            , ElementHardnessMeasurement element
-            , DiagnosticEquipmentData objectData
-            , ElementData objectElementData) {
-        if (element.getMeasurement() == null) {
-            element.setPartElementMeasurements(partElementHardnessMeasurementService.update(measurementDto
-                    , element.getPartElementMeasurements()
-                    , objectData
-                    , objectElementData));
+            , ElementHardnessMeasurement measurement
+            , EquipmentElement element ) {
+        if (measurement.getMeasurement() == null) {
+            measurement.setPartElementMeasurements(partElementHardnessMeasurementService.update(measurementDto
+                    , measurement.getPartElementMeasurements()
+                    , element.getPartsElement()));
         } else {
-            element.setMeasurement(measurementService.update(measurementDto
-                    , element.getMeasurement()
-                    , objectData
-                    , objectElementData));
+            measurement.setMeasurement(measurementService.update(measurementDto
+                    , measurement.getMeasurement()
+                    , element.getStandardSize()));
         }
-        return mapper.mapToResponseElementHardnessMeasurementDto(element);
+        return mapper.mapToResponseElementHardnessMeasurementDto(measurement);
     }
 
     @Override

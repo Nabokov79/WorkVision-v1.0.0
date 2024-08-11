@@ -28,4 +28,6 @@ public class GeodesicMeasurementsPointDto {
     private Integer controlPointValue;
     @Schema(description = "Измеренное значение при смене положения прибора(переход)")
     private Integer transitionValue;
+    @Schema(description = "Оборудование с теплоносителем")
+    private Boolean full;
 }

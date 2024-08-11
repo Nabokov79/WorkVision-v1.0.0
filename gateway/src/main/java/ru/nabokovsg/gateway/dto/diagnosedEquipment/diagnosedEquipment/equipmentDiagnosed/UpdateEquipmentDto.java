@@ -13,15 +13,15 @@ import lombok.Setter;
 @Schema(description = "Данные для изменения информации об оборудовании")
 public class UpdateEquipmentDto {
 
-    @Schema(description = "Индентификатор")
+    @Schema(description = "Идентификатор")
     @NotNull(message = "document header id should not be null")
     @Positive(message = "document header id can only be positive")
     private Long id;
-    @Schema(description = "Индентификатор котельной, цтп")
+    @Schema(description = "Идентификатор котельной, цтп")
     @NotNull(message = "building id should not be null")
     @Positive(message = "building id can only be positive")
     private Long buildingId;
-    @Schema(description = "Индентификатор типа оборудования")
+    @Schema(description = "Идентификатор типа оборудования")
     @NotNull(message = "equipmentType id should not be null")
     @Positive(message = "equipmentType id can only be positive")
     private Long equipmentTypeId;
@@ -31,6 +31,6 @@ public class UpdateEquipmentDto {
     private Boolean old;
     @Schema(description = "Производственное помещение")
     private String room;
-    @Schema(description = "Колличество мест проведения измерений геодезии")
+    @Schema(description = "Количество мест проведения измерений геодезии")
     private Integer geodesyLocations;
 }
