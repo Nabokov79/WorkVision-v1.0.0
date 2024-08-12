@@ -3,6 +3,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement.geodesy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy.ReferencePointMapper;
+import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ReferencePoint;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableDeviationsGeodesy;
@@ -22,12 +23,12 @@ public class ReferencePointMeasurementServiceImpl implements ReferencePointMeasu
     private final ReferencePointMapper mapper;
     private final DeviationYearService deviationYearService;
     private final CalculationGeodesicMeasurementService calculationService;
-    private final EquipmentGeodesicMeasurementsService equipmentGeodesicMeasurementsService;
     private final QueryDSLRequestService requestService;
 
     @Override
     public void save(AcceptableDeviationsGeodesy acceptableDeviationsGeodesy
-                   , List<GeodesicMeasurementsPoint> measurements) {
+                   , List<GeodesicMeasurementsPoint> measurements
+                   , EquipmentGeodesicMeasurements geodesicMeasurements) {
        if (!measurements.isEmpty()) {
            Integer min = getMin(measurements);
            Long equipmentId = calculationService.getEquipmentId(measurements);
@@ -39,11 +40,10 @@ public class ReferencePointMeasurementServiceImpl implements ReferencePointMeasu
            List<ReferencePoint> referencePoints = repository.saveAll(
                                                measurements.stream()
                                                        .filter(m -> m.getReferencePointValue() != null)
-                                                       .map(mapper::mapToReferencePoint)
+                                                       .map(g -> mapper.mapToReferencePoint(g, geodesicMeasurements))
                                                        .map(r -> getReferencePoint(acceptableDeviationsGeodesy, r, min))
                                                        .toList());
            deviationYearService.save(referencePoints);
-           equipmentGeodesicMeasurementsService.addReferencePoint(equipmentId, referencePoints);
        }
     }
 

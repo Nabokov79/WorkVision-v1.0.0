@@ -60,12 +60,10 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     public Set<ReferencePoint> getAllReferencePoint(Long equipmentId) {
         QEquipmentGeodesicMeasurements geodesic = QEquipmentGeodesicMeasurements.equipmentGeodesicMeasurements;
         QReferencePoint referencePoint = QReferencePoint.referencePoint;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(geodesic.equipmentId.eq(equipmentId));
-        builder.and(referencePoint.geodesicMeasurements.id.eq(geodesic.id));
         return new HashSet<>(new JPAQueryFactory(em).from(referencePoint)
                 .select(referencePoint)
-                .where(builder)
+                .innerJoin(referencePoint.geodesicMeasurements, geodesic)
+                .where(geodesic.equipmentId.eq(equipmentId))
                 .fetch());
     }
 
@@ -73,12 +71,10 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     public Set<ControlPoint> getAllControlPoint(Long equipmentId) {
         QEquipmentGeodesicMeasurements geodesic = QEquipmentGeodesicMeasurements.equipmentGeodesicMeasurements;
         QControlPoint controlPoint = QControlPoint.controlPoint;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(geodesic.equipmentId.eq(equipmentId));
-        builder.and(controlPoint.geodesicMeasurements.id.eq(geodesic.id));
         return new HashSet<>(new JPAQueryFactory(em).from(controlPoint)
                 .select(controlPoint)
-                .where(builder)
+                .innerJoin(controlPoint.geodesicMeasurements, geodesic)
+                .where(geodesic.equipmentId.eq(equipmentId))
                 .fetch());
     }
 
@@ -86,13 +82,11 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     public Set<PointDifference> getAllPointDifference(Long equipmentId) {
         QEquipmentGeodesicMeasurements geodesic = QEquipmentGeodesicMeasurements.equipmentGeodesicMeasurements;
         QPointDifference pointDifference = QPointDifference.pointDifference;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(geodesic.equipmentId.eq(equipmentId));
-        builder.and(pointDifference.geodesicMeasurements.id.eq(geodesic.id));
         return new HashSet<>(new JPAQueryFactory(em)
                 .from(pointDifference)
                 .select(pointDifference)
-                .where(builder)
+                .innerJoin(pointDifference.geodesicMeasurements, geodesic)
+                .where(geodesic.equipmentId.eq(equipmentId))
                 .fetch());
     }
 

@@ -48,8 +48,8 @@ public class CalculationGeodesicMeasurementServiceImpl implements CalculationGeo
         int delta = 0;
         Map<Integer, GeodesicMeasurementsPoint> recalculateMeasurements = measurements.stream()
                 .collect(Collectors.toMap(GeodesicMeasurementsPoint::getSequentialNumber, g -> g));
-        for (int i = 1;  i <= measurements.size(); i++) {
-            GeodesicMeasurementsPoint measurement = measurements.get(i);
+        for (int i = 1;  i < measurements.size() + 1; i++) {
+            GeodesicMeasurementsPoint measurement = recalculateMeasurements.get(i);
             recalculateMeasurements.put(measurement.getSequentialNumber(), getRecalculateMeasurement(measurement, delta));
             if (measurement.getTransitionValue() != null) {
                 delta = getDelta(measurement.getControlPointValue(), measurement.getTransitionValue());

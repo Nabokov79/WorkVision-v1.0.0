@@ -7,6 +7,7 @@ import ru.nabokovsg.diagnosedNK.dto.measurement.geodesy.ResponseGeodesicMeasurem
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy.GeodesicMeasurementsPointMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentDiagnosed;
+import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableDeviationsGeodesy;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.GeodesicMeasurementsPointRepository;
@@ -29,6 +30,7 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
     private final ReferencePointMeasurementService referencePointMeasurementService;
     private final PointDifferenceService pointDifferenceService;
     private final CalculationGeodesicMeasurementService calculationService;
+    private final EquipmentGeodesicMeasurementsService equipmentGeodesicMeasurementsService;
 
     @Override
     public List<ResponseGeodesicMeasurementsPointDto> save(GeodesicMeasurementsPointDto measurementDto) {
@@ -65,17 +67,20 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
     private void calculated(Long equipmentId, boolean full, List<GeodesicMeasurementsPoint> measurements) {
         EquipmentDiagnosed equipment = equipmentDiagnosedService.getById(equipmentId);
         if (measurements.size() == equipment.getGeodesyLocations()) {
+            EquipmentGeodesicMeasurements geodesicMeasurements =  equipmentGeodesicMeasurementsService.getByEquipmentId(calculationService.getEquipmentId(measurements));
             measurements = calculationService.recalculateByTransition(measurements);
             AcceptableDeviationsGeodesy acceptableDeviationsGeodesy =
                                                                 acceptableDeviationsGeodesyService.get(equipment, full);
             referencePointMeasurementService.save(acceptableDeviationsGeodesy
                                                 , measurements.stream()
                                                               .filter(m -> m.getReferencePointValue() != null)
-                                                              .toList());
+                                                              .toList()
+                                                , geodesicMeasurements);
             pointDifferenceService.save(acceptableDeviationsGeodesy
                                       , measurements.stream()
                                                     .filter(m -> m.getControlPointValue() != null)
-                                                    .toList());
+                                                    .toList()
+                                      , geodesicMeasurements);
         }
     }
 }

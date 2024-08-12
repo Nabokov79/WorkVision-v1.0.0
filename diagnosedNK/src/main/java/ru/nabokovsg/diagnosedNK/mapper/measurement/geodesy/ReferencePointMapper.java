@@ -3,6 +3,7 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ReferencePoint;
 
@@ -19,8 +20,10 @@ public interface ReferencePointMapper {
 
     @Mapping(source = "measurement.numberMeasurementLocation", target = "placeNumber")
     @Mapping(source = "measurement.referencePointValue", target = "calculatedHeight")
+    @Mapping(source = "measurements", target = "geodesicMeasurements")
     @Mapping(target = "id", ignore = true)
-    ReferencePoint mapToReferencePoint(GeodesicMeasurementsPoint measurement);
+    ReferencePoint mapToReferencePoint(GeodesicMeasurementsPoint measurement
+                                   , EquipmentGeodesicMeasurements measurements);
 
     @Mapping(source = "measurement.numberMeasurementLocation", target = "placeNumber")
     @Mapping(source = "measurement.referencePointValue", target = "calculatedHeight")

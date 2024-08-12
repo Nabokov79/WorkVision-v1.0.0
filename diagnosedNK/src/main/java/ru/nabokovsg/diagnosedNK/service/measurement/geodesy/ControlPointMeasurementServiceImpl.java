@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy.ControlPointMeasurementMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
+import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.ControlPointMeasurementRepository;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
@@ -24,7 +25,8 @@ public class ControlPointMeasurementServiceImpl implements ControlPointMeasureme
     private final QueryDSLRequestService requestService;
 
     @Override
-    public Set<ControlPoint> save(List<GeodesicMeasurementsPoint> measurements) {
+    public Set<ControlPoint> save(List<GeodesicMeasurementsPoint> measurements
+                                , EquipmentGeodesicMeasurements geodesicMeasurements) {
         Integer min = getMin(measurements);
         Set<ControlPoint> controlPoints = requestService.getAllControlPoint(calculationService.getEquipmentId(measurements));
         if (!controlPoints.isEmpty() && controlPoints.size() == measurements.size()) {
@@ -34,7 +36,8 @@ public class ControlPointMeasurementServiceImpl implements ControlPointMeasureme
                                                     .map(g -> mapper.mapToControlPoint(
                                                             g
                                                             , calculationService.getDeviation(min
-                                                                                           , g.getControlPointValue())))
+                                                                                           , g.getControlPointValue())
+                                                    , geodesicMeasurements))
                                                     .toList()));
     }
 

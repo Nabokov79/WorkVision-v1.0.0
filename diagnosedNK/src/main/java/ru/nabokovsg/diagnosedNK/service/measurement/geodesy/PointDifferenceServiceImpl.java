@@ -3,10 +3,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement.geodesy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy.PointDifferenceMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
-import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
-import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicPointType;
-import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
+import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.*;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableDeviationsGeodesy;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.PointDifferenceRepository;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
@@ -28,16 +25,18 @@ public class PointDifferenceServiceImpl implements PointDifferenceService {
 
     @Override
     public void save(AcceptableDeviationsGeodesy acceptableDeviationsGeodesy
-                   , List<GeodesicMeasurementsPoint> measurements) {
+                   , List<GeodesicMeasurementsPoint> measurements
+                   , EquipmentGeodesicMeasurements geodesicMeasurements) {
         Long equipmentId = calculationService.getEquipmentId(measurements);
         Set<PointDifference> pointDifferences = requestService.getAllPointDifference(equipmentId);
         if (!pointDifferences.isEmpty() && measurements.size() == pointDifferences.size()) {
             update(acceptableDeviationsGeodesy, pointDifferences, measurements);
             return;
         }
-        Set<ControlPoint> controlPoints = controlPointMeasurementService.save(measurements);
+        Set<ControlPoint> controlPoints = controlPointMeasurementService.save(measurements, geodesicMeasurements);
         pointDifferences = new HashSet<>(repository.saveAll(create(acceptableDeviationsGeodesy, controlPoints)
                 .stream()
+                        .map(m -> mapper.mapPointDifferenceWithEquipmentGeodesicMeasurements(m, geodesicMeasurements))
                 .toList()));
         equipmentGeodesicMeasurementsService.addControlPointAndPointDifference(equipmentId, controlPoints, pointDifferences);
     }
@@ -47,7 +46,8 @@ public class PointDifferenceServiceImpl implements PointDifferenceService {
                      , List<GeodesicMeasurementsPoint> measurements) {
         Map<Integer,PointDifference> pointDifferencesDb = pointDifferences.stream()
                                                .collect(Collectors.toMap(PointDifference::getFirstPlaceNumber, p -> p));
-        repository.saveAll(create(acceptableDeviationsGeodesy, controlPointMeasurementService.save(measurements))
+        EquipmentGeodesicMeasurements geodesicMeasurements = new EquipmentGeodesicMeasurements();
+        repository.saveAll(create(acceptableDeviationsGeodesy, controlPointMeasurementService.save(measurements, geodesicMeasurements))
                 .stream()
                 .map(p -> mapper.mapToUpdatePointDifference(pointDifferencesDb.get(p.getFirstPlaceNumber()), p))
                 .toList());

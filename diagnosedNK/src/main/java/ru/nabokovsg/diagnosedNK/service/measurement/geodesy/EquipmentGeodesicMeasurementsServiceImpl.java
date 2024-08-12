@@ -8,11 +8,9 @@ import ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy.EquipmentGeodesicMeas
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
-import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ReferencePoint;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.EquipmentGeodesicMeasurementsRepository;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -24,25 +22,26 @@ public class EquipmentGeodesicMeasurementsServiceImpl implements EquipmentGeodes
 
     @Override
     public ResponseEquipmentGeodesicMeasurementsDto get(Long equipmentId) {
-        return mapper.mapToResponseEquipmentGeodesicMeasurementsDto(
-                repository.findByEquipmentId(equipmentId)
-                        .orElseThrow(() -> new NotFoundException(
-                                String.format("EquipmentGeodesicMeasurements for equipment with id=%s not found"
-                                                                                                    , equipmentId))));
+        EquipmentGeodesicMeasurements geodesicMeasurements = repository.findByEquipmentId(equipmentId);
+        if (geodesicMeasurements == null) {
+            throw new NotFoundException(
+                    String.format("EquipmentGeodesicMeasurements for equipment with id=%s not found", equipmentId));
+        }
+        return mapper.mapToResponseEquipmentGeodesicMeasurementsDto(geodesicMeasurements);
     }
 
     @Override
-    public void addReferencePoint(Long equipmentId, List<ReferencePoint> referencePoints) {
-        EquipmentGeodesicMeasurements measurement = getByEquipment(equipmentId);
-        measurement.setReferencePoints(new HashSet<>(referencePoints));
-        save(measurement);
+    public EquipmentGeodesicMeasurements getByEquipmentId(Long equipmentId) {
+        return Objects.requireNonNullElseGet(repository.findByEquipmentId(equipmentId)
+                        , () -> repository.save(mapper.mapToEquipmentGeodesicMeasurements(equipmentId))
+        );
     }
 
     @Override
     public void addControlPointAndPointDifference(Long equipmentId
                                                 , Set<ControlPoint> controlPoints
                                                 , Set<PointDifference> pointDifferences) {
-        EquipmentGeodesicMeasurements measurement = getByEquipment(equipmentId);
+        EquipmentGeodesicMeasurements measurement = getByEquipmentId(equipmentId);
         measurement.setControlPoints(controlPoints);
         measurement.setPointDifferences(pointDifferences);
         save(measurement);
@@ -52,7 +51,5 @@ public class EquipmentGeodesicMeasurementsServiceImpl implements EquipmentGeodes
         repository.save(measurement);
     }
 
-    private EquipmentGeodesicMeasurements getByEquipment(Long equipmentId) {
-        return repository.findByEquipmentId(equipmentId).orElse(repository.save(mapper.mapToEquipmentGeodesicMeasurements(equipmentId)));
-    }
+
 }

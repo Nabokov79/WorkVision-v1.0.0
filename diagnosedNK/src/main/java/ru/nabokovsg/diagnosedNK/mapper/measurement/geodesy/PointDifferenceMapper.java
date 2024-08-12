@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
+import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicPointType;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
 
@@ -28,4 +29,9 @@ public interface PointDifferenceMapper {
 
     PointDifference mapToUpdatePointDifference(@MappingTarget PointDifference pointDifferenceDb
                                                             , PointDifference pointDifference);
+
+    @Mapping(source = "measurements", target = "geodesicMeasurements")
+    @Mapping(target = "id", ignore = true)
+    PointDifference mapPointDifferenceWithEquipmentGeodesicMeasurements(@MappingTarget PointDifference pointDifference
+                                                                         , EquipmentGeodesicMeasurements measurements);
 }

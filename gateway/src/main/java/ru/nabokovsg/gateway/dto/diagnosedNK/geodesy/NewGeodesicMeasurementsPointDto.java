@@ -35,4 +35,7 @@ public class NewGeodesicMeasurementsPointDto {
     private Integer controlPointValue;
     @Schema(description = "Измеренное значение при смене положения прибора(переход)")
     private Integer transitionValue;
+    @Schema(description = "Оборудование с теплоносителем")
+    @NotNull(message = "full should not be null")
+    private Boolean full;
 }

@@ -1,12 +1,10 @@
 package ru.nabokovsg.diagnosedNK.service.constantService;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 
 @Component
-@Slf4j
 public class ConstParameterMeasurementServiceImpl implements ConstParameterMeasurementService {
 
     private static final String LENGTH = "длина";
@@ -51,7 +49,6 @@ public class ConstParameterMeasurementServiceImpl implements ConstParameterMeasu
     }
 
     public MeasuredParameterType convertToParameterMeasurement(String measuredParameter) {
-        log.info("measuredParameter = {}", measuredParameter);
         return MeasuredParameterType.from(measuredParameter).orElseThrow(
                 () -> new BadRequestException(String.format("Unknown parameterMeasurement=%s", measuredParameter)));
     }
