@@ -2,9 +2,9 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.inspection.InspectionDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.inspection.ResponseInspectionDto;
-import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.InspectionMapper;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.ResponseInspectionDto;
+import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.InspectionMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class InspectionServiceImpl implements InspectionService {
 
     private final InspectionMapper mapper;
-    private final VisualMeasuringSurveyService vmSurveyService;
+    private final CalculatedVMSurveyService vmSurveyService;
     private final ExaminedPartElementService partElementService;
 
     @Override

@@ -6,20 +6,24 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.identifiedDefect.IdentifiedDefectDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.identifiedDefect.ResponseIdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.IdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.ResponseIdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.IdentifiedDefectMapper;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
+import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.QIdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.QParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.QVisualMeasuringSurvey;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.IdentifiedDefectRepository;
+import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,28 +34,27 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
     private final EntityManager em;
     private final DefectService defectsService;
     private final ParameterMeasurementService parameterMeasurementService;
-    private final VisualMeasuringSurveyService visualMeasuringSurveyService;
-    private final ExaminedPartElementService examinedPartElementService;
+    private final EquipmentElementService elementService;
     private final QueryDSLRequestService requestService;
 
     @Override
     public ResponseIdentifiedDefectDto save(IdentifiedDefectDto defectDto) {
         IdentifiedDefect identifiedDefect = requestService.getIdentifiedDefect(defectDto);
         Defect defect = defectsService.getById(defectDto.getDefectId());
+        EquipmentElement element = elementService.get(defectDto.getElementId());
         if (identifiedDefect == null) {
-            identifiedDefect = mapper.mapToIdentifiedDefect(defectDto, defect);
+            identifiedDefect = mapper.mapToIdentifiedDefect(defectDto, defect, element);
             if (defectDto.getPartElementId() != null) {
-                identifiedDefect = mapper.mapWithExaminedPartElement(identifiedDefect
-                                                        , examinedPartElementService.get(defectDto.getEquipmentId()
-                                                                                       , defectDto.getElementId()));
-            } else {
-                identifiedDefect = mapper.mapWithVisualMeasuringSurvey(identifiedDefect
-                                                 , visualMeasuringSurveyService.get(defectDto.getEquipmentId()
-                                                                                  , defectDto.getElementId()));
+                EquipmentPartElement partElement = element.getPartsElement()
+                                            .stream()
+                                            .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
+                                            .get(defectDto.getPartElementId());
+                mapper. mapWithEquipmentPartElement(identifiedDefect, partElement);
             }
             identifiedDefect = repository.save(identifiedDefect);
         }
-        identifiedDefect.setParameterMeasurements(parameterMeasurementService.save(defect.getCalculation()
+        mapper.mapWithParameterMeasurements(identifiedDefect
+                                          , parameterMeasurementService.save(defect.getCalculation()
                                                                            , defect.getMeasuredParameters()
                                                                            , identifiedDefect.getParameterMeasurements()
                                                                            , defectDto.getParameterMeasurements()));

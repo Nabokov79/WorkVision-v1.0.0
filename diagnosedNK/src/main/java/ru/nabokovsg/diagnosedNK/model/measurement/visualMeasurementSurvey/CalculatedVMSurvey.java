@@ -14,23 +14,21 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "visual_measuring_surveys")
-public class VisualMeasuringSurvey {
+public class CalculatedVMSurvey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "equipment_id")
     private Long equipmentId;
-    @Column(name = "element_id")
-    private Long elementId;
     @Column(name = "element_name")
     private String elementName;
-    @OneToMany(mappedBy = "visualMeasuringSurvey", fetch = FetchType.LAZY)
-    private Set<ExaminedPartElement> examinedPartElements;
-    @OneToMany(mappedBy = "visualMeasuringSurvey", fetch = FetchType.LAZY)
-    private Set<IdentifiedDefect> identifiedDefects;
-    @OneToMany(mappedBy = "visualMeasuringSurvey", fetch = FetchType.LAZY)
-    private Set<CompletedRepair> completedRepairs;
     @Column(name = "inspection")
     private String inspection;
+    @OneToMany(mappedBy = "visualMeasuringSurvey", fetch = FetchType.LAZY)
+    private Set<CalculatedPartElement> partElements;
+    @OneToMany(mappedBy = "visualMeasuringSurvey", fetch = FetchType.LAZY)
+    private Set<CalculatedDefect> defects;
+    @OneToMany(mappedBy = "visualMeasuringSurvey", fetch = FetchType.LAZY)
+    private Set<CalculatedRepair> repairs;
 }

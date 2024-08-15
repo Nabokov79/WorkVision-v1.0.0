@@ -19,22 +19,24 @@ public class IdentifiedDefect {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "equipment_id")
+    private Long equipmentId;
     @Column(name = "defect_id")
     private Long defectId;
     @Column(name = "defect_name")
     private String defectName;
-    @Column(name = "welded_joint_number")
-    private Integer weldedJointNumber;
     @Column(name = "not_meet_requirements")
     private Boolean notMeetRequirements;
     @Column(name = "use_calculate_thickness")
     private Boolean useCalculateThickness;
+    @Column(name = "element_id")
+    private Long elementId;
+    @Column(name = "element_name")
+    private String elementName;
+    @Column(name = "part_element_id")
+    private Long partElementId;
+    @Column(name = "part_element_name")
+    private String partElementName;
     @OneToMany(mappedBy = "identifiedDefect", fetch = FetchType.LAZY)
     private Set<ParameterMeasurement> parameterMeasurements;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "examined_part_element_id", nullable = false)
-    private ExaminedPartElement examinedPartElement;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "visual_measuring_survey_id", nullable = false)
-    private VisualMeasuringSurvey visualMeasuringSurvey;
 }

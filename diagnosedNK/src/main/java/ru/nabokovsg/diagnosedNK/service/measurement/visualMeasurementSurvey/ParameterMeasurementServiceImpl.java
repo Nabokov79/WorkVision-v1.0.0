@@ -2,7 +2,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.parameterMeasurement.ParameterMeasurementDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;

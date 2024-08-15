@@ -86,7 +86,7 @@ public class EquipmentElementServiceImpl implements EquipmentElementService {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(equipment.id.eq(elementDto.getEquipmentDiagnosedId()));
         builder.and(element.elementId.eq(elementDto.getElementId()));
-        if (elementDto.getPartElementId() == null) {
+        if (elementDto.getStandardSize() != null) {
             if (elementDto.getStandardSize().getDesignThickness() != null) {
                 builder.and(standardSize.designThickness.eq(elementDto.getStandardSize().getDesignThickness()));
             }

@@ -1,11 +1,11 @@
-package ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.identifiedDefect;
+package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.parameterMeasurement.ParameterMeasurementDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Результаты измерения дефекта элемента, подэлемента оборудования")
-public class IdentifiedDefectDto {
+@Schema(description = "Результаты измерения ремонта элемента, подэлемента оборудования")
+public class CompletedRepairDto {
 
     @Schema(description = "Идентификатор")
     private Long id;
@@ -24,10 +24,8 @@ public class IdentifiedDefectDto {
     private Long elementId;
     @Schema(description = "Идентификатор подэлемента")
     private Long partElementId;
-    @Schema(description = "Идентификатор дефекта")
-    private Long defectId;
-    @Schema(description = "Порядковый номер сварного соединения")
-    private Integer weldedJointNumber;
-    @Schema(description = "Измеренные параметры дефекта")
+    @Schema(description = "Идентификатор ремонта")
+    private Long repairId;
+    @Schema(description = "Измеренные параметры выполненного ремонта элемента")
     private List<ParameterMeasurementDto> parameterMeasurements;
 }

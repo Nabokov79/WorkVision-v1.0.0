@@ -17,7 +17,10 @@ public class StandardSizeServiceImpl implements StandardSizeService {
 
     @Override
     public StandardSize save(StandardSizeDto standardSizeDto) {
-        return repository.save(mapper.mapToStandardSize(standardSizeDto));
+        if (standardSizeDto != null) {
+            return repository.save(mapper.mapToStandardSize(standardSizeDto));
+        }
+        return null;
     }
 
     @Override

@@ -73,6 +73,9 @@ public class EquipmentTypeServiceImpl implements EquipmentTypeService {
         QEquipmentType type = QEquipmentType.equipmentType;
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(type.equipmentName.eq(equipmentTypeDto.getEquipmentName()));
+        if (equipmentTypeDto.getVolume() != null) {
+            builder.and(type.volume.eq(equipmentTypeDto.getVolume()));
+        }
         if (equipmentTypeDto.getOrientation() != null) {
             builder.and(type.orientation.eq(equipmentTypeDto.getOrientation()));
         }

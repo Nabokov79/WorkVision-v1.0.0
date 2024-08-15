@@ -1,7 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement;
 
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.completedRepair.CompletedRepairDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.identifiedDefect.IdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.CompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.IdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ReferencePoint;

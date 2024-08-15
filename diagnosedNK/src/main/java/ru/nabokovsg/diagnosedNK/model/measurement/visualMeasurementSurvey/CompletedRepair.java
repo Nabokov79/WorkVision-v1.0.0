@@ -19,16 +19,20 @@ public class CompletedRepair {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "equipment_id")
+    private Long equipmentId;
     @Column(name = "repair_id")
     private Long repairId;
     @Column(name = "repair_name")
     private String repairName;
+    @Column(name = "element_id")
+    private Long elementId;
+    @Column(name = "element_name")
+    private String elementName;
+    @Column(name = "part_element_id")
+    private Long partElementId;
+    @Column(name = "part_element_name")
+    private String partElementName;
     @OneToMany(mappedBy = "completedRepair", fetch = FetchType.LAZY)
     private Set<ParameterMeasurement> parameterMeasurements;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "examined_part_element_id",  nullable = false)
-    private ExaminedPartElement examinedPartElement;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "visual_measuring_survey_id",  nullable = false)
-    private VisualMeasuringSurvey visualMeasuringSurvey;
 }

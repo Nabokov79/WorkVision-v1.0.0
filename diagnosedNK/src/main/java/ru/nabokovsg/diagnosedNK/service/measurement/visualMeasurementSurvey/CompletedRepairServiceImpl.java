@@ -4,8 +4,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.completedRepair.CompletedRepairDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.completedRepair.ResponseCompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.CompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.ResponseCompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.CompletedRepairMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.CompletedRepair;
@@ -27,7 +27,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     private final EntityManager em;
     private final ElementRepairService elementRepairService;
     private final ParameterMeasurementService parameterMeasurementService;
-    private final VisualMeasuringSurveyService visualMeasuringSurveyService;
+    private final CalculatedVMSurveyService visualMeasuringSurveyService;
     private final ExaminedPartElementService examinedPartElementService;
     private final QueryDSLRequestService requestService;
 

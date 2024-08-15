@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.visualMeasuringSurvey.ResponseVisualMeasuringSurveyDto;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.VisualMeasuringSurveyService;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey.ResponseCalculatedVMSurveyDto;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.CalculatedVMSurveyService;
 
 import java.util.List;
 
@@ -24,13 +24,13 @@ import java.util.List;
 @Tag(name="Данные визуального и измерительного контроля при проведении обследования оборудования",
         description="API для работы с данными визуального и измерительного контроля " +
                 "при проведении обследования оборудования")
-public class VisualMeasuringSurveyController {
+public class CalculatedVMSurveyController {
 
-    private final VisualMeasuringSurveyService service;
+    private final CalculatedVMSurveyService service;
 
     @Operation(summary = "Получить данные визуального и измерительного контроля по идентификатору записи рабочего журнала")
     @GetMapping("/{id}")
-    public ResponseEntity<List<ResponseVisualMeasuringSurveyDto>> getAll(
+    public ResponseEntity<List<ResponseCalculatedVMSurveyDto>> getAll(
             @PathVariable(name = "id") @Parameter(name = "Идентификатор оборудования") Long equipmentId) {
         return ResponseEntity.ok().body(service.getAll(equipmentId));
     }

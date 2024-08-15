@@ -17,26 +17,16 @@ public class ParameterMeasurement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "measurement_number")
-    private Integer measurementNumber;
-    @Column(name = "parameter_number")
-    private Integer parameterNumber;
     @Column(name = "parameter_name")
     private String parameterName;
-    @Column(name = "min_value")
-    private Double minValue;
-    @Column(name = "max_value")
-    private Double maxValue;
+    @Column(name = "value")
+    private Double value;
     @Column(name = "unit_measurement")
     private String unitMeasurement;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "defect_id",  nullable = false)
+    @JoinColumn(name = "defect_id", nullable = false)
     private IdentifiedDefect identifiedDefect;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "repair_id",  nullable = false)
+    @JoinColumn(name = "repair_id", nullable = false)
     private CompletedRepair completedRepair;
-
-
-
-
 }

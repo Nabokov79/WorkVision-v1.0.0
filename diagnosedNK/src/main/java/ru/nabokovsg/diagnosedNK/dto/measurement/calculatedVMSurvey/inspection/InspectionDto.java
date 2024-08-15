@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementSurvey.inspection;
+package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

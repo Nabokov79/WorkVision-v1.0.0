@@ -13,23 +13,21 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "examined_parts_element")
-public class ExaminedPartElement {
+@Table(name = "calculated_elements")
+public class CalculatedElement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "part_element_id")
-    private Long partElementId;
-    @Column(name = "part_element_name")
-    private String partElementName;
+    @Column(name = "element_name")
+    private String elementName;
     @Column(name = "inspection")
     private String inspection;
-    @OneToMany(mappedBy = "examinedPartElement", fetch = FetchType.LAZY)
-    private Set<IdentifiedDefect> identifiedDefects;
-    @OneToMany(mappedBy = "examinedPartElement", fetch = FetchType.LAZY)
-    private Set<CompletedRepair> completedRepairs;
+    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY)
+    private Set<CalculatedDefect> defects;
+    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY)
+    private Set<CalculatedRepair> repairs;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "visual_measuring_survey_id",  nullable = false)
-    private VisualMeasuringSurvey visualMeasuringSurvey;
+    private CalculatedVMSurvey visualMeasuringSurvey;
 }
