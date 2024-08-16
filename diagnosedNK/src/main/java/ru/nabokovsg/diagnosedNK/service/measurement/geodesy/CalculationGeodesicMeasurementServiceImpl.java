@@ -67,6 +67,11 @@ public class CalculationGeodesicMeasurementServiceImpl implements CalculationGeo
         return ids.get(0);
     }
 
+    @Override
+    public int getMeasurementNumber(int measurementNumber) {
+        return measurementNumber + 1;
+    }
+
     private GeodesicMeasurementsPoint getRecalculateMeasurement(GeodesicMeasurementsPoint measurement, int delta) {
         if (measurement.getReferencePointValue() != null) {
             measurement.setReferencePointValue(

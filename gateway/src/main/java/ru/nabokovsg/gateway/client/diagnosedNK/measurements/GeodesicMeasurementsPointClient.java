@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.BaseClient;
 import ru.nabokovsg.gateway.dto.diagnosedNK.geodesy.NewGeodesicMeasurementsPointDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.geodesy.UpdateGeodesicMeasurementsPointDto;
 
 @Service
 public class GeodesicMeasurementsPointClient extends BaseClient {
@@ -24,6 +25,10 @@ public class GeodesicMeasurementsPointClient extends BaseClient {
 
     public Flux<Object> save(NewGeodesicMeasurementsPointDto measurementDto) {
         return postAll(API_PREFIX, measurementDto);
+    }
+
+    public Flux<Object> update(UpdateGeodesicMeasurementsPointDto measurementDto) {
+        return patchAll(API_PREFIX, measurementDto);
     }
 
     public Flux<Object> getAll(Long equipmentId) {

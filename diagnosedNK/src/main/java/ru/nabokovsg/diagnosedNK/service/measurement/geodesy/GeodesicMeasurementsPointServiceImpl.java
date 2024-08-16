@@ -35,16 +35,37 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
     @Override
     public List<ResponseGeodesicMeasurementsPointDto> save(GeodesicMeasurementsPointDto measurementDto) {
         Map<Integer, GeodesicMeasurementsPoint> measurements = repository.findAllByEquipmentId(
-                                                                                        measurementDto.getEquipmentId())
-                                .stream()
-                                .collect(Collectors.toMap(GeodesicMeasurementsPoint::getNumberMeasurementLocation, g -> g));
+                        measurementDto.getEquipmentId())
+                .stream()
+                .collect(Collectors.toMap(GeodesicMeasurementsPoint::getNumberMeasurementLocation, g -> g));
         measurements.put(measurementDto.getNumberMeasurementLocation()
-                , repository.save(mapper.mapToGeodesicMeasurementsPoint(measurementDto)));
+                , repository.save(mapper.mapToGeodesicMeasurementsPoint(measurementDto, 1)));
         calculated(measurementDto.getEquipmentId(), measurementDto.getFull(), new ArrayList<>(measurements.values()));
         return measurements.values()
-                           .stream()
-                           .map(mapper::mapToResponseGeodesicMeasurementsPointDto)
-                           .toList();
+                .stream()
+                .map(mapper::mapToResponseGeodesicMeasurementsPointDto)
+                .toList();
+    }
+
+    @Override
+    public List<ResponseGeodesicMeasurementsPointDto> update(GeodesicMeasurementsPointDto measurementDto) {
+        Map<Integer, GeodesicMeasurementsPoint> measurements = repository.findAllByEquipmentId(
+                        measurementDto.getEquipmentId())
+                .stream()
+                .collect(Collectors.toMap(GeodesicMeasurementsPoint::getNumberMeasurementLocation, g -> g));
+        GeodesicMeasurementsPoint measurement = measurements.get(measurementDto.getNumberMeasurementLocation());
+        measurements.put(measurement.getNumberMeasurementLocation()
+                , repository.save(mapper.mapToGeodesicMeasurementsPoint(measurementDto
+                        , calculationService.getMeasurementNumber(measurement.getMeasurementNumber()))));
+        if (size(measurements)) {
+            calculated(measurementDto.getEquipmentId()
+                     , measurementDto.getFull()
+                     , new ArrayList<>(measurements.values()));
+        }
+        return measurements.values()
+                .stream()
+                .map(mapper::mapToResponseGeodesicMeasurementsPointDto)
+                .toList();
     }
 
     @Override
@@ -67,20 +88,30 @@ public class GeodesicMeasurementsPointServiceImpl implements GeodesicMeasurement
     private void calculated(Long equipmentId, boolean full, List<GeodesicMeasurementsPoint> measurements) {
         EquipmentDiagnosed equipment = equipmentDiagnosedService.getById(equipmentId);
         if (measurements.size() == equipment.getGeodesyLocations()) {
-            EquipmentGeodesicMeasurements geodesicMeasurements =  equipmentGeodesicMeasurementsService.getByEquipmentId(calculationService.getEquipmentId(measurements));
+            EquipmentGeodesicMeasurements geodesicMeasurements = equipmentGeodesicMeasurementsService.getByEquipmentId(
+                    calculationService.getEquipmentId(measurements));
             measurements = calculationService.recalculateByTransition(measurements);
             AcceptableDeviationsGeodesy acceptableDeviationsGeodesy =
-                                                                acceptableDeviationsGeodesyService.get(equipment, full);
+                    acceptableDeviationsGeodesyService.get(equipment, full);
             referencePointMeasurementService.save(acceptableDeviationsGeodesy
-                                                , measurements.stream()
-                                                              .filter(m -> m.getReferencePointValue() != null)
-                                                              .toList()
-                                                , geodesicMeasurements);
+                    , measurements.stream()
+                            .filter(m -> m.getReferencePointValue() != null)
+                            .toList()
+                    , geodesicMeasurements);
             pointDifferenceService.save(acceptableDeviationsGeodesy
-                                      , measurements.stream()
-                                                    .filter(m -> m.getControlPointValue() != null)
-                                                    .toList()
-                                      , geodesicMeasurements);
+                    , measurements.stream()
+                            .filter(m -> m.getControlPointValue() != null)
+                            .toList()
+                    , geodesicMeasurements);
         }
+    }
+
+    private boolean size(Map<Integer, GeodesicMeasurementsPoint> measurements) {
+        return measurements.values()
+                .stream()
+                .map(GeodesicMeasurementsPoint::getMeasurementNumber)
+                .distinct()
+                .toList()
+                .size() == 1;
     }
 }

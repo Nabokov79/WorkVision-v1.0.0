@@ -16,4 +16,6 @@ public interface CalculationGeodesicMeasurementService {
     List<GeodesicMeasurementsPoint> recalculateByTransition(List<GeodesicMeasurementsPoint> measurements);
 
     Long getEquipmentId(List<GeodesicMeasurementsPoint> measurements);
+
+    int getMeasurementNumber(int measurementNumber);
 }

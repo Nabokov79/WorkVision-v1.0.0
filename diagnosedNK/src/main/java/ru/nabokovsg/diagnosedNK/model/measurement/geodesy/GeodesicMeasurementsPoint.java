@@ -19,6 +19,8 @@ public class GeodesicMeasurementsPoint {
     private Long id;
     @Column(name = "equipment_id")
     private Long equipmentId;
+    @Column(name = "measurement_number")
+    private int measurementNumber;
     @Column(name = "sequential_number")
     private Integer sequentialNumber;
     @Column(name = "number_measurement_location")

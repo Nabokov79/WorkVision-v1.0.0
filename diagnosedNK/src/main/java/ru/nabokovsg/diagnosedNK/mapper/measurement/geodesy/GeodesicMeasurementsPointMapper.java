@@ -10,13 +10,15 @@ import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPo
 public interface GeodesicMeasurementsPointMapper {
 
     @Mapping(source = "measurementDto.equipmentId", target = "equipmentId")
+    @Mapping(source = "measurementNumber", target = "measurementNumber")
     @Mapping(source = "measurementDto.sequentialNumber", target = "sequentialNumber")
     @Mapping(source = "measurementDto.numberMeasurementLocation", target = "numberMeasurementLocation")
     @Mapping(source = "measurementDto.referencePointValue", target = "referencePointValue")
     @Mapping(source = "measurementDto.controlPointValue", target = "controlPointValue")
     @Mapping(source = "measurementDto.transitionValue", target = "transitionValue")
     @Mapping(source = "measurementDto.id", target = "id")
-    GeodesicMeasurementsPoint mapToGeodesicMeasurementsPoint(GeodesicMeasurementsPointDto measurementDto);
+    GeodesicMeasurementsPoint mapToGeodesicMeasurementsPoint(GeodesicMeasurementsPointDto measurementDto
+                                                           , Integer measurementNumber);
 
     ResponseGeodesicMeasurementsPointDto mapToResponseGeodesicMeasurementsPointDto(
                                                                         GeodesicMeasurementsPoint geodesicMeasurement);
