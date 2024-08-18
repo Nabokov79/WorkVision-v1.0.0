@@ -13,9 +13,9 @@ import lombok.Setter;
 @Schema(description = "Данные для добавления/изменения измеренного значения параметра дефекта")
 public class ParameterMeasurementDto {
 
-    @Schema(description = "Индентификатор")
+    @Schema(description = "Идентификатор")
     private Long id;
-    @Schema(description = "Индентификатор параметра")
+    @Schema(description = "Идентификатор параметра")
     private Long parameterId;
     @Schema(description = "Значение параметра")
     private Double value;

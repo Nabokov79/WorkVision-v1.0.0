@@ -1,6 +1,6 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey;
 
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.ParameterMeasurement;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
 import java.util.Set;
 

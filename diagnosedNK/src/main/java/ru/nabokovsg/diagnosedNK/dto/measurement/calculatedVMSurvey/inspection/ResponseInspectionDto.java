@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Результат визуального осмотра элемента(подэлемента")
+@Schema(description = "Результат визуального осмотра элемента(подэлемента)")
 public class ResponseInspectionDto {
 
-    @Schema(description = "Индентификатор элемента")
-    private Long elementId;
-    @Schema(description = "Индентификатор подэлемента")
+    @Schema(description = "Идентификатор элемента")
+    private Long elementName;
+    @Schema(description = "Идентификатор подэлемента")
     private Long partElementId;
     @Schema(description = "Результат визуального осмотра элемента(подэлемента")
     private String inspection;

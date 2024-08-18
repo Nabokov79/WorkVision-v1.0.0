@@ -1,25 +1,24 @@
 package ru.nabokovsg.diagnosedNK.service.measurement;
 
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.ParameterMeasurement;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public interface CalculationMeasurementService {
 
-    ParameterMeasurement countMin(ParameterMeasurement parameterMeasurement
-                                , ParameterMeasurementDto parameterMeasurementDto);
+    CalculatedParameter countMin(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter);
 
-    ParameterMeasurement countMax(ParameterMeasurement parameterMeasurement
-                                , ParameterMeasurementDto parameterMeasurementDto);
+    CalculatedParameter countMax(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter);
 
-    ParameterMeasurement countMaxAndMin(ParameterMeasurement parameterMeasurement
-                                      , ParameterMeasurementDto parameterMeasurementDto);
+    Set<CalculatedParameter> countSquare(Map<Long, CalculatedParameter> parameterMeasurements
+                                        , Map<String, ParameterMeasurement> parameters);
 
-    Set<ParameterMeasurement> countSquare(Map<Long, ParameterMeasurement> parameterMeasurements
-                                        , Map<String, ParameterMeasurementDto> parameterMeasurementsDto);
+   Set<CalculatedParameter> countQuantity(Map<Long, CalculatedParameter> parameterMeasurements
+                                         , Map<String,ParameterMeasurement> parameters);
 
-   Set<ParameterMeasurement> countQuantity(Map<Long, ParameterMeasurement> parameterMeasurements
-                                         , Map<String, ParameterMeasurementDto> parameterMeasurementsDto);
+    Integer getQuantity(Set<ParameterMeasurement> parameterMeasurements, List<ParameterMeasurementDto> parameters);
 }

@@ -2,6 +2,7 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.geodesy;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import ru.nabokovsg.diagnosedNK.dto.measurement.geodesy.GeodesicMeasurementsPointDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.geodesy.ResponseGeodesicMeasurementsPointDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
@@ -19,6 +20,16 @@ public interface GeodesicMeasurementsPointMapper {
     @Mapping(source = "measurementDto.id", target = "id")
     GeodesicMeasurementsPoint mapToGeodesicMeasurementsPoint(GeodesicMeasurementsPointDto measurementDto
                                                            , Integer measurementNumber);
+
+    @Mapping(source = "measurementNumber", target = "measurementNumber")
+    @Mapping(source = "measurementDto.sequentialNumber", target = "sequentialNumber")
+    @Mapping(source = "measurementDto.referencePointValue", target = "referencePointValue")
+    @Mapping(source = "measurementDto.controlPointValue", target = "controlPointValue")
+    @Mapping(source = "measurementDto.transitionValue", target = "transitionValue")
+    @Mapping(source = "measurementDto.id", target = "id")
+    GeodesicMeasurementsPoint mapToUpdateGeodesicMeasurementsPoint(@MappingTarget GeodesicMeasurementsPoint measurement
+                                                                          , GeodesicMeasurementsPointDto measurementDto
+                                                                          , Integer measurementNumber);
 
     ResponseGeodesicMeasurementsPointDto mapToResponseGeodesicMeasurementsPointDto(
                                                                         GeodesicMeasurementsPoint geodesicMeasurement);

@@ -3,7 +3,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.ParametersSequenceNumberMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.ParameterMeasurement;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasurementService;
 

@@ -9,8 +9,6 @@ public interface GeodesicMeasurementsPointService {
 
     List<ResponseGeodesicMeasurementsPointDto> save(GeodesicMeasurementsPointDto measurementDto);
 
-    List<ResponseGeodesicMeasurementsPointDto> update(GeodesicMeasurementsPointDto measurementDto);
-
     List<ResponseGeodesicMeasurementsPointDto> getAll(Long equipmentId);
 
     void delete(Long id);

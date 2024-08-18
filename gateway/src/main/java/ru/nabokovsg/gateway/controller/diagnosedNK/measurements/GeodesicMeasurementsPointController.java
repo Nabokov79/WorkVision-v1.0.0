@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.diagnosedNK.measurements.GeodesicMeasurementsPointClient;
 import ru.nabokovsg.gateway.dto.diagnosedNK.geodesy.NewGeodesicMeasurementsPointDto;
-import ru.nabokovsg.gateway.dto.diagnosedNK.geodesy.UpdateGeodesicMeasurementsPointDto;
 
 @RestController
 @RequestMapping(
@@ -34,13 +33,6 @@ public class GeodesicMeasurementsPointController {
     public Flux<Object> save(@RequestBody @Valid @Parameter(name = "Данные измерений геодезической съемки")
                                                             NewGeodesicMeasurementsPointDto measurementDto) {
         return client.save(measurementDto);
-    }
-
-    @Operation(summary = "Добавить данные геодезический съемки оборудования")
-    @PatchMapping
-    public Flux<Object> update(@RequestBody @Valid@Parameter(name = "Данные измерений геодезической съемки")
-                                                          UpdateGeodesicMeasurementsPointDto measurementDto) {
-        return client.update(measurementDto);
     }
 
     @Operation(summary = "Получить данные геодезических измерений по идентификатору записи журнала задач")

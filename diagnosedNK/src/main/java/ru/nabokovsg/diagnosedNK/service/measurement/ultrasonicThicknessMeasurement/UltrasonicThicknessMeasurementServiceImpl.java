@@ -9,7 +9,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableThickness;
 import ru.nabokovsg.diagnosedNK.repository.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementRepository;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.IdentifiedDefectService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected.IdentifiedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.AcceptableThicknessService;
 
 @Service

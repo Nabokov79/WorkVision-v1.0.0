@@ -7,11 +7,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.IdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
+import ru.nabokovsg.diagnosedNK.model.equipment.QEquipmentDiagnosed;
+import ru.nabokovsg.diagnosedNK.model.equipment.QEquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.*;
 import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.*;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.*;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -23,10 +27,14 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     @Override
     public IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto) {
         QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
-        BooleanBuilder builder = getPredicate(defectDto.getEquipmentId()
-                                            , defectDto.getElementId()
-                                            , defectDto.getPartElementId());
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(defect.equipmentId.eq(defectDto.getEquipmentId()));
         builder.and(defect.defectId.eq(defectDto.getDefectId()));
+        builder.and(defect.elementId.eq(defectDto.getElementId()));
+        if (defectDto.getPartElementId() != null) {
+            builder.and(defect.partElementId.eq(defectDto.getPartElementId()));
+        }
+        getParameterMeasurementByPredicate(defectDto.getParameterMeasurements(), builder);
         return new JPAQueryFactory(em).from(defect)
                 .select(defect)
                 .where(builder)
@@ -36,14 +44,27 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     @Override
     public CompletedRepair getCompletedRepair(CompletedRepairDto repairDto) {
         QCompletedRepair repair = QCompletedRepair.completedRepair;
-        BooleanBuilder builder = getPredicate(repairDto.getEquipmentId()
-                                            , repairDto.getElementId()
-                                            , repairDto.getPartElementId());
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(repair.equipmentId.eq(repairDto.getEquipmentId()));
         builder.and(repair.repairId.eq(repairDto.getRepairId()));
+        builder.and(repair.elementId.eq(repairDto.getElementId()));
+        if (repairDto.getPartElementId() != null) {
+            builder.and(repair.partElementId.eq(repairDto.getPartElementId()));
+        }
+        getParameterMeasurementByPredicate(repairDto.getParameterMeasurements(), builder);
         return new JPAQueryFactory(em).from(repair)
-                .select(repair)
-                .where(builder)
-                .fetchOne();
+                                      .select(repair)
+                                      .where(builder)
+                                      .fetchOne();
+    }
+
+
+    private void getParameterMeasurementByPredicate(List<ParameterMeasurementDto> parameters, BooleanBuilder builder) {
+        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
+        parameters.forEach(p -> {
+            builder.and(parameter.parameterId.eq(p.getParameterId()));
+            builder.and(parameter.value.eq(p.getValue()));
+        });
     }
 
     @Override
@@ -109,17 +130,5 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
                             .select(measurement)
                             .where(builder)
                             .fetchOne();
-    }
-
-    private BooleanBuilder getPredicate(Long equipmentId, Long elementId, Long partElementId) {
-        QVisualMeasuringSurvey vms = QVisualMeasuringSurvey.visualMeasuringSurvey;
-        QExaminedPartElement part = QExaminedPartElement.examinedPartElement;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(vms.equipmentId.eq(equipmentId));
-        builder.and(vms.elementId.eq(elementId));
-        if (partElementId != null) {
-            builder.and(part.partElementId.eq(partElementId));
-        }
-        return builder;
     }
 }
