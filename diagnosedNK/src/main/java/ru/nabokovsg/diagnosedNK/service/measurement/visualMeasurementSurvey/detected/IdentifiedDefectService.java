@@ -10,6 +10,8 @@ public interface IdentifiedDefectService {
 
     ResponseIdentifiedDefectDto save(IdentifiedDefectDto defectDto);
 
+    ResponseIdentifiedDefectDto update(IdentifiedDefectDto defectDto);
+
     List<ResponseIdentifiedDefectDto> getAll(Long equipmentId);
 
     void delete(Long id);

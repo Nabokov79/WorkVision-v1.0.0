@@ -35,6 +35,13 @@ public class IdentifiedDefectController {
         return client.save(defectDto);
     }
 
+    @Operation(summary = "Изменить данные измеренного дефекта")
+    @PatchMapping
+    public Mono<Object> update(@RequestBody @Valid @Parameter(name = "Данные измеренного дефекта")
+                             NewIdentifiedDefectDto defectDto) {
+        return client.update(defectDto);
+    }
+
     @Operation(summary = "Получить данные измеренных дефектов элементов(подэлементов) оборудования" +
                         " по идентификатору записи рабочего журнала")
     @GetMapping("/all/{id}")

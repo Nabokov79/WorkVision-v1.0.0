@@ -26,6 +26,10 @@ public class IdentifiedDefectClient extends BaseClient {
         return post(API_PREFIX, defectDto);
     }
 
+    public Mono<Object> update(NewIdentifiedDefectDto defectDto) {
+        return patch(API_PREFIX, defectDto);
+    }
+
     public Flux<Object> getAll(Long equipmentId) {
         return getAll(String.join(DELIMITER, API_PREFIX, "all", String.valueOf(equipmentId)));
     }

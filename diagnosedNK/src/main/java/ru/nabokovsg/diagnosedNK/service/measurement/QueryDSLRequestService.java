@@ -15,6 +15,10 @@ import java.util.Set;
 
 public interface QueryDSLRequestService {
 
+    IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto);
+
+    CompletedRepair getCompletedRepair(CompletedRepairDto repairDto);
+
     Set<IdentifiedDefect> getAllIdentifiedDefect(IdentifiedDefectDto defectDto);
 
     Set<CompletedRepair> getAllCompletedRepair(CompletedRepairDto repairDto);

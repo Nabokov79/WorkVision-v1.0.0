@@ -1,4 +1,4 @@
-package ru.nabokovsg.gateway.controller.diagnosedNK.norms;
+package ru.nabokovsg.gateway.controller.diagnosedNK.measurements;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,7 +22,7 @@ import ru.nabokovsg.gateway.dto.diagnosedNK.completedRepair.NewCompletedRepairDt
         produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 @Validated
-@Tag(name="Выволненные ремонты элементов, подэлементов оборудования",
+@Tag(name="Выполненные ремонты элементов, подэлементов оборудования",
         description="API для работы с данными выполненных ремонтов элементов, подэлементов оборудования")
 public class CompletedRepairController {
 
@@ -33,6 +33,13 @@ public class CompletedRepairController {
     public Mono<Object> save(
             @RequestBody @Valid @Parameter(description = "Выполненный ремонт") NewCompletedRepairDto repairDto) {
         return client.save(repairDto);
+    }
+
+    @Operation(summary = "Изменить данные выполненного ремонта элемента")
+    @PatchMapping
+    public Mono<Object> update(
+            @RequestBody @Valid @Parameter(description = "Выполненный ремонт") NewCompletedRepairDto repairDto) {
+        return client.update(repairDto);
     }
 
     @Operation(summary = "Получить выполненные ремонты элементов оборудования" +

@@ -33,6 +33,14 @@ public class IdentifiedDefectController {
         return ResponseEntity.ok().body(service.save(defectDto));
     }
 
+    @Operation(summary = "Добавить данные измеренного дефекта")
+    @PostMapping
+    public ResponseEntity<ResponseIdentifiedDefectDto> update(@RequestBody
+                                                            @Parameter(name = "Данные измеренного дефекта")
+                                                            IdentifiedDefectDto defectDto) {
+        return ResponseEntity.ok().body(service.update(defectDto));
+    }
+
     @Operation(summary = "Получить данные измеренных дефектов элементов(подэлементов) оборудования" +
                         " по идентификатору записи рабочего журнала")
     @GetMapping("/all/{id}")

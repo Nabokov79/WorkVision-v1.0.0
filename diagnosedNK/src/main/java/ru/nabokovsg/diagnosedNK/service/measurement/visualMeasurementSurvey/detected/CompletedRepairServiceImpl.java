@@ -65,6 +65,11 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     }
 
     @Override
+    public ResponseCompletedRepairDto update(CompletedRepairDto repairDto) {
+        return null;
+    }
+
+    @Override
     public List<ResponseCompletedRepairDto> getAll(Long equipmentId) {
         return repository.findAllByEquipmentId(equipmentId)
                                       .stream()

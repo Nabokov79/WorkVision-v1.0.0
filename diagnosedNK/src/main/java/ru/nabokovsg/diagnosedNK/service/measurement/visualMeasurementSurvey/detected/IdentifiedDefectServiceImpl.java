@@ -67,6 +67,11 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
     }
 
     @Override
+    public ResponseIdentifiedDefectDto update(IdentifiedDefectDto defectDto) {
+        return null;
+    }
+
+    @Override
     public List<ResponseIdentifiedDefectDto> getAll(Long equipmentId) {
         return repository.findAllByEquipmentId(equipmentId)
                 .stream()

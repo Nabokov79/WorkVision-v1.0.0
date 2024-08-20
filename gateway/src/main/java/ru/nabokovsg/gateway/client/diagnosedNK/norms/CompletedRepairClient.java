@@ -26,6 +26,10 @@ public class CompletedRepairClient extends BaseClient {
         return post(API_PREFIX, repairDto);
     }
 
+    public Mono<Object> update(NewCompletedRepairDto repairDto) {
+        return patch(API_PREFIX, repairDto);
+    }
+
     public Flux<Object> getAll(Long equipmentId) {
         return getAll(String.join(DELIMITER, API_PREFIX, "all", String.valueOf(equipmentId)));
     }
