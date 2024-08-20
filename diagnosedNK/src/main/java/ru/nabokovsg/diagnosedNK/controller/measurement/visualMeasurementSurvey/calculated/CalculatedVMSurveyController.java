@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey.ResponseCalculatedVMSurveyDto;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedVMSurveyService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected.VisualMeasurementControlService;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ import java.util.List;
                 "при проведении обследования оборудования")
 public class CalculatedVMSurveyController {
 
-    private final CalculatedVMSurveyService service;
+    private final VisualMeasurementControlService service;
 
     @Operation(summary = "Получить данные визуального и измерительного контроля по идентификатору записи рабочего журнала")
     @GetMapping("/{id}")

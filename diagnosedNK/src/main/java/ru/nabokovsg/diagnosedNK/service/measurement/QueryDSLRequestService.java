@@ -2,6 +2,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement;
 
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.IdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ReferencePoint;
@@ -14,9 +15,9 @@ import java.util.Set;
 
 public interface QueryDSLRequestService {
 
-    IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto);
+    Set<IdentifiedDefect> getAllIdentifiedDefect(IdentifiedDefectDto defectDto);
 
-    CompletedRepair getCompletedRepair(CompletedRepairDto repairDto);
+    Set<CompletedRepair> getAllCompletedRepair(CompletedRepairDto repairDto);
 
     Long getEquipmentTypeId(Long elementId);
 
@@ -27,4 +28,6 @@ public interface QueryDSLRequestService {
     Set<PointDifference> getAllPointDifference(Long equipmentId);
 
     UltrasonicThicknessMeasurement getUltrasonicThicknessMeasurement(UTPredicateData predicateData);
+
+    Double getMaxCorrosionValueByPredicate(UltrasonicThicknessMeasurementDto measurementDto, Long equipmentId);
 }

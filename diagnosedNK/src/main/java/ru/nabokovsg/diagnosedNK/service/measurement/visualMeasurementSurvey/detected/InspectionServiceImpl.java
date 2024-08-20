@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.ResponseInspectionDto;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.InspectionMapper;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedVMSurveyService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 public class InspectionServiceImpl implements InspectionService {
 
     private final InspectionMapper mapper;
-    private final CalculatedVMSurveyService vmSurveyService;
+    private final VisualMeasurementControlService vmSurveyService;
 
     @Override
     public ResponseInspectionDto save(InspectionDto inspectionDto) {

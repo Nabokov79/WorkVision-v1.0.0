@@ -11,4 +11,16 @@ public interface CalculatedParameterMapper {
 
     @Mapping(source = "defect", target = "defect")
     void mapWithDefect(@MappingTarget CalculatedParameter parameter, CalculatedDefect defect);
+
+    @Mapping(source = "parameterName", target = "parameterName")
+    @Mapping(source = "unitMeasurement", target = "unitMeasurement")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "measurementNumber", ignore = true)
+    @Mapping(target = "parameterNumber", ignore = true)
+    @Mapping(target = "minValue", ignore = true)
+    @Mapping(target = "maxValue", ignore = true)
+    @Mapping(target = "defect", ignore = true)
+    @Mapping(target = "repair", ignore = true)
+    @Mapping(target = "visualMeasurementControl", ignore = true)
+    CalculatedParameter maToEmptyParameter(String parameterName, String unitMeasurement);
 }

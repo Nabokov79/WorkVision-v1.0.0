@@ -9,7 +9,6 @@ import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableThickness;
 import ru.nabokovsg.diagnosedNK.repository.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementRepository;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected.IdentifiedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.AcceptableThicknessService;
 
 @Service
@@ -19,7 +18,6 @@ public class UltrasonicThicknessMeasurementServiceImpl implements UltrasonicThic
     private final UltrasonicThicknessMeasurementRepository repository;
     private final UltrasonicThicknessMeasurementMapper mapper;
     private final AcceptableThicknessService acceptableThicknessService;
-    private final IdentifiedDefectService identifiedDefectService;
     private final QueryDSLRequestService requestService;
 
     @Override
@@ -38,7 +36,9 @@ public class UltrasonicThicknessMeasurementServiceImpl implements UltrasonicThic
         return repository.save(measurement);
     }
 
-    private void set(UltrasonicThicknessMeasurement measurement, UltrasonicThicknessMeasurementDto measurementDto, StandardSize standardSize) {
+    private void set(UltrasonicThicknessMeasurement measurement
+                   , UltrasonicThicknessMeasurementDto measurementDto
+                   , StandardSize standardSize) {
         AcceptableThickness acceptableThickness = acceptableThicknessService.getByPredicate(
                                                       requestService.getEquipmentTypeId(measurementDto.getElementId())
                                                     , measurementDto.getElementId()
@@ -51,7 +51,7 @@ public class UltrasonicThicknessMeasurementServiceImpl implements UltrasonicThic
 
     private void setResidualThickness(UltrasonicThicknessMeasurement measurement
                                     , UltrasonicThicknessMeasurementDto measurementDto) {
-        Double maxCorrosion = identifiedDefectService.getMaxCorrosionValueByPredicate(measurementDto
+        Double maxCorrosion = requestService.getMaxCorrosionValueByPredicate(measurementDto
                                                                                     , measurementDto.getEquipmentId());
         if (maxCorrosion != null) {
             measurement.setResidualThickness(measurement.getMinMeasurementValue() - maxCorrosion);

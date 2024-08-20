@@ -19,6 +19,8 @@ public class CalculatedElement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "equipment_id")
+    private Long equipmentId;
     @Column(name = "element_name")
     private String elementName;
     @Column(name = "inspection")
@@ -27,7 +29,6 @@ public class CalculatedElement {
     private Set<CalculatedDefect> defects;
     @OneToMany(mappedBy = "element", fetch = FetchType.LAZY)
     private Set<CalculatedRepair> repairs;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "visual_measuring_survey_id",  nullable = false)
-    private CalculatedVMSurvey visualMeasuringSurvey;
+    @OneToMany(mappedBy = "element", fetch = FetchType.LAZY)
+    private Set<CalculatedPartElement> partElements;
 }

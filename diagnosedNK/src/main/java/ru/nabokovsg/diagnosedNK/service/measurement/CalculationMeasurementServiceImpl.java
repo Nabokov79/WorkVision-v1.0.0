@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
+import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
@@ -20,6 +21,7 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
 
     private final ConstParameterMeasurementService constParameter;
     private final ConstUnitMeasurementService constUnit;
+    private final CalculatedParameterMapper mapper;
 
     @Override
     public CalculatedParameter countMin(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter) {
@@ -57,7 +59,7 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
         Double firstValue = parameters.get(parameterName).getValue();
         CalculatedParameter quantity = parameterMeasurements.get(parameters.get(parameterName).getParameterId());
         if (quantity == null) {
-            quantity = new CalculatedParameter(null, null, null, parameterName, null, null, unitMeasurement, null, null);
+            quantity = mapper.maToEmptyParameter(parameterName, unitMeasurement);
         }
         if (quantity.getMinValue() == null && firstValue == null) {
             quantity.setMinValue(1.0);

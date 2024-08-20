@@ -28,6 +28,6 @@ public class CalculatedPartElement {
     @OneToMany(mappedBy = "partElement", fetch = FetchType.LAZY)
     private Set<CalculatedRepair> repairs;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "visual_measuring_survey_id",  nullable = false)
-    private CalculatedVMSurvey visualMeasuringSurvey;
+    @JoinColumn(name = "element_id", nullable = false)
+    private CalculatedElement element;
 }

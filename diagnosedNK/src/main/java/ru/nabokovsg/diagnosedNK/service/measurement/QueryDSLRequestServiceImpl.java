@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.IdentifiedDefectDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
+import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.model.equipment.QEquipmentDiagnosed;
 import ru.nabokovsg.diagnosedNK.model.equipment.QEquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.*;
@@ -15,7 +16,6 @@ import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -25,46 +25,36 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     private final EntityManager em;
 
     @Override
-    public IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto) {
+    public Set<IdentifiedDefect> getAllIdentifiedDefect(IdentifiedDefectDto defectDto) {
         QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(defect.equipmentId.eq(defectDto.getEquipmentId()));
-        builder.and(defect.defectId.eq(defectDto.getDefectId()));
-        builder.and(defect.elementId.eq(defectDto.getElementId()));
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(defect.equipmentId.eq(defectDto.getEquipmentId()));
+        booleanBuilder.and(defect.defectId.eq(defectDto.getDefectId()));
+        booleanBuilder.and(defect.elementId.eq(defectDto.getElementId()));
+        booleanBuilder.and(defect.useCalculateThickness.eq(true));
         if (defectDto.getPartElementId() != null) {
-            builder.and(defect.partElementId.eq(defectDto.getPartElementId()));
+            booleanBuilder.and(defect.partElementId.eq(defectDto.getPartElementId()));
         }
-        getParameterMeasurementByPredicate(defectDto.getParameterMeasurements(), builder);
-        return new JPAQueryFactory(em).from(defect)
-                .select(defect)
-                .where(builder)
-                .fetchOne();
+        return new HashSet<>(new JPAQueryFactory(em).from(defect)
+                                                    .select(defect)
+                                                    .where(booleanBuilder)
+                                                    .fetch());
     }
 
     @Override
-    public CompletedRepair getCompletedRepair(CompletedRepairDto repairDto) {
+    public Set<CompletedRepair> getAllCompletedRepair(CompletedRepairDto repairDto) {
         QCompletedRepair repair = QCompletedRepair.completedRepair;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(repair.equipmentId.eq(repairDto.getEquipmentId()));
-        builder.and(repair.repairId.eq(repairDto.getRepairId()));
-        builder.and(repair.elementId.eq(repairDto.getElementId()));
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(repair.equipmentId.eq(repairDto.getEquipmentId()));
+        booleanBuilder.and(repair.repairId.eq(repairDto.getRepairId()));
+        booleanBuilder.and(repair.elementId.eq(repairDto.getElementId()));
         if (repairDto.getPartElementId() != null) {
-            builder.and(repair.partElementId.eq(repairDto.getPartElementId()));
+            booleanBuilder.and(repair.partElementId.eq(repairDto.getPartElementId()));
         }
-        getParameterMeasurementByPredicate(repairDto.getParameterMeasurements(), builder);
-        return new JPAQueryFactory(em).from(repair)
-                                      .select(repair)
-                                      .where(builder)
-                                      .fetchOne();
-    }
-
-
-    private void getParameterMeasurementByPredicate(List<ParameterMeasurementDto> parameters, BooleanBuilder builder) {
-        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
-        parameters.forEach(p -> {
-            builder.and(parameter.parameterId.eq(p.getParameterId()));
-            builder.and(parameter.value.eq(p.getValue()));
-        });
+        return new HashSet<>(new JPAQueryFactory(em).from(repair)
+                                                    .select(repair)
+                                                    .where(booleanBuilder)
+                                                    .fetch());
     }
 
     @Override
@@ -81,10 +71,10 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
         QEquipmentGeodesicMeasurements geodesic = QEquipmentGeodesicMeasurements.equipmentGeodesicMeasurements;
         QReferencePoint referencePoint = QReferencePoint.referencePoint;
         return new HashSet<>(new JPAQueryFactory(em).from(referencePoint)
-                .select(referencePoint)
-                .innerJoin(referencePoint.geodesicMeasurements, geodesic)
-                .where(geodesic.equipmentId.eq(equipmentId))
-                .fetch());
+                                                    .select(referencePoint)
+                                                    .innerJoin(referencePoint.geodesicMeasurements, geodesic)
+                                                    .where(geodesic.equipmentId.eq(equipmentId))
+                                                    .fetch());
     }
 
     @Override
@@ -92,22 +82,21 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
         QEquipmentGeodesicMeasurements geodesic = QEquipmentGeodesicMeasurements.equipmentGeodesicMeasurements;
         QControlPoint controlPoint = QControlPoint.controlPoint;
         return new HashSet<>(new JPAQueryFactory(em).from(controlPoint)
-                .select(controlPoint)
-                .innerJoin(controlPoint.geodesicMeasurements, geodesic)
-                .where(geodesic.equipmentId.eq(equipmentId))
-                .fetch());
+                                                    .select(controlPoint)
+                                                    .innerJoin(controlPoint.geodesicMeasurements, geodesic)
+                                                    .where(geodesic.equipmentId.eq(equipmentId))
+                                                    .fetch());
     }
 
     @Override
     public Set<PointDifference> getAllPointDifference(Long equipmentId) {
         QEquipmentGeodesicMeasurements geodesic = QEquipmentGeodesicMeasurements.equipmentGeodesicMeasurements;
         QPointDifference pointDifference = QPointDifference.pointDifference;
-        return new HashSet<>(new JPAQueryFactory(em)
-                .from(pointDifference)
-                .select(pointDifference)
-                .innerJoin(pointDifference.geodesicMeasurements, geodesic)
-                .where(geodesic.equipmentId.eq(equipmentId))
-                .fetch());
+        return new HashSet<>(new JPAQueryFactory(em).from(pointDifference)
+                                                    .select(pointDifference)
+                                                    .innerJoin(pointDifference.geodesicMeasurements, geodesic)
+                                                    .where(geodesic.equipmentId.eq(equipmentId))
+                                                    .fetch());
     }
 
     @Override
@@ -125,10 +114,31 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
             builder.and(partElement.partElementId.eq(predicateData.getPartElementId()));
         }
         builder.and(measurement.measurementNumber.eq(predicateData.getMeasurementNumber()));
-        return new JPAQueryFactory(em)
-                            .from(measurement)
-                            .select(measurement)
-                            .where(builder)
-                            .fetchOne();
+        return new JPAQueryFactory(em).from(measurement)
+                                      .select(measurement)
+                                      .where(builder)
+                                      .fetchOne();
+    }
+
+    @Override
+    public Double getMaxCorrosionValueByPredicate(UltrasonicThicknessMeasurementDto measurementDto, Long equipmentId) {
+        QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
+        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        booleanBuilder.and(defect.equipmentId.eq(equipmentId));
+        booleanBuilder.and(defect.elementId.eq(measurementDto.getElementId()));
+        booleanBuilder.and(defect.useCalculateThickness.eq(true));
+        if (measurementDto.getPartElementId() != null) {
+            booleanBuilder.and(defect.partElementId.eq(measurementDto.getPartElementId()));
+        }
+        booleanBuilder.and(parameter.identifiedDefect.defectId.eq(defect.id));
+        Double corrosion = new JPAQueryFactory(em).from(parameter)
+                                                  .select(parameter.value)
+                                                  .where(booleanBuilder)
+                                                  .fetchFirst();
+        if (corrosion == null) {
+            throw new NotFoundException(String.format("Max corrosion value not found corrosion=%s", corrosion));
+        }
+        return corrosion;
     }
 }

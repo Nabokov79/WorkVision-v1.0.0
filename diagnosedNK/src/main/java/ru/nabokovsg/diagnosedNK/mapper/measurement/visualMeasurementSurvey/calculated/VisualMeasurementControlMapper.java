@@ -6,20 +6,20 @@ import org.mapstruct.MappingTarget;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey.ResponseCalculatedVMSurveyDto;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedVMSurvey;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControl;
 
 @Mapper(componentModel = "spring")
-public interface CalculatedVMSurveyMapper {
+public interface VisualMeasurementControlMapper {
 
     @Mapping(source = "equipmentId", target = "equipmentId")
     @Mapping(source = "element.elementName", target = "elementName")
     @Mapping(target = "inspection", ignore = true)
     @Mapping(target = "id", ignore = true)
-    CalculatedVMSurvey mapToVisualMeasuringSurvey(Long equipmentId, EquipmentElement element);
+    VisualMeasurementControl mapToVisualMeasuringSurvey(Long equipmentId, EquipmentElement element);
 
     @Mapping(source = "inspectionDto.inspection", target = "inspection")
     @Mapping(target = "id", ignore = true)
-    CalculatedVMSurvey mapWithInspection(@MappingTarget CalculatedVMSurvey vmSurvey, InspectionDto inspectionDto);
+    VisualMeasurementControl mapWithInspection(@MappingTarget VisualMeasurementControl vmSurvey, InspectionDto inspectionDto);
 
-    ResponseCalculatedVMSurveyDto mapToResponseVisualMeasuringSurveyDto(CalculatedVMSurvey vmSurvey);
+    ResponseCalculatedVMSurveyDto mapToResponseVisualMeasuringSurveyDto(VisualMeasurementControl vmSurvey);
 }

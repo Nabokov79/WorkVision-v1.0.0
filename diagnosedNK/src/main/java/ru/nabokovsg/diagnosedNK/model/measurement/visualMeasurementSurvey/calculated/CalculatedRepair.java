@@ -18,6 +18,8 @@ public class CalculatedRepair {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "repair_id")
+    private Long repairId;
     @Column(name = "repair_name")
     private String repairName;
     @OneToMany(mappedBy = "repair", fetch = FetchType.LAZY)
@@ -28,7 +30,4 @@ public class CalculatedRepair {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "part_element_id", nullable = false)
     private CalculatedPartElement partElement;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "visual_measuring_survey_id",  nullable = false)
-    private CalculatedVMSurvey visualMeasuringSurvey;
 }

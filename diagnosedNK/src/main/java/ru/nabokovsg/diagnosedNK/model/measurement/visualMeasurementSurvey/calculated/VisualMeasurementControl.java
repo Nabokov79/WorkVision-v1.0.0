@@ -13,28 +13,26 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "calculated_defects")
-public class CalculatedDefect {
+@Table(name = "visual_measuring_controls")
+public class VisualMeasurementControl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "work_journal_id")
+    private Long workJournalId;
     @Column(name = "defect_id")
     private Long defectId;
     @Column(name = "defect_name")
     private String defectName;
+    @Column(name = "standard_size")
+    private String standardSize;
     @Column(name = "welded_joint_number")
     private Integer weldedJointNumber;
-    @Column(name = "not_meet_requirements")
-    private Boolean notMeetRequirements;
-    @Column(name = "use_calculate_thickness")
-    private Boolean useCalculateThickness;
-    @OneToMany(mappedBy = "defect", fetch = FetchType.LAZY)
+    @Column(name = "coordinates")
+    private String coordinates;
+    @Column(name = "estimation")
+    private String estimation;
+    @OneToMany(mappedBy = "visualMeasurementControl", fetch = FetchType.LAZY)
     private Set<CalculatedParameter> parameters;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "element_id", nullable = false)
-    private CalculatedElement element;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "part_element_id", nullable = false)
-    private CalculatedPartElement partElement;
 }

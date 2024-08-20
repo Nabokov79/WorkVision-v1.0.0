@@ -4,8 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.ResponseInspectionDto;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedElement;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedVMSurvey;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControl;
 
 @Mapper(componentModel = "spring")
 public interface InspectionMapper {
@@ -18,5 +17,5 @@ public interface InspectionMapper {
     @Mapping(source = "calculatedVMSurvey.elementName", target = "elementName")
     @Mapping(target = "partElementId", ignore = true)
     @Mapping(source = "calculatedVMSurvey.inspection", target = "inspection")
-    ResponseInspectionDto mapToResponseInspectionDto(CalculatedVMSurvey calculatedVMSurvey);
+    ResponseInspectionDto mapToResponseInspectionDto(VisualMeasurementControl calculatedVMSurvey);
 }
