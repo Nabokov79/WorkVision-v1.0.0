@@ -2,6 +2,7 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.dete
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
@@ -15,4 +16,12 @@ public interface ParameterMeasurementMapper {
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
     @Mapping(target = "id", ignore = true)
     ParameterMeasurement mapToParameterMeasurement(MeasuredParameter parameter, ParameterMeasurementDto parameterDto);
+
+    @Mapping(source = "parameterDto.value", target = "value")
+    @Mapping(target = "parameterId", ignore = true)
+    @Mapping(target = "parameterName", ignore = true)
+    @Mapping(target = "unitMeasurement", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    ParameterMeasurement mapToUpdateParameterMeasurement(@MappingTarget ParameterMeasurement parameter
+                                                                      , ParameterMeasurementDto parameterDto);
 }

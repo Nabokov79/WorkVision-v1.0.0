@@ -9,6 +9,7 @@ import java.util.Set;
 
 public interface ParameterMeasurementService {
 
-    Set<ParameterMeasurement> save(Set<MeasuredParameter> measuredParameters
-                                 , List<ParameterMeasurementDto> parameterMeasurementsDto);
+    Set<ParameterMeasurement> save(Set<MeasuredParameter> parameters, List<ParameterMeasurementDto> parametersDto);
+
+    Set<ParameterMeasurement> update(Set<ParameterMeasurement> parameters, List<ParameterMeasurementDto> parametersDto);
 }

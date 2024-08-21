@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection;
+package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,11 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Данные визуального осмотра элемента(подэлемента)")
-public class InspectionDto {
+@Schema(description = "Данные для добавления/изменения замечания по техническому состоянию элементов/подэлементов оборудования")
+public class RemarkByEquipmentDto {
 
+    @Schema(description = "Идентификатор")
+    private Long id;
     @Schema(description = "Идентификатор диагностируемого оборудования")
     private Long equipmentId;
     @Schema(description = "Идентификатор элемента")

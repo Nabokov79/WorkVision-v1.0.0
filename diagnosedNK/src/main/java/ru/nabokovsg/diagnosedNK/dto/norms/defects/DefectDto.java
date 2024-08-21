@@ -20,6 +20,8 @@ public class DefectDto {
     private String defectName;
     @Schema(description = "Указание недопустимости дефекта")
     private Boolean notMeetRequirements;
+    @Schema(description = "Использовать дефект для рассчета остаточной толщины")
+    private Boolean useCalculateThickness;
     @Schema(description = "Требуемые вычисления параметров дефекта")
     private String calculation;
     @Schema(description = "Измеряемые параметры дефекта")

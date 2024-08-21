@@ -19,16 +19,27 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     private final ParameterMeasurementMapper mapper;
 
     @Override
-    public Set<ParameterMeasurement> save(Set<MeasuredParameter> measuredParameters
-                                        , List<ParameterMeasurementDto> parameterMeasurementsDto) {
-        Map<Long, MeasuredParameter> parameters = measuredParameters.stream()
+    public Set<ParameterMeasurement> save(Set<MeasuredParameter> parameters
+                                        , List<ParameterMeasurementDto> parametersDto) {
+        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
                                                            .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
         return new HashSet<>(
-                repository.saveAll(
-                parameterMeasurementsDto.stream()
-                                        .map(p -> mapper.mapToParameterMeasurement(parameters.get(p.getParameterId())
+                repository.saveAll(parametersDto.stream()
+                                        .map(p -> mapper.mapToParameterMeasurement(measuredParameter.get(p.getParameterId())
                                                                                  , p))
                                         .toList())
+        );
+    }
+
+    @Override
+    public Set<ParameterMeasurement> update(Set<ParameterMeasurement> parameters
+                                          , List<ParameterMeasurementDto> parametersDto) {
+        Map<Long, ParameterMeasurement> parametersDb = parameters.stream()
+                                              .collect(Collectors.toMap(ParameterMeasurement::getParameterId, p -> p));
+        return new HashSet<>(
+                repository.saveAll(parametersDto.stream()
+                        .map(p -> mapper.mapToUpdateParameterMeasurement(parametersDb.get(p.getParameterId()), p))
+                        .toList())
         );
     }
 }

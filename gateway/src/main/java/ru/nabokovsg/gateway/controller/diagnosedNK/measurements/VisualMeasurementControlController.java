@@ -12,8 +12,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.nabokovsg.gateway.client.diagnosedNK.measurements.QualityControlDefectClient;
-import ru.nabokovsg.gateway.dto.diagnosedNK.qualityControlDefect.NewQualityControlDefectDto;
+import ru.nabokovsg.gateway.client.diagnosedNK.measurements.VisualMeasurementControlClient;
+import ru.nabokovsg.gateway.dto.diagnosedNK.visualMeasurementControl.NewVisualMeasurementControlDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.visualMeasurementControl.UpdateVisualMeasurementControlDto;
 
 @RestController
 @RequestMapping(
@@ -24,15 +25,22 @@ import ru.nabokovsg.gateway.dto.diagnosedNK.qualityControlDefect.NewQualityContr
 @Validated
 @Tag(name="Данные обнаруженных дефектов сварных соединений",
         description="API для работы с данными дефектов сварных соединений")
-public class QualityControlDefectController {
+public class VisualMeasurementControlController {
 
-    private final QualityControlDefectClient client;
+    private final VisualMeasurementControlClient client;
 
-    @Operation(summary = "Добавить данные измеренного дефекта")
+    @Operation(summary = "Добавить данные результата измерения")
     @PostMapping
     public Mono<Object> save(@RequestBody @Valid @Parameter(name = "Данные измеренного дефекта")
-                                                         NewQualityControlDefectDto defectDto) {
+                             NewVisualMeasurementControlDto defectDto) {
         return client.save(defectDto);
+    }
+
+    @Operation(summary = "Изменить данные результата измерения")
+    @PatchMapping
+    public Mono<Object> update(@RequestBody @Valid @Parameter(name = "Данные измеренного дефекта")
+                               UpdateVisualMeasurementControlDto defectDto) {
+        return client.update(defectDto);
     }
 
     @Operation(summary = "Получить данные измеренных дефектов элементов(подэлементов) оборудования" +

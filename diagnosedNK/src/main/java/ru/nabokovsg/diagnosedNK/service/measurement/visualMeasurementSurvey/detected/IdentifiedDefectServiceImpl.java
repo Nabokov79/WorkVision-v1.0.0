@@ -9,7 +9,6 @@ import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detec
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.IdentifiedDefectRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
@@ -18,7 +17,9 @@ import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +38,10 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
     @Override
     public ResponseIdentifiedDefectDto save(IdentifiedDefectDto defectDto) {
         IdentifiedDefect identifiedDefect = requestService.getIdentifiedDefect(defectDto);
-        CalculationDefectOrRepair calculation = null;
+        Defect defect = defectsService.getById(defectDto.getDefectId());
         if (identifiedDefect == null) {
-            Defect defect = defectsService.getById(defectDto.getDefectId());
             EquipmentElement element = elementService.get(defectDto.getElementId());
             identifiedDefect = mapper.mapToIdentifiedDefect(defectDto, defect, element);
-            calculation = defect.getCalculation();
             if (defectDto.getPartElementId() != null) {
                 EquipmentPartElement partElement = element.getPartsElement()
                         .stream()
@@ -62,13 +61,35 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
                             , defectDto.getParameterMeasurements()));
             identifiedDefect = repository.save(identifiedDefect);
         }
-        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, calculation);
+        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect.getCalculation(), defect.getMeasuredParameters());
         return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
     }
 
     @Override
     public ResponseIdentifiedDefectDto update(IdentifiedDefectDto defectDto) {
-        return null;
+        Map<Long, IdentifiedDefect> defects = requestService.getAllIdentifiedDefect(defectDto)
+                                                        .stream()
+                                                        .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
+        IdentifiedDefect identifiedDefect = defects.get(defectDto.getId());
+        IdentifiedDefect defectDb = requestService.getIdentifiedDefect(defectDto);
+        Defect defect = defectsService.getById(defectDto.getDefectId());
+        if (defectDb != null) {
+            mapper.mapToWithQuantity(defectDb, calculationService.getQuantity(defectDb.getParameterMeasurements()
+                                                                            , defectDto.getParameterMeasurements()));
+            defects.put(defectDto.getId(), defectDb);
+            delete(defectDto.getId());
+            defects.remove(defectDto.getId());
+        } else {
+            identifiedDefect.setParameterMeasurements(
+                                        parameterMeasurementService.update(identifiedDefect.getParameterMeasurements()
+                                                                         , defectDto.getParameterMeasurements()));
+            defects.put(identifiedDefect.getId(), identifiedDefect);
+        }
+        calculatedDefectService.update(new ArrayList<>(defects.values())
+                                     , identifiedDefect
+                                     , defect.getCalculation()
+                                     , defect.getMeasuredParameters());
+        return mapper.mapToResponseIdentifiedDefectDto(defects.get(defectDto.getId()));
     }
 
     @Override

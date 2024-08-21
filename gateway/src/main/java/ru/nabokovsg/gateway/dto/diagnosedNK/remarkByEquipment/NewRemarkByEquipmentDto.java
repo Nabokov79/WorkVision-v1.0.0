@@ -1,4 +1,4 @@
-package ru.nabokovsg.gateway.dto.diagnosedNK.inspection;
+package ru.nabokovsg.gateway.dto.diagnosedNK.remarkByEquipment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -13,8 +13,8 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Данные визуального осмотра элемента(подэлемента)")
-public class NewInspectionDto {
+@Schema(description = "Данные добавления замечания по техническому состоянию элементов/подэлементов оборудования")
+public class NewRemarkByEquipmentDto {
 
     @Schema(description = "Идентификатор оборудования")
     @NotNull(message = "equipmentId should not be null")

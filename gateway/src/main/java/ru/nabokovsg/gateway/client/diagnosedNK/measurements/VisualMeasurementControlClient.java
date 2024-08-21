@@ -7,23 +7,28 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.BaseClient;
-import ru.nabokovsg.gateway.dto.diagnosedNK.qualityControlDefect.NewQualityControlDefectDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.visualMeasurementControl.NewVisualMeasurementControlDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.visualMeasurementControl.UpdateVisualMeasurementControlDto;
 
 @Service
-public class QualityControlDefectClient extends BaseClient {
+public class VisualMeasurementControlClient extends BaseClient {
 
-    private static final String API_PREFIX = "/diagnosed/nk/measurement/defect";
+    private static final String API_PREFIX = "/diagnosed/nk/measurement/control/visual";
     private static final String DELIMITER = "/";
 
     @Autowired
-    public QualityControlDefectClient(@Value("${diagnosedNK-server.url}") String baseUrl) {
+    public VisualMeasurementControlClient(@Value("${diagnosedNK-server.url}") String baseUrl) {
         super(WebClient.builder()
                 .baseUrl(baseUrl)
                 .build());
     }
 
-    public Mono<Object> save(NewQualityControlDefectDto defectDto) {
+    public Mono<Object> save(NewVisualMeasurementControlDto defectDto) {
         return post(API_PREFIX, defectDto);
+    }
+
+    public Mono<Object> update(UpdateVisualMeasurementControlDto defectDto) {
+        return patch(API_PREFIX, defectDto);
     }
 
     public Flux<Object> getAll(Long workJournalId) {

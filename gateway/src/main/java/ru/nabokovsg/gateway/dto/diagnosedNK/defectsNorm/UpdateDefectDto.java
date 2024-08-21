@@ -27,6 +27,9 @@ public class UpdateDefectDto {
     @Schema(description = "Требуемые вычисления параметров дефекта")
     @NotBlank(message = "calculation should not be blank")
     private String calculation;
+    @Schema(description = "Использовать дефект для рассчета остаточной толщины")
+    @NotNull(message = "useCalculateThickness should not be null")
+    private Boolean useCalculateThickness;
     @Schema(description = "Измеряемые параметры дефекта")
     private List<UpdateMeasuredParameterDto> measuredParameters;
 }

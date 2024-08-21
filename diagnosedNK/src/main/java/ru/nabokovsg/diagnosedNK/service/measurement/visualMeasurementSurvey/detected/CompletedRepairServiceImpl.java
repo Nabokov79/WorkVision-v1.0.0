@@ -9,7 +9,6 @@ import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detec
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.CompletedRepairRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
@@ -18,7 +17,9 @@ import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedRepairService;
 import ru.nabokovsg.diagnosedNK.service.norms.ElementRepairService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +38,10 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     @Override
     public ResponseCompletedRepairDto save(CompletedRepairDto repairDto) {
         CompletedRepair repair = requestService.getCompletedRepair(repairDto);
-        CalculationDefectOrRepair calculation = null;
+        ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         if (repair == null) {
-            ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
             EquipmentElement element = elementService.get(repairDto.getElementId());
             repair = mapper.mapToCompletedRepair(elementRepair);
-            calculation = elementRepair.getCalculation();
             if (repairDto.getPartElementId() != null) {
                 EquipmentPartElement partElement = element.getPartsElement()
                         .stream()
@@ -60,13 +59,38 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                                                                           , repairDto.getParameterMeasurements()));
             repair = repository.save(repair);
         }
-        calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto), repair, calculation);
+        calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto)
+                                   , repair
+                                   , elementRepair.getCalculation()
+                                   , elementRepair.getMeasuredParameters());
         return mapper.mapToResponseCompletedRepairDto(repair);
     }
 
     @Override
     public ResponseCompletedRepairDto update(CompletedRepairDto repairDto) {
-        return null;
+        Map<Long, CompletedRepair> repairs = requestService.getAllCompletedRepair(repairDto)
+                .stream()
+                .collect(Collectors.toMap(CompletedRepair::getId, d -> d));
+        CompletedRepair repair = repairs.get(repairDto.getId());
+        CompletedRepair repairDb = requestService.getCompletedRepair(repairDto);
+        ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
+        if (repairDb != null) {
+            mapper.mapToWithQuantity(repairDb
+                    , calculationService.getQuantity(repairDb.getParameterMeasurements()
+                            , repairDto.getParameterMeasurements()));
+            repairs.put(repairDb.getId(), repairDb);
+            delete(repair.getId());
+            repairs.remove(repair.getId());
+        } else {
+            repair.setParameterMeasurements(parameterMeasurementService.update(repair.getParameterMeasurements()
+                    , repairDto.getParameterMeasurements()));
+            repairs.put(repair.getId(), repair);
+        }
+        calculatedRepairService.update(new ArrayList<>(repairs.values())
+                                     , repairs.get(repair.getId())
+                                     , elementRepair.getCalculation()
+                                     , elementRepair.getMeasuredParameters());
+        return mapper.mapToResponseCompletedRepairDto(repair);
     }
 
     @Override

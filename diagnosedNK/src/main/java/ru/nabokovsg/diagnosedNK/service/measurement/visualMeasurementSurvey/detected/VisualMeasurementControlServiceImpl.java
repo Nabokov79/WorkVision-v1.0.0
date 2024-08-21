@@ -2,17 +2,16 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.det
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey.ResponseCalculatedVMSurveyDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.ResponseVisualMeasurementControlDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.VisualMeasurementControlDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControlMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControlRepository;
-import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
+import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -20,43 +19,51 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
 
     private final VisualMeasurementControlRepository repository;
     private final VisualMeasurementControlMapper mapper;
-    private final EquipmentElementService elementService;
+    private final ParameterMeasurementService parameterMeasurementService;
+    private final DefectService defectsService;
+    private final static String SUITABLE = "Удовл.";
+    private final static String NOT_SUITABLE = "Не удовл.";
 
     @Override
-    public List<ResponseCalculatedVMSurveyDto> getAll(Long equipmentId) {
-        return getByEquipmentId(equipmentId).stream()
-                                                .map(mapper::mapToResponseVisualMeasuringSurveyDto)
-                                                .toList();
+    public ResponseVisualMeasurementControlDto save(VisualMeasurementControlDto defectDto) {
+        Defect defect = defectsService.getById(defectDto.getDefectId());
+        VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto, defect, getEstimation(defectDto.isEstimation()));
+        vmControl.setParameterMeasurements(parameterMeasurementService.save(defect.getMeasuredParameters()
+                , defectDto.getParameterMeasurements()));
+        return mapper.mapToResponseVisualMeasuringSurveyDto(vmControl);
     }
 
     @Override
-    public VisualMeasurementControl get(Long equipmentId, Long elementId) {
-        return Objects.requireNonNullElseGet(
-                        repository.findByEquipmentIdAndElementId(equipmentId, elementId)
-                , () -> repository.save(mapper.mapToVisualMeasuringSurvey(equipmentId, elementService.get(elementId))));
+    public ResponseVisualMeasurementControlDto update(VisualMeasurementControlDto defectDto) {
+        Defect defect = defectsService.getById(defectDto.getDefectId());
+        VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto
+                                                                            , defect
+                                                                            , getEstimation(defectDto.isEstimation()));
+        vmControl.setParameterMeasurements(parameterMeasurementService.save(defect.getMeasuredParameters()
+                                                                          , defectDto.getParameterMeasurements()));
+        return mapper.mapToResponseVisualMeasuringSurveyDto(vmControl);
     }
 
     @Override
-    public Set<VisualMeasurementControl> getByEquipmentId(Long equipmentId) {
-        Set<VisualMeasurementControl> visualMeasuringSurvey = repository.findAllByEquipmentId(equipmentId);
-        if (visualMeasuringSurvey == null) {
-            throw new NotFoundException(
-                    String.format("VisualMeasuringSurvey by equipmentId=%s not found", equipmentId));
+    public List<ResponseVisualMeasurementControlDto> getAll(Long workJournalId) {
+        return repository.findAllByWorkJournalId(workJournalId).stream()
+                                            .map(mapper::mapToResponseVisualMeasuringSurveyDto)
+                                            .toList();
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
         }
-        return visualMeasuringSurvey;
+        throw new NotFoundException(String.format("VisualMeasurementControl with id=%s not found for delete", id));
     }
 
-    @Override
-    public VisualMeasurementControl addInspection(InspectionDto inspectionDto) {
-        VisualMeasurementControl visualMeasuringSurvey =
-                repository.findByEquipmentIdAndElementId(inspectionDto.getEquipmentId(), inspectionDto.getElementId());
-        if (visualMeasuringSurvey == null) {
-            throw new NotFoundException(
-                   String.format("VisualMeasuringSurvey by equipmentId=%s, partElementId=%s not found"
-                                                                                    , inspectionDto.getEquipmentId()
-                                                                                    , inspectionDto.getPartElementId())
-            );
+    private String getEstimation(boolean estimation) {
+        if (estimation) {
+            return SUITABLE;
         }
-        return repository.save(mapper.mapWithInspection(visualMeasuringSurvey, inspectionDto));
+        return NOT_SUITABLE;
     }
 }

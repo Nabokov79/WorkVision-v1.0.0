@@ -1,19 +1,16 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected;
 
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey.ResponseCalculatedVMSurveyDto;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.ResponseVisualMeasurementControlDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.VisualMeasurementControlDto;
 
 import java.util.List;
-import java.util.Set;
-
 public interface VisualMeasurementControlService {
 
-    List<ResponseCalculatedVMSurveyDto> getAll(Long equipmentId);
+    ResponseVisualMeasurementControlDto save(VisualMeasurementControlDto defectDto);
 
-    VisualMeasurementControl get(Long equipmentId, Long elementId);
+    ResponseVisualMeasurementControlDto update(VisualMeasurementControlDto defectDto);
 
-    Set<VisualMeasurementControl> getByEquipmentId(Long equipmentId);
+    List<ResponseVisualMeasurementControlDto> getAll(Long workJournalId);
 
-    VisualMeasurementControl addInspection(InspectionDto inspectionDto);
+    void delete(Long id);
 }

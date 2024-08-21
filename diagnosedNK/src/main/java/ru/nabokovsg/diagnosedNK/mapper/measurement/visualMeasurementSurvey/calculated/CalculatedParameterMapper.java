@@ -21,6 +21,5 @@ public interface CalculatedParameterMapper {
     @Mapping(target = "maxValue", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    @Mapping(target = "visualMeasurementControl", ignore = true)
     CalculatedParameter maToEmptyParameter(String parameterName, String unitMeasurement);
 }

@@ -41,7 +41,7 @@ public class EquipmentTypeElementServiceImpl implements EquipmentTypeElementServ
                                                     , equipmentTypeService.getById(elementDto.getEquipmentTypeId())))
             );
         }
-        throw new NotFoundException(String.format("Element with id=%s not found for update", elementDto.getId()));
+        throw new NotFoundException(String.format("ElementType with id=%s not found for update", elementDto.getId()));
     }
 
     @Override
@@ -55,6 +55,6 @@ public class EquipmentTypeElementServiceImpl implements EquipmentTypeElementServ
     @Override
     public EquipmentTypeElement getById(long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Element with id=%s not found", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("ElementType with id=%s not found", id)));
     }
 }

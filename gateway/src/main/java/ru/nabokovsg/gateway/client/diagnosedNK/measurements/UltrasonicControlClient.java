@@ -13,7 +13,7 @@ import ru.nabokovsg.gateway.dto.diagnosedNK.ultrasonicControl.UpdateUltrasonicMe
 @Service
 public class UltrasonicControlClient extends BaseClient {
 
-    private static final String API_PREFIX = "/diagnosed/nk/measurement/ultrasonic";
+    private static final String API_PREFIX = "/diagnosed/nk/measurement/control/ultrasonic";
     private static final String DELIMITER = "/";
 
     @Autowired

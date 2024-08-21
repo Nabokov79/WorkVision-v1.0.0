@@ -29,10 +29,12 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     @Override
     public IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto) {
         QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
+        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
         BooleanBuilder builder = createPredicateByCIdentifiedDefectData(defectDto, defect);
         createPredicateByParameterMeasurement(builder, defectDto.getParameterMeasurements());
         return new JPAQueryFactory(em).from(defect)
                                       .select(defect)
+                                      .innerJoin(defect.parameterMeasurements, parameter)
                                       .where(builder)
                                       .fetchOne();
     }
@@ -60,10 +62,12 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     @Override
     public CompletedRepair getCompletedRepair(CompletedRepairDto repairDto) {
         QCompletedRepair repair = QCompletedRepair.completedRepair;
+        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
         BooleanBuilder builder = createPredicateByCompletedRepairData(repairDto, repair);
         createPredicateByParameterMeasurement(builder, repairDto.getParameterMeasurements());
         return new JPAQueryFactory(em).from(repair)
                 .select(repair)
+                .innerJoin(repair.parameterMeasurements, parameter)
                 .where(builder)
                 .fetchOne();
     }

@@ -1,10 +1,11 @@
-package ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated;
+package ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
 import java.util.Set;
 
@@ -34,5 +35,5 @@ public class VisualMeasurementControl {
     @Column(name = "estimation")
     private String estimation;
     @OneToMany(mappedBy = "visualMeasurementControl", fetch = FetchType.LAZY)
-    private Set<CalculatedParameter> parameters;
+    private Set<ParameterMeasurement> parameterMeasurements;
 }

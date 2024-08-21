@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl.VisualMeasurementControl;
 
 @Setter
 @Getter
@@ -31,4 +32,7 @@ public class ParameterMeasurement {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "repair_id", nullable = false)
     private CompletedRepair completedRepair;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "vm_control_id", nullable = false)
+    private VisualMeasurementControl visualMeasurementControl;
 }

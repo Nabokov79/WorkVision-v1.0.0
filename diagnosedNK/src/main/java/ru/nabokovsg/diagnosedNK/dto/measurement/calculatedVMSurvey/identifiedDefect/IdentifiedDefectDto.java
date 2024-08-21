@@ -26,8 +26,6 @@ public class IdentifiedDefectDto {
     private Long partElementId;
     @Schema(description = "Идентификатор дефекта")
     private Long defectId;
-    @Schema(description = "Порядковый номер сварного соединения")
-    private Integer weldedJointNumber;
     @Schema(description = "Измеренные параметры дефекта")
     private List<ParameterMeasurementDto> parameterMeasurements;
 }

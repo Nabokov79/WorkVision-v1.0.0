@@ -35,9 +35,4 @@ public class CalculatedParameter {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "repair_id",  nullable = false)
     private CalculatedRepair repair;
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "control_id",  nullable = false)
-    private VisualMeasurementControl visualMeasurementControl;
-
-
 }

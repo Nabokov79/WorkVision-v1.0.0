@@ -2,24 +2,25 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calc
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.inspection.InspectionDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey.ResponseCalculatedVMSurveyDto;
-import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.ResponseVisualMeasurementControlDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.VisualMeasurementControlDto;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 
 @Mapper(componentModel = "spring")
 public interface VisualMeasurementControlMapper {
 
-    @Mapping(source = "equipmentId", target = "equipmentId")
-    @Mapping(source = "element.elementName", target = "elementName")
-    @Mapping(target = "inspection", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    VisualMeasurementControl mapToVisualMeasuringSurvey(Long equipmentId, EquipmentElement element);
+    @Mapping(source = "defectDto.workJournalId", target = "workJournalId")
+    @Mapping(source = "defect.id", target = "defectId")
+    @Mapping(source = "defect.defectName", target = "defectName")
+    @Mapping(source = "defectDto.standardSize", target = "standardSize")
+    @Mapping(source = "defectDto.weldedJointNumber", target = "weldedJointNumber")
+    @Mapping(source = "defectDto.coordinates", target = "coordinates")
+    @Mapping(source = "estimation", target = "estimation")
+    @Mapping(source = "defectDto.id", target = "id")
+    VisualMeasurementControl mapToVisualMeasurementControl(VisualMeasurementControlDto defectDto
+                                                        , Defect defect
+                                                        , String estimation);
 
-    @Mapping(source = "inspectionDto.inspection", target = "inspection")
-    @Mapping(target = "id", ignore = true)
-    VisualMeasurementControl mapWithInspection(@MappingTarget VisualMeasurementControl vmSurvey, InspectionDto inspectionDto);
-
-    ResponseCalculatedVMSurveyDto mapToResponseVisualMeasuringSurveyDto(VisualMeasurementControl vmSurvey);
+    ResponseVisualMeasurementControlDto mapToResponseVisualMeasuringSurveyDto(VisualMeasurementControl vmControl);
 }

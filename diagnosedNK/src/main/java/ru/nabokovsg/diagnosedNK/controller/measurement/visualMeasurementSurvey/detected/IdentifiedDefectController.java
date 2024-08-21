@@ -34,7 +34,7 @@ public class IdentifiedDefectController {
     }
 
     @Operation(summary = "Добавить данные измеренного дефекта")
-    @PostMapping
+    @PatchMapping
     public ResponseEntity<ResponseIdentifiedDefectDto> update(@RequestBody
                                                             @Parameter(name = "Данные измеренного дефекта")
                                                             IdentifiedDefectDto defectDto) {
