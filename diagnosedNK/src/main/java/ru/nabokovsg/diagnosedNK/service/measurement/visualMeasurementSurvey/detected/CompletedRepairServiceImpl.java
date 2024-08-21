@@ -49,14 +49,14 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                         .get(repairDto.getPartElementId());
                 mapper.mapWithEquipmentPartElement(repair, partElement);
             }
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getParameterMeasurements()
-                                                                          , repairDto.getParameterMeasurements()));
+            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity(), repairDto.getQuantity()));
             repair = repository.save(repair);
-            repair.setParameterMeasurements(parameterMeasurementService.save(elementRepair.getMeasuredParameters()
-                                                                           , repairDto.getParameterMeasurements()));
+            repair.setParameterMeasurements(parameterMeasurementService.saveForCompletedRepair(
+                                                                              repair
+                                                                            , elementRepair.getMeasuredParameters()
+                                                                            , repairDto.getParameterMeasurements()));
         } else {
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getParameterMeasurements()
-                                                                          , repairDto.getParameterMeasurements()));
+            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity(), repairDto.getQuantity()));
             repair = repository.save(repair);
         }
         calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto)
@@ -75,9 +75,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
         CompletedRepair repairDb = requestService.getCompletedRepair(repairDto);
         ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         if (repairDb != null) {
-            mapper.mapToWithQuantity(repairDb
-                    , calculationService.getQuantity(repairDb.getParameterMeasurements()
-                            , repairDto.getParameterMeasurements()));
+            mapper.mapToWithQuantity(repairDb, calculationService.getQuantity(repair.getQuantity(), repairDto.getQuantity()));
             repairs.put(repairDb.getId(), repairDb);
             delete(repair.getId());
             repairs.remove(repair.getId());

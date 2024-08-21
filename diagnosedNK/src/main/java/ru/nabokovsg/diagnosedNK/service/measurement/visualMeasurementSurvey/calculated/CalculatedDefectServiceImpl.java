@@ -66,6 +66,7 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
         return new JPAQueryFactory(em).from(defect)
                 .select(defect)
                 .where(builder)
+                .innerJoin(defect.element, element)
                 .fetchOne();
     }
 }

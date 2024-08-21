@@ -23,7 +23,7 @@ public class NewDefectDto {
     @Schema(description = "Указание недопустимости дефекта")
     @NotNull(message = "notMeetRequirements should not be null")
     private Boolean notMeetRequirements;
-    @Schema(description = "Использовать Дефект для рассчета остаточной толщины")
+    @Schema(description = "Использовать Дефект для расчета остаточной толщины")
     @NotNull(message = "useCalculateThickness should not be null")
     private Boolean useCalculateThickness;
     @Schema(description = "Требуемые вычисления параметров дефекта")

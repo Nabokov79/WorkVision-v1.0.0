@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.diagnosedNK.measurements.IdentifiedDefectClient;
 import ru.nabokovsg.gateway.dto.diagnosedNK.identifiedDefect.NewIdentifiedDefectDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.identifiedDefect.UpdateIdentifiedDefectDto;
 
 @RestController
 @RequestMapping(
@@ -38,7 +39,7 @@ public class IdentifiedDefectController {
     @Operation(summary = "Изменить данные измеренного дефекта")
     @PatchMapping
     public Mono<Object> update(@RequestBody @Valid @Parameter(name = "Данные измеренного дефекта")
-                             NewIdentifiedDefectDto defectDto) {
+                                                            UpdateIdentifiedDefectDto defectDto) {
         return client.update(defectDto);
     }
 

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.ParameterMeasurementMapper;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.ParameterMeasurementRepository;
@@ -19,15 +22,47 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     private final ParameterMeasurementMapper mapper;
 
     @Override
-    public Set<ParameterMeasurement> save(Set<MeasuredParameter> parameters
+    public Set<ParameterMeasurement> saveForIdentifiedDefect(IdentifiedDefect identifiedDefect
+                                        , Set<MeasuredParameter> parameters
                                         , List<ParameterMeasurementDto> parametersDto) {
         Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
                                                            .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
         return new HashSet<>(
                 repository.saveAll(parametersDto.stream()
-                                        .map(p -> mapper.mapToParameterMeasurement(measuredParameter.get(p.getParameterId())
-                                                                                 , p))
+                                        .map(p -> mapper.mapWithIdentifiedDefect(measuredParameter.get(p.getParameterId())
+                                                                                 , p
+                                                                                 , identifiedDefect))
                                         .toList())
+        );
+    }
+
+    @Override
+    public Set<ParameterMeasurement> saveForCompletedRepair(CompletedRepair repair
+                                                          , Set<MeasuredParameter> parameters
+                                                          , List<ParameterMeasurementDto> parametersDto) {
+        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
+                .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
+        return new HashSet<>(
+                repository.saveAll(parametersDto.stream()
+                        .map(p -> mapper.mapWithIdentifiedDefect(measuredParameter.get(p.getParameterId())
+                                , p
+                                , repair))
+                        .toList())
+        );
+    }
+
+    @Override
+    public Set<ParameterMeasurement> saveForVMControl(VisualMeasurementControl vmControl
+                                                    , Set<MeasuredParameter> parameters
+                                                    , List<ParameterMeasurementDto> parametersDto) {
+        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
+                .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
+        return new HashSet<>(
+                repository.saveAll(parametersDto.stream()
+                        .map(p -> mapper.mapWithVisualMeasurementControl(measuredParameter.get(p.getParameterId())
+                                , p
+                                , vmControl))
+                        .toList())
         );
     }
 

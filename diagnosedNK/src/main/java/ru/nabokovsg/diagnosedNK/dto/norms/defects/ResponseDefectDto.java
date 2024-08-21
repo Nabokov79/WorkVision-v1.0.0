@@ -18,6 +18,10 @@ public class ResponseDefectDto {
     private Long id;
     @Schema(description = "Наименование дефекта")
     private String defectName;
+    @Schema(description = "Указание недопустимости дефекта")
+    private Boolean notMeetRequirements;
+    @Schema(description = "Использовать дефект для расчета остаточной толщины")
+    private Boolean useCalculateThickness;
     @Schema(description = "Измеряемые параметры дефекта")
     private List<ResponseMeasuredParameterDto> measuredParameters;
 }

@@ -26,8 +26,8 @@ public class ResponseIdentifiedDefectDto {
     private String partName;
     @Schema(description = "Наименование дефекта")
     private String defectName;
-    @Schema(description = "Порядковый номер сварного соединения")
-    private Integer weldedJointNumber;
+    @Schema(description = "Количество дефектов")
+    private Integer quantity;
     @Schema(description = "Указание недопустимого дефекта")
     private Boolean notMeetRequirements;
     @Schema(description = "Рассчитанные параметры дефекта")

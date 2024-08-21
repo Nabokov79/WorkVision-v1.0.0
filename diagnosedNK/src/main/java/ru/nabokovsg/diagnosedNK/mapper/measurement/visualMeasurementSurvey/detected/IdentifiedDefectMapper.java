@@ -27,7 +27,7 @@ public interface IdentifiedDefectMapper {
                                          , EquipmentElement element);
 
     @Mapping(source = "quantity", target = "quantity")
-    void mapToWithQuantity(@MappingTarget IdentifiedDefect identifiedDefect, Integer quantity);
+    IdentifiedDefect mapToWithQuantity(@MappingTarget IdentifiedDefect identifiedDefect, Integer quantity);
 
     @Mapping(source = "partElement.id", target = "partElementId")
     @Mapping(source = "partElement.partElementName", target = "partElementName")

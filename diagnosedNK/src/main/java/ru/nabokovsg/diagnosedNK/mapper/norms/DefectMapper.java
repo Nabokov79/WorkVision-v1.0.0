@@ -15,6 +15,7 @@ public interface DefectMapper {
     @Mapping(source = "defectDto.defectName", target = "defectName")
     @Mapping(source = "calculation", target = "calculation")
     @Mapping(source = "defectDto.notMeetRequirements", target = "notMeetRequirements")
+    @Mapping(source = "defectDto.useCalculateThickness", target = "useCalculateThickness")
     Defect mapToDefect(DefectDto defectDto, CalculationDefectOrRepair calculation);
 
     ResponseDefectDto mapToResponseDefectDto(Defect defect);

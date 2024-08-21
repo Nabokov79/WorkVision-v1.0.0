@@ -1,6 +1,7 @@
 package ru.nabokovsg.gateway.dto.diagnosedNK.defectsNorm;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -27,9 +28,9 @@ public class UpdateDefectDto {
     @Schema(description = "Требуемые вычисления параметров дефекта")
     @NotBlank(message = "calculation should not be blank")
     private String calculation;
-    @Schema(description = "Использовать дефект для рассчета остаточной толщины")
+    @Schema(description = "Использовать дефект для расчета остаточной толщины")
     @NotNull(message = "useCalculateThickness should not be null")
     private Boolean useCalculateThickness;
     @Schema(description = "Измеряемые параметры дефекта")
-    private List<UpdateMeasuredParameterDto> measuredParameters;
+    private List<@Valid UpdateMeasuredParameterDto> measuredParameters;
 }

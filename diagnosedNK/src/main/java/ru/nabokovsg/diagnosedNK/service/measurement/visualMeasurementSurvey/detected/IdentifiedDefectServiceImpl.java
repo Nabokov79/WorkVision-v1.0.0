@@ -50,18 +50,18 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
                 mapper.mapWithEquipmentPartElement(identifiedDefect, partElement);
             }
             mapper.mapToWithQuantity(identifiedDefect
-                    , calculationService.getQuantity(identifiedDefect.getParameterMeasurements()
-                            , defectDto.getParameterMeasurements()));
+                    , calculationService.getQuantity(identifiedDefect.getQuantity(), defectDto.getQuantity()));
             identifiedDefect = repository.save(identifiedDefect);
-            identifiedDefect.setParameterMeasurements(parameterMeasurementService.save(defect.getMeasuredParameters()
-                    , defectDto.getParameterMeasurements()));
+            identifiedDefect.setParameterMeasurements(
+                    parameterMeasurementService.saveForIdentifiedDefect(identifiedDefect
+                                                                      , defect.getMeasuredParameters()
+                                                                      , defectDto.getParameterMeasurements()));
         } else {
-            mapper.mapToWithQuantity(identifiedDefect
-                    , calculationService.getQuantity(identifiedDefect.getParameterMeasurements()
-                            , defectDto.getParameterMeasurements()));
+            identifiedDefect = mapper.mapToWithQuantity(identifiedDefect
+                    , calculationService.getQuantity(identifiedDefect.getQuantity(), defectDto.getQuantity()));
             identifiedDefect = repository.save(identifiedDefect);
         }
-        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect.getCalculation(), defect.getMeasuredParameters());
+//        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect.getCalculation(), defect.getMeasuredParameters());
         return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
     }
 
@@ -74,8 +74,7 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
         IdentifiedDefect defectDb = requestService.getIdentifiedDefect(defectDto);
         Defect defect = defectsService.getById(defectDto.getDefectId());
         if (defectDb != null) {
-            mapper.mapToWithQuantity(defectDb, calculationService.getQuantity(defectDb.getParameterMeasurements()
-                                                                            , defectDto.getParameterMeasurements()));
+            mapper.mapToWithQuantity(defectDb, calculationService.getQuantity(defectDb.getQuantity(), defectDto.getQuantity()));
             defects.put(defectDto.getId(), defectDb);
             delete(defectDto.getId());
             defects.remove(defectDto.getId());

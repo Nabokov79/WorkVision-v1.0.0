@@ -20,5 +20,5 @@ public interface CalculationMeasurementService {
    Set<CalculatedParameter> countQuantity(Map<Long, CalculatedParameter> parameterMeasurements
                                          , Map<String,ParameterMeasurement> parameters);
 
-    Integer getQuantity(Set<ParameterMeasurement> parameterMeasurements, List<ParameterMeasurementDto> parameters);
+    Integer getQuantity(Integer quantityDb, Integer quantityDto);
 }

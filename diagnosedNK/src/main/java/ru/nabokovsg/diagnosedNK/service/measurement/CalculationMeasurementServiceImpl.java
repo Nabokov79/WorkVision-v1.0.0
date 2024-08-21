@@ -2,7 +2,6 @@ package ru.nabokovsg.diagnosedNK.service.measurement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
@@ -13,7 +12,6 @@ import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasuremen
 import ru.nabokovsg.diagnosedNK.service.constantService.ConstUnitMeasurementService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,26 +73,17 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
     }
 
     @Override
-    public Integer getQuantity(Set<ParameterMeasurement> parameterMeasurements
-                             , List<ParameterMeasurementDto> parameters) {
+    public Integer getQuantity(Integer quantityDb, Integer quantityDto) {
         int quantity = 1;
-        if (parameterMeasurements == null) {
+        if (quantityDb == null && quantityDto == null) {
             return quantity;
+        } else if (quantityDb == null) {
+            return quantityDto;
+        } else if (quantityDto == null) {
+            return quantityDb + quantity;
+        } else {
+            return quantityDb + quantityDto;
         }
-        String parameterName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
-        Map<Long, ParameterMeasurementDto> parametersDto = parameters.stream()
-                                            .collect(Collectors.toMap(ParameterMeasurementDto::getParameterId, p -> p));
-        for (ParameterMeasurement parameter : parameterMeasurements) {
-            if (parameter.getParameterName().equals(parameterName)) {
-                ParameterMeasurementDto param = parametersDto.get(parameter.getParameterId());
-                if (param != null) {
-                    quantity = (int) (parameter.getValue() + parameter.getValue());
-                } else {
-                    quantity = (int) (parameter.getValue() + 1.0);
-                }
-            }
-        }
-        return quantity;
     }
 
     @Override

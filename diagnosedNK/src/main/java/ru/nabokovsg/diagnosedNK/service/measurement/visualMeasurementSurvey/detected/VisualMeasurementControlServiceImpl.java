@@ -27,9 +27,13 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
     @Override
     public ResponseVisualMeasurementControlDto save(VisualMeasurementControlDto defectDto) {
         Defect defect = defectsService.getById(defectDto.getDefectId());
-        VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto, defect, getEstimation(defectDto.isEstimation()));
-        vmControl.setParameterMeasurements(parameterMeasurementService.save(defect.getMeasuredParameters()
-                , defectDto.getParameterMeasurements()));
+        VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto
+                                                                            , defect
+                                                                            , getEstimation(defectDto.isEstimation()));
+        vmControl.setParameterMeasurements(parameterMeasurementService.saveForVMControl(
+                                                                              vmControl
+                                                                            , defect.getMeasuredParameters()
+                                                                            , defectDto.getParameterMeasurements()));
         return mapper.mapToResponseVisualMeasuringSurveyDto(vmControl);
     }
 
@@ -39,8 +43,8 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
         VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto
                                                                             , defect
                                                                             , getEstimation(defectDto.isEstimation()));
-        vmControl.setParameterMeasurements(parameterMeasurementService.save(defect.getMeasuredParameters()
-                                                                          , defectDto.getParameterMeasurements()));
+        vmControl.setParameterMeasurements(parameterMeasurementService.update(vmControl.getParameterMeasurements()
+                                                                            , defectDto.getParameterMeasurements()));
         return mapper.mapToResponseVisualMeasuringSurveyDto(vmControl);
     }
 

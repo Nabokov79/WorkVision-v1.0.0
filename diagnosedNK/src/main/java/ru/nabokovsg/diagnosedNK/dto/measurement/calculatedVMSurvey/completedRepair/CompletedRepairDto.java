@@ -26,6 +26,8 @@ public class CompletedRepairDto {
     private Long partElementId;
     @Schema(description = "Идентификатор ремонта")
     private Long repairId;
+    @Schema(description = "Количество ремонтов")
+    private int quantity;
     @Schema(description = "Измеренные параметры выполненного ремонта элемента")
     private List<ParameterMeasurementDto> parameterMeasurements;
 }
