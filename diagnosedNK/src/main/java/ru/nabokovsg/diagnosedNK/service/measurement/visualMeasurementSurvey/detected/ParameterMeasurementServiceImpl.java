@@ -77,4 +77,9 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
                         .toList())
         );
     }
+
+    @Override
+    public void deleteAll(Set<ParameterMeasurement> parameters) {
+        repository.deleteAll(parameters);
+    }
 }

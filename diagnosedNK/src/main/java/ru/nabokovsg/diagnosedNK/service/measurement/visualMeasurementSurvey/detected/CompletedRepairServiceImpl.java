@@ -49,14 +49,16 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                         .get(repairDto.getPartElementId());
                 mapper.mapWithEquipmentPartElement(repair, partElement);
             }
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity(), repairDto.getQuantity()));
+            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity()
+                                                                          , repairDto.getQuantity()));
             repair = repository.save(repair);
             repair.setParameterMeasurements(parameterMeasurementService.saveForCompletedRepair(
                                                                               repair
                                                                             , elementRepair.getMeasuredParameters()
                                                                             , repairDto.getParameterMeasurements()));
         } else {
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity(), repairDto.getQuantity()));
+            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity()
+                                                                          , repairDto.getQuantity()));
             repair = repository.save(repair);
         }
         calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto)
@@ -71,24 +73,26 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
         Map<Long, CompletedRepair> repairs = requestService.getAllCompletedRepair(repairDto)
                 .stream()
                 .collect(Collectors.toMap(CompletedRepair::getId, d -> d));
-        CompletedRepair repair = repairs.get(repairDto.getId());
         CompletedRepair repairDb = requestService.getCompletedRepair(repairDto);
         ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
-        if (repairDb != null) {
-            mapper.mapToWithQuantity(repairDb, calculationService.getQuantity(repair.getQuantity(), repairDto.getQuantity()));
-            repairs.put(repairDb.getId(), repairDb);
-            delete(repair.getId());
-            repairs.remove(repair.getId());
-        } else {
-            repair.setParameterMeasurements(parameterMeasurementService.update(repair.getParameterMeasurements()
+        if (repairDb == null) {
+            repairDb = repairs.get(repairDto.getId());
+            repairDb =  mapper.mapToWithQuantity(repairDb, calculationService.getQuantity(repairDb.getQuantity()
+                    , repairDto.getQuantity()));
+            repairDb.setParameterMeasurements(parameterMeasurementService.update(repairDb.getParameterMeasurements()
                     , repairDto.getParameterMeasurements()));
-            repairs.put(repair.getId(), repair);
+        } else {
+            repairDb =  mapper.mapToWithQuantity(repairDb, calculationService.getQuantity(repairDb.getQuantity()
+                    ,repairDto.getQuantity()));
+            delete(repairDto.getId());
+            repairs.remove(repairDto.getId());
         }
+        repairs.put(repairDb.getId(),repairDb);
         calculatedRepairService.update(new ArrayList<>(repairs.values())
-                                     , repairs.get(repair.getId())
-                                     , elementRepair.getCalculation()
-                                     , elementRepair.getMeasuredParameters());
-        return mapper.mapToResponseCompletedRepairDto(repair);
+                                                     , repairDb
+                                                     , elementRepair.getCalculation()
+                                                     , elementRepair.getMeasuredParameters());
+        return mapper.mapToResponseCompletedRepairDto(repairDb);
     }
 
     @Override
@@ -101,10 +105,13 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
 
     @Override
     public void delete(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-            return;
-        }
-        throw new NotFoundException(String.format("Completed repair with id=%s not found for delete", id));
+        CompletedRepair repair = get(id);
+        parameterMeasurementService.deleteAll(repair.getParameterMeasurements());
+        repository.deleteById(id);
+    }
+
+    private CompletedRepair get(Long id) {
+        return repository.findById(id)
+            .orElseThrow(() -> new NotFoundException(String.format("CompletedRepair defect with id=%s not found", id)));
     }
 }

@@ -50,7 +50,7 @@ public interface ParameterMeasurementMapper {
     @Mapping(target = "identifiedDefect", ignore = true)
     @Mapping(target = "completedRepair", ignore = true)
     @Mapping(target = "visualMeasurementControl", ignore = true)
-    @Mapping(target = "id", ignore = true)
+    @Mapping(source = "parameterDto.id", target = "id")
     ParameterMeasurement mapToUpdateParameterMeasurement(@MappingTarget ParameterMeasurement parameter
                                                                       , ParameterMeasurementDto parameterDto);
 }

@@ -26,5 +26,5 @@ public interface CompletedRepairMapper {
             , EquipmentPartElement partElement);
 
     @Mapping(source = "quantity", target = "quantity")
-    void mapToWithQuantity(@MappingTarget CompletedRepair repair, Integer quantity);
+    CompletedRepair mapToWithQuantity(@MappingTarget CompletedRepair repair, Integer quantity);
 }

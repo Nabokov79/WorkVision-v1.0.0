@@ -70,25 +70,26 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
         Map<Long, IdentifiedDefect> defects = requestService.getAllIdentifiedDefect(defectDto)
                                                         .stream()
                                                         .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
-        IdentifiedDefect identifiedDefect = defects.get(defectDto.getId());
         IdentifiedDefect defectDb = requestService.getIdentifiedDefect(defectDto);
         Defect defect = defectsService.getById(defectDto.getDefectId());
-        if (defectDb != null) {
-            mapper.mapToWithQuantity(defectDb, calculationService.getQuantity(defectDb.getQuantity(), defectDto.getQuantity()));
-            defects.put(defectDto.getId(), defectDb);
+        if (defectDb == null) {
+            defectDb = defects.get(defectDto.getId());
+            defectDb =  mapper.mapToWithQuantity(defectDb, calculationService.getQuantity(defectDb.getQuantity()
+                                                                                        , defectDto.getQuantity()));
+            defectDb.setParameterMeasurements(parameterMeasurementService.update(defectDb.getParameterMeasurements()
+                    , defectDto.getParameterMeasurements()));
+        } else {
+            defectDb =  mapper.mapToWithQuantity(defectDb, calculationService.getQuantity(defectDb.getQuantity()
+                                                                                        , defectDto.getQuantity()));
             delete(defectDto.getId());
             defects.remove(defectDto.getId());
-        } else {
-            identifiedDefect.setParameterMeasurements(
-                                        parameterMeasurementService.update(identifiedDefect.getParameterMeasurements()
-                                                                         , defectDto.getParameterMeasurements()));
-            defects.put(identifiedDefect.getId(), identifiedDefect);
         }
+        defects.put(defectDb.getId(), defectDb);
         calculatedDefectService.update(new ArrayList<>(defects.values())
-                                     , identifiedDefect
-                                     , defect.getCalculation()
-                                     , defect.getMeasuredParameters());
-        return mapper.mapToResponseIdentifiedDefectDto(defects.get(defectDto.getId()));
+                                                     , defectDb
+                                                     , defect.getCalculation()
+                                                     , defect.getMeasuredParameters());
+        return mapper.mapToResponseIdentifiedDefectDto(repository.save(defectDb));
     }
 
     @Override
@@ -101,10 +102,13 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     @Override
     public void delete(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-            return;
-        }
-        throw new NotFoundException(String.format("Identified defect with id=%s not found for delete", id));
+        IdentifiedDefect defect = get(id);
+        parameterMeasurementService.deleteAll(defect.getParameterMeasurements());
+        repository.deleteById(id);
+    }
+
+    private IdentifiedDefect get(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Identified defect with id=%s not found", id)));
     }
 }
