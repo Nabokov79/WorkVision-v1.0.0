@@ -37,7 +37,7 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
             calculatedDefect = repository.save(mapper.mapToCalculatedDefect(defect));
         }
 //        switch (defect.getCalculation()) {
-//            case SQUARE -> e;
+//            case SQUARE -> ;
 //            case QUANTITY -> ;
 //            case NO_ACTION -> ;
 //        }

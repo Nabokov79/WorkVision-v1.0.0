@@ -10,5 +10,8 @@ import java.util.Set;
 
 public interface CalculatedParameterService {
 
-    void save(CalculatedDefect calculatedDefect, Set<CalculatedParameter> parameters, Defect defect, Set<ParameterMeasurement> parameterMeasurements);
+    void save(CalculatedDefect calculatedDefect
+            , Set<CalculatedParameter> parameters
+            , Defect defect
+            , Set<ParameterMeasurement> parameterMeasurements);
 }
