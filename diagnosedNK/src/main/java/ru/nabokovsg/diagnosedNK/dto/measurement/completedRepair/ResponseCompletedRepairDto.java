@@ -1,18 +1,18 @@
-package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect;
+package ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ResponseParameterMeasurementDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.parameterMeasurement.ResponseParameterMeasurementDto;
 
 import java.util.Set;
 
 @Setter
 @Getter
 @AllArgsConstructor
-@Schema(description = "Данные измеренного дефекта")
-public class ResponseIdentifiedDefectDto {
+@Schema(description = "Выполненный ремонт элемента, подэлемента оборудования")
+public class ResponseCompletedRepairDto {
 
     @Schema(description = "Идентификатор")
     private Long id;
@@ -24,12 +24,10 @@ public class ResponseIdentifiedDefectDto {
     private Long partElementId;
     @Schema(description = "Наименование подэлемента")
     private String partName;
-    @Schema(description = "Наименование дефекта")
-    private String defectName;
-    @Schema(description = "Количество дефектов")
+    @Schema(description = "Наименование ремонта")
+    private String repairName;
+    @Schema(description = "Количество ремонтов")
     private Integer quantity;
-    @Schema(description = "Указание недопустимого дефекта")
-    private Boolean notMeetRequirements;
-    @Schema(description = "Рассчитанные параметры дефекта")
+    @Schema(description = "Рассчитанные параметры выполненного ремонта элемента")
     private Set<ResponseParameterMeasurementDto> parameterMeasurements;
 }

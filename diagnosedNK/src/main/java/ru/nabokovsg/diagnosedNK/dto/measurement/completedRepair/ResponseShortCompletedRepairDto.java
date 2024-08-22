@@ -1,10 +1,10 @@
-package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair;
+package ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.parameterMeasurement.ResponseParameterMeasurementDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.parameterMeasurement.ResponseParameterMeasurementDto;
 
 import java.util.Set;
 

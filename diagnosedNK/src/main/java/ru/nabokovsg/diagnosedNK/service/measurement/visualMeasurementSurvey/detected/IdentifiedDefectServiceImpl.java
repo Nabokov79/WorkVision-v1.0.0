@@ -2,8 +2,8 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.det
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.IdentifiedDefectDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.ResponseIdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.ResponseIdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.IdentifiedDefectMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
@@ -49,8 +49,8 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
                         .get(defectDto.getPartElementId());
                 mapper.mapWithEquipmentPartElement(identifiedDefect, partElement);
             }
-            mapper.mapToWithQuantity(identifiedDefect
-                    , calculationService.getQuantity(identifiedDefect.getQuantity(), defectDto.getQuantity()));
+            identifiedDefect = mapper.mapToWithQuantity(mapper.mapToIdentifiedDefect(defectDto, defect, element)
+                    , calculationService.getQuantity(null, defectDto.getQuantity()));
             identifiedDefect = repository.save(identifiedDefect);
             identifiedDefect.setParameterMeasurements(
                     parameterMeasurementService.saveForIdentifiedDefect(identifiedDefect

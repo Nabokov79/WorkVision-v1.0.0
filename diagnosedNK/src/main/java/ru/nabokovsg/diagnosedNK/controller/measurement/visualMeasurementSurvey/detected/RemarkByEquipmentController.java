@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.RemarkByEquipmentDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.ResponseRemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.RemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.ResponseRemarkByEquipmentDto;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected.RemarkByEquipmentService;
 
 import java.util.List;

@@ -1,6 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
@@ -15,6 +16,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalculationMeasurementServiceImpl implements CalculationMeasurementService {
 
     private final ConstParameterMeasurementService constParameter;
@@ -76,12 +78,18 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
     public Integer getQuantity(Integer quantityDb, Integer quantityDto) {
         int quantity = 1;
         if (quantityDb == null && quantityDto == null) {
+            log.info("quantity № 1");
             return quantity;
         } else if (quantityDb == null) {
+            log.info("quantity № 2");
             return quantityDto;
         } else if (quantityDto == null) {
+            log.info("quantity № 3");
             return quantityDb + quantity;
         } else {
+            log.info("quantity № 4");
+            log.info("quantityDb = {}", quantityDb);
+            log.info("quantityDto = {}", quantityDto);
             return quantityDb + quantityDto;
         }
     }

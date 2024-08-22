@@ -1,12 +1,12 @@
-package ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.visualMeasuringSurvey;
+package ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasuringSurvey;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.ResponseShortCompletedRepairDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.identifiedDefect.ResponseShortIdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.ResponseShortCompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.ResponseShortIdentifiedDefectDto;
 
 import java.util.Set;
 

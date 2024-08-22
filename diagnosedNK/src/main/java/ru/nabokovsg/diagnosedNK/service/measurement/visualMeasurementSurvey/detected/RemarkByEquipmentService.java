@@ -1,7 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected;
 
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.RemarkByEquipmentDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.ResponseRemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.RemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.ResponseRemarkByEquipmentDto;
 
 import java.util.List;
 

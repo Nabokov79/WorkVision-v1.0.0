@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.BaseClient;
 import ru.nabokovsg.gateway.dto.diagnosedNK.completedRepair.NewCompletedRepairDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.completedRepair.UpdateCompletedRepairDto;
 
 @Service
 public class CompletedRepairClient extends BaseClient {
@@ -26,7 +27,7 @@ public class CompletedRepairClient extends BaseClient {
         return post(API_PREFIX, repairDto);
     }
 
-    public Mono<Object> update(NewCompletedRepairDto repairDto) {
+    public Mono<Object> update(UpdateCompletedRepairDto repairDto) {
         return patch(API_PREFIX, repairDto);
     }
 

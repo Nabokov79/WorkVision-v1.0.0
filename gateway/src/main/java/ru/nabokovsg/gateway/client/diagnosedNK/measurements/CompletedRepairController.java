@@ -1,4 +1,4 @@
-package ru.nabokovsg.gateway.controller.diagnosedNK.measurements;
+package ru.nabokovsg.gateway.client.diagnosedNK.measurements;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.diagnosedNK.norms.CompletedRepairClient;
 import ru.nabokovsg.gateway.dto.diagnosedNK.completedRepair.NewCompletedRepairDto;
+import ru.nabokovsg.gateway.dto.diagnosedNK.completedRepair.UpdateCompletedRepairDto;
 
 @RestController
 @RequestMapping(
@@ -38,7 +39,7 @@ public class CompletedRepairController {
     @Operation(summary = "Изменить данные выполненного ремонта элемента")
     @PatchMapping
     public Mono<Object> update(
-            @RequestBody @Valid @Parameter(description = "Выполненный ремонт") NewCompletedRepairDto repairDto) {
+            @RequestBody @Valid @Parameter(description = "Выполненный ремонт") UpdateCompletedRepairDto repairDto) {
         return client.update(repairDto);
     }
 

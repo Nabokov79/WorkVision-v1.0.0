@@ -2,8 +2,8 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.det
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.RemarkByEquipmentDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.ResponseRemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.RemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.ResponseRemarkByEquipmentDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.RemarkByEquipmentMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;

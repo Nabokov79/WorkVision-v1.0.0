@@ -3,8 +3,8 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.dete
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.RemarkByEquipmentDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.remarkByEquipment.ResponseRemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.RemarkByEquipmentDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.remarkByEquipment.ResponseRemarkByEquipmentDto;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.RemarkByEquipment;

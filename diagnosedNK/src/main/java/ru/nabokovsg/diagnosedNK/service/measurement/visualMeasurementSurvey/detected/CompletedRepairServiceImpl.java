@@ -2,8 +2,8 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.det
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.CompletedRepairDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.calculatedVMSurvey.completedRepair.ResponseCompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.CompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.ResponseCompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.CompletedRepairMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
@@ -41,7 +41,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
         ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         if (repair == null) {
             EquipmentElement element = elementService.get(repairDto.getElementId());
-            repair = mapper.mapToCompletedRepair(elementRepair);
+            repair = mapper.mapToCompletedRepair(repairDto, elementRepair, element);
             if (repairDto.getPartElementId() != null) {
                 EquipmentPartElement partElement = element.getPartsElement()
                         .stream()
@@ -49,8 +49,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                         .get(repairDto.getPartElementId());
                 mapper.mapWithEquipmentPartElement(repair, partElement);
             }
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity()
-                                                                          , repairDto.getQuantity()));
+            mapper.mapToWithQuantity(repair, calculationService.getQuantity(null, repairDto.getQuantity()));
             repair = repository.save(repair);
             repair.setParameterMeasurements(parameterMeasurementService.saveForCompletedRepair(
                                                                               repair
