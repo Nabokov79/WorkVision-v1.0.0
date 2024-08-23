@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.model.norms.UnitMeasurementType;
@@ -13,6 +14,7 @@ import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasuremen
 import ru.nabokovsg.diagnosedNK.service.constantService.ConstUnitMeasurementService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,15 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
     private final CalculatedParameterMapper mapper;
 
     @Override
-    public CalculatedParameter countMin(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter) {
+    public CalculatedParameter countMin(Set<IdentifiedDefect> identifiedDefects, Set<CalculatedParameter> defects) {
+        if (defects.isEmpty()) {
+            for (IdentifiedDefect defect : identifiedDefects) {
+                defects.addAll(defect.getParameterMeasurements()
+                                     .stream()
+                                     .peek(p -> mapper.mapToMinValue(p))
+                                     .collect(Collectors.toSet()));
+            }
+        }
         if (parameter.getValue() == null) {
             throw new NotFoundException(
                     String.format("To calculate the minimum" +

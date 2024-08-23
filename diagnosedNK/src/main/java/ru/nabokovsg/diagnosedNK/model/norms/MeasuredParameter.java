@@ -21,9 +21,6 @@ public class MeasuredParameter {
     private String parameterName;
     @Column(name = "unit_measurement")
     private String unitMeasurement;
-    @Column(name = "calculation")
-    @Enumerated(EnumType.STRING)
-    private CalculationParameter calculation;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "defect_id", nullable = false)
     private Defect defect;

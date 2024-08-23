@@ -8,7 +8,6 @@ import ru.nabokovsg.diagnosedNK.dto.norms.elementRepair.ResponseShortElementRepa
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.norms.ElementRepairMapper;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.norms.ElementRepairRepository;
 

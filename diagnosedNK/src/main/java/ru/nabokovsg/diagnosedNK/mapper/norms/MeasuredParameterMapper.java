@@ -2,7 +2,7 @@ package ru.nabokovsg.diagnosedNK.mapper.norms;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationParameter;
+import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
@@ -19,7 +19,7 @@ public interface MeasuredParameterMapper {
     MeasuredParameter mapForDefect(String parameterMeasurement
                                  , String unitMeasurement
                                  , Defect defect
-                                 , CalculationParameter calculation);
+                                 , ParameterCalculationType calculation);
 
     @Mapping(source = "parameterMeasurement", target = "parameterName")
     @Mapping(source = "unitMeasurement", target = "unitMeasurement")
@@ -30,7 +30,7 @@ public interface MeasuredParameterMapper {
     MeasuredParameter mapForElementRepair(String parameterMeasurement
                                         , String unitMeasurement
                                         , ElementRepair elementRepair
-                                        , CalculationParameter calculation);
+                                        , ParameterCalculationType calculation);
 
     @Mapping(source = "parameterMeasurement", target = "parameterName")
     @Mapping(source = "unitMeasurement", target = "unitMeasurement")

@@ -23,7 +23,7 @@ public class ElementRepair {
     private String repairName;
     @Column(name = "calculation")
     @Enumerated(EnumType.STRING)
-    private CalculationDefectOrRepair calculation;
+    private ParameterCalculationType calculation;
     @OneToMany(mappedBy = "elementRepair", fetch = FetchType.LAZY)
     private Set<MeasuredParameter> measuredParameters;
 }

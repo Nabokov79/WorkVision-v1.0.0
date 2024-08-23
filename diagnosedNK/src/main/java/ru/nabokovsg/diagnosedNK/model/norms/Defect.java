@@ -27,7 +27,7 @@ public class Defect {
     private Boolean useCalculateThickness;
     @Column(name = "calculation")
     @Enumerated(EnumType.STRING)
-    private CalculationDefectOrRepair calculation;
+    private ParameterCalculationType calculation;
     @OneToMany(mappedBy = "defect", fetch = FetchType.LAZY)
     private Set<MeasuredParameter> measuredParameters;
 }

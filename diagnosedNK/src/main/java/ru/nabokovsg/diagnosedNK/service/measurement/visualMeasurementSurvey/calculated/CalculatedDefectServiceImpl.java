@@ -6,17 +6,18 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedDefectMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedDefect;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.QCalculatedDefect;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.QCalculatedElement;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.QCalculatedPartElement;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.*;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
+import ru.nabokovsg.diagnosedNK.model.norms.Defect;
+import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedDefectRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,26 +30,22 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     @Override
     public void save(Set<IdentifiedDefect> defects
-                   , IdentifiedDefect defect
-                   , CalculationDefectOrRepair calculation
-                   , Set<MeasuredParameter> measuredParameters) {
-        CalculatedDefect calculatedDefect = getByPredicate(defect);
+            , IdentifiedDefect identifiedDefect
+            , Defect defect
+            , Set<MeasuredParameter> measuredParameters) {
+        CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
         if (calculatedDefect == null) {
-            calculatedDefect = repository.save(mapper.mapToCalculatedDefect(defect));
+            calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect));
         }
-//        switch (defect.getCalculation()) {
-//            case SQUARE -> ;
-//            case QUANTITY -> ;
-//            case NO_ACTION -> ;
-//        }
-
+        parameterService.save();
     }
+}
 
     @Override
     public void update(List<IdentifiedDefect> defects
-                     , IdentifiedDefect defect
-                     , CalculationDefectOrRepair calculation
-                     , Set<MeasuredParameter> measuredParameters) {
+            , IdentifiedDefect defect
+            , CalculationDefectOrRepair calculation
+            , Set<MeasuredParameter> measuredParameters) {
 
     }
 

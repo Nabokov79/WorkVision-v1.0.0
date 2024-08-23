@@ -1,6 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement;
 
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Set;
 
 public interface CalculationMeasurementService {
 
-    CalculatedParameter countMin(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter);
+    CalculatedParameter countMin(Set<IdentifiedDefect> defects);
 
     CalculatedParameter countMax(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter);
 

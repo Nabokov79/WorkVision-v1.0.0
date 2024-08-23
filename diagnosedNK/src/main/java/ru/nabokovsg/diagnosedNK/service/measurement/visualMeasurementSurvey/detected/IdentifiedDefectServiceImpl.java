@@ -61,7 +61,7 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
                     , calculationService.getQuantity(identifiedDefect.getQuantity(), defectDto.getQuantity()));
             identifiedDefect = repository.save(identifiedDefect);
         }
-//        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect.getCalculation(), defect.getMeasuredParameters());
+        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect.getCalculation(), defect.getMeasuredParameters());
         return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
     }
 

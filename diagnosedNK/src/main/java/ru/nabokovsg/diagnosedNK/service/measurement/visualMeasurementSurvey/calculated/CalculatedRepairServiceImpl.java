@@ -3,7 +3,6 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.cal
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedRepairRepository;
 

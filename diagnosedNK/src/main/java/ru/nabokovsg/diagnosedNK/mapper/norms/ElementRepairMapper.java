@@ -5,7 +5,6 @@ import org.mapstruct.Mapping;
 import ru.nabokovsg.diagnosedNK.dto.norms.elementRepair.ElementRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.norms.elementRepair.ResponseElementRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.norms.elementRepair.ResponseShortElementRepairDto;
-import ru.nabokovsg.diagnosedNK.model.norms.CalculationDefectOrRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 
 @Mapper(componentModel = "spring")
