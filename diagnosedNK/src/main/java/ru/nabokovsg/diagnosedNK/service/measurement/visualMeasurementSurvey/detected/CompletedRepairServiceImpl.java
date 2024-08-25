@@ -17,7 +17,7 @@ import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedRepairService;
 import ru.nabokovsg.diagnosedNK.service.norms.ElementRepairService;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,10 +60,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                                                                           , repairDto.getQuantity()));
             repair = repository.save(repair);
         }
-        calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto)
-                                   , repair
-                                   , elementRepair.getCalculation()
-                                   , elementRepair.getMeasuredParameters());
+        calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto), repair, elementRepair);
         return mapper.mapToResponseCompletedRepairDto(repair);
     }
 
@@ -87,10 +84,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
             repairs.remove(repairDto.getId());
         }
         repairs.put(repairDb.getId(),repairDb);
-        calculatedRepairService.update(new ArrayList<>(repairs.values())
-                                                     , repairDb
-                                                     , elementRepair.getCalculation()
-                                                     , elementRepair.getMeasuredParameters());
+        calculatedRepairService.update(new HashSet<>(repairs.values()), repairDb, elementRepair);
         return mapper.mapToResponseCompletedRepairDto(repairDb);
     }
 

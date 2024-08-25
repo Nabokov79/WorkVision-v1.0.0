@@ -5,13 +5,30 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
 @Mapper(componentModel = "spring")
 public interface CalculatedParameterMapper {
 
     @Mapping(source = "defect", target = "defect")
-    void mapWithDefect(@MappingTarget CalculatedParameter parameter, CalculatedDefect defect);
+    CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameter, CalculatedDefect defect);
+
+    @Mapping(source = "repair", target = "repair")
+    CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameter, CalculatedRepair repair);
+
+
+    @Mapping(source = "parameter.parameterName", target = "parameterName")
+    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
+    @Mapping(source = "parameter.minValue", target = "minValue")
+    @Mapping(source = "parameter.maxValue", target = "maxValue")
+    @Mapping(target = "measurementNumber", ignore = true)
+    @Mapping(target = "parameterNumber", ignore = true)
+    @Mapping(source = "parameter.defect", target = "defect")
+    @Mapping(source = "parameter.repair", target = "repair")
+    CalculatedParameter mapToUpdateCalculatedParameter(@MappingTarget CalculatedParameter parameterDb
+                                                                    , CalculatedParameter parameter);
+
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
@@ -22,5 +39,11 @@ public interface CalculatedParameterMapper {
     @Mapping(target = "maxValue", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToMinValue(ParameterMeasurement parameter);
+    CalculatedParameter mapToCalculatedParameter(ParameterMeasurement parameter);
+
+    @Mapping(source = "measurementNumber", target = "measurementNumber")
+    @Mapping(source = "parameterNumber", target = "parameterNumber")
+    void mapWithSequenceNumber(@MappingTarget CalculatedParameter parameter
+                                            , Integer measurementNumber
+                                            , Integer parameterNumber);
 }

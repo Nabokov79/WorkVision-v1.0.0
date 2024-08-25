@@ -41,4 +41,6 @@ public class IdentifiedDefect {
     private Set<ParameterMeasurement> parameterMeasurements;
     @Column(name = "quantity")
     private Integer quantity;
+
+
 }

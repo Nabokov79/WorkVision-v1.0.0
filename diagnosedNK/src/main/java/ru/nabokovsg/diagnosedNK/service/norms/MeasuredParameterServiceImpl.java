@@ -3,9 +3,7 @@ package ru.nabokovsg.diagnosedNK.service.norms;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.norms.measuredParameter.MeasuredParameterDto;
-import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.mapper.norms.MeasuredParameterMapper;
-import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
@@ -32,8 +30,7 @@ public class MeasuredParameterServiceImpl implements MeasuredParameterService {
                 .map(p -> mapper.mapForDefect(
                           constParameterService.get(p.getMeasuredParameter())
                         , constUnitService.get(p.getUnitMeasurement())
-                        , defect
-                        , getTypeOfParameterCalculation(p.getCalculation())))
+                        , defect))
                 .toList()));
     }
 
@@ -44,8 +41,7 @@ public class MeasuredParameterServiceImpl implements MeasuredParameterService {
                         .map(p -> mapper.mapForElementRepair(
                                   constParameterService.get(p.getMeasuredParameter())
                                 , constUnitService.get(p.getUnitMeasurement())
-                                , repair
-                                , getTypeOfParameterCalculation(p.getCalculation())))
+                                , repair))
                         .toList())
         );
     }
@@ -59,11 +55,5 @@ public class MeasuredParameterServiceImpl implements MeasuredParameterService {
                                 , constUnitService.get(p.getUnitMeasurement())))
                         .toList())
         );
-    }
-
-    private ParameterCalculationType getTypeOfParameterCalculation(String calculation) {
-        return ParameterCalculationType.from(calculation).orElseThrow(
-                () -> new BadRequestException(
-                        String.format("Unsupported measured parameter calculation type=%s", calculation)));
     }
 }

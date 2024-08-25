@@ -9,6 +9,7 @@ import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.norms.ElementRepairMapper;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
+import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.repository.norms.ElementRepairRepository;
 
 import java.util.List;
@@ -73,8 +74,8 @@ public class ElementRepairServiceImpl implements ElementRepairService {
                 .orElseThrow(() -> new NotFoundException(String.format("Repair method with id=%s not found", id)));
     }
 
-    private CalculationDefectOrRepair getTypeCalculation(String calculation) {
-        return CalculationDefectOrRepair.from(calculation).orElseThrow(
+    private ParameterCalculationType getTypeCalculation(String calculation) {
+        return ParameterCalculationType.from(calculation).orElseThrow(
                 () -> new BadRequestException(
                         String.format("Unsupported element repair calculation type=%s", calculation)));
     }

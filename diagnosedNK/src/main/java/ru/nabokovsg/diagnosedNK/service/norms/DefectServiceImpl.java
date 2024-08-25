@@ -9,6 +9,7 @@ import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.norms.DefectMapper;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
+import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.repository.norms.DefectRepository;
 
 import java.util.List;
@@ -71,8 +72,8 @@ public class DefectServiceImpl implements DefectService {
                 .orElseThrow(() -> new NotFoundException(String.format("Defect with id=%s not found", id)));
     }
 
-    private CalculationDefectOrRepair getTypeCalculation(String calculation) {
-        return CalculationDefectOrRepair.from(calculation).orElseThrow(
+    private ParameterCalculationType getTypeCalculation(String calculation) {
+        return ParameterCalculationType.from(calculation).orElseThrow(
                 () -> new BadRequestException(String.format("Unsupported defect calculation type=%s", calculation)));
     }
 }

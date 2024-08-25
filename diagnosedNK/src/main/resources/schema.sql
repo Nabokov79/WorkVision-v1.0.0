@@ -330,6 +330,7 @@ CREATE TABLE IF NOT EXISTS CALCULATED_PARAMETERS
     min_value          DOUBLE PRECISION                        NOT NULL,
     max_value          DOUBLE PRECISION,
     unit_measurement   VARCHAR                                 NOT NULL,
+    quantity           INTEGER,
     defect_id          BIGINT,
     repair_id          BIGINT,
     control_id         BIGINT,
@@ -379,12 +380,12 @@ CREATE TABLE IF NOT EXISTS PARAMETER_MEASUREMENTS
     unit_measurement VARCHAR                                 NOT NULL,
     defect_id        BIGINT,
     repair_id        BIGINT,
-    vm_control_id BIGINT,
+    vm_control_id    BIGINT,
     CONSTRAINT pk_parameterMeasurement PRIMARY KEY (id),
     CONSTRAINT FK_PARAMETER_MEASUREMENTS_ON_IDENTIFIED_DEFECTS FOREIGN KEY (defect_id) REFERENCES identified_defects (id),
     CONSTRAINT FK_PARAMETER_MEASUREMENTS_ON_COMPLETED_REPAIRS FOREIGN KEY (repair_id) REFERENCES completed_repairs (id),
     CONSTRAINT FK_PARAMETER_MEASUREMENTS_ON_VISUAL_MEASURING_CONTROLS
-                            FOREIGN KEY (vm_control_id) REFERENCES visual_measuring_controls (id)
+        FOREIGN KEY (vm_control_id) REFERENCES visual_measuring_controls (id)
 );
 
 CREATE TABLE IF NOT EXISTS REMARKS_BY_EQUIPMENT

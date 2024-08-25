@@ -1,23 +1,28 @@
 package ru.nabokovsg.diagnosedNK.service.measurement;
 
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 public interface CalculationMeasurementService {
 
-    CalculatedParameter countMin(Set<IdentifiedDefect> defects);
+    List<CalculatedParameter> countMin(Set<ParameterMeasurement> measurements);
 
-    CalculatedParameter countMax(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter);
+    List<CalculatedParameter> countMax(Set<ParameterMeasurement> measurements);
 
-    Set<CalculatedParameter> countSquare(Map<Long, CalculatedParameter> parameterMeasurements
-                                        , Map<String, ParameterMeasurement> parameters);
+    List<CalculatedParameter> countMaxMin(Set<ParameterMeasurement> measurements);
 
-   Set<CalculatedParameter> countQuantity(Map<Long, CalculatedParameter> parameterMeasurements
-                                         , Map<String,ParameterMeasurement> parameters);
+    List<CalculatedParameter> countSquare(Set<ParameterMeasurement> measurements);
+
+   Set<CalculatedParameter> countQuantityDefect(Set<IdentifiedDefect> defects);
+
+    Set<CalculatedParameter> countQuantityRepair(Set<CompletedRepair> repairs);
+
+    CalculatedParameter createQuantityParameter(int quantity);
 
     Integer getQuantity(Integer quantityDb, Integer quantityDto);
 }

@@ -17,7 +17,7 @@ import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,7 +61,7 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
                     , calculationService.getQuantity(identifiedDefect.getQuantity(), defectDto.getQuantity()));
             identifiedDefect = repository.save(identifiedDefect);
         }
-        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect.getCalculation(), defect.getMeasuredParameters());
+        calculatedDefectService.save(requestService.getAllIdentifiedDefect(defectDto), identifiedDefect, defect);
         return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
     }
 
@@ -85,10 +85,7 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
             defects.remove(defectDto.getId());
         }
         defects.put(defectDb.getId(), defectDb);
-        calculatedDefectService.update(new ArrayList<>(defects.values())
-                                                     , defectDb
-                                                     , defect.getCalculation()
-                                                     , defect.getMeasuredParameters());
+        calculatedDefectService.update(new HashSet<>(defects.values()), defectDb, defect);
         return mapper.mapToResponseIdentifiedDefectDto(repository.save(defectDb));
     }
 

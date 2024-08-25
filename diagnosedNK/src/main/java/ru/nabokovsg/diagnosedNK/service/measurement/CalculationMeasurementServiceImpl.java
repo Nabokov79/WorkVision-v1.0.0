@@ -3,9 +3,9 @@ package ru.nabokovsg.diagnosedNK.service.measurement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
-import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
+import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculationMeasurementMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
@@ -23,125 +23,123 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
 
     private final ConstParameterMeasurementService constParameter;
     private final ConstUnitMeasurementService constUnit;
-    private final CalculatedParameterMapper mapper;
+    private final CalculationMeasurementMapper mapper;
 
     @Override
-    public CalculatedParameter countMin(Set<IdentifiedDefect> identifiedDefects, Set<CalculatedParameter> defects) {
-        if (defects.isEmpty()) {
-            for (IdentifiedDefect defect : identifiedDefects) {
-                defects.addAll(defect.getParameterMeasurements()
-                                     .stream()
-                                     .peek(p -> mapper.mapToMinValue(p))
-                                     .collect(Collectors.toSet()));
+    public List<CalculatedParameter> countMin(Set<ParameterMeasurement> measurements) {
+        List<CalculatedParameter> calculatedParameters = new ArrayList<>();
+        double minValue = 0.0;
+        for (ParameterMeasurement parameter : measurements) {
+            if (minValue == 0.0 || parameter.getValue() < minValue) {
+                minValue = parameter.getValue();
             }
+            calculatedParameters.add(mapper.mapToMinValue(parameter, minValue));
         }
-        if (parameter.getValue() == null) {
-            throw new NotFoundException(
-                    String.format("To calculate the minimum" +
-                            ", the measured value must not be zero, measurement=%s", parameter.getValue())
-            );
-        }
-        if (parameterMeasurement.getMinValue() == null || parameter.getValue() > parameterMeasurement.getMinValue()) {
-            parameterMeasurement.setMinValue(parameter.getValue());
-        }
-        return parameterMeasurement;
+        return calculatedParameters;
     }
 
     @Override
-    public CalculatedParameter countMax(CalculatedParameter parameterMeasurement, ParameterMeasurement parameter) {
-        if (parameter.getValue() == null) {
-            throw new NotFoundException(
-                    String.format("To calculate the minimum" +
-                            ", the measured value must not be zero, measurement=%s", parameter.getValue())
-            );
+    public List<CalculatedParameter> countMax(Set<ParameterMeasurement> measurements) {
+        List<CalculatedParameter> calculatedParameters = new ArrayList<>();
+        double maxValue = 0.0;
+        for (ParameterMeasurement parameter : measurements) {
+            if (maxValue == 0.0 || parameter.getValue() > maxValue) {
+                maxValue = parameter.getValue();
+            }
+            calculatedParameters.add(mapper.mapToMaxValue(parameter, maxValue));
         }
-        if (parameterMeasurement.getMaxValue() == null || parameterMeasurement.getMaxValue() < parameter.getValue()) {
-            parameterMeasurement.setMaxValue(parameter.getValue());
+        return calculatedParameters;
+    }
+
+    public List<CalculatedParameter> countMaxMin(Set<ParameterMeasurement> measurements) {
+        List<CalculatedParameter> calculatedParameters = new ArrayList<>();
+        double minValue = 0.0;
+        double maxValue = 0.0;
+        for (ParameterMeasurement parameter : measurements) {
+            if (minValue == 0.0 || parameter.getValue() < minValue) {
+                minValue = parameter.getValue();
+            }
+            if (maxValue == 0.0 || parameter.getValue() > maxValue) {
+                maxValue = parameter.getValue();
+            }
+            calculatedParameters.add(mapper.mapToMaxMinValue(parameter, minValue, maxValue));
         }
-        return parameterMeasurement;
+        return calculatedParameters;
     }
 
     @Override
-    public Set<CalculatedParameter> countQuantity(Map<Long, CalculatedParameter> parameterMeasurements
-                                                , Map<String, ParameterMeasurement> parameters) {
+    public Set<CalculatedParameter> countQuantityDefect(Set<IdentifiedDefect> defects) {
+        Set<CalculatedParameter> calculatedParameters = new HashSet<>();
+        int quantity = 0;
+        for (IdentifiedDefect defect : defects) {
+            quantity = quantity + defect.getQuantity();
+        }
+        calculatedParameters.add(createQuantityParameter(quantity));
+        return calculatedParameters;
+    }
+
+    @Override
+    public Set<CalculatedParameter> countQuantityRepair(Set<CompletedRepair> repairs) {
+        Set<CalculatedParameter> calculatedParameters = new HashSet<>();
+        int quantity = 0;
+        for (CompletedRepair repair : repairs) {
+            quantity = quantity + repair.getQuantity();
+        }
+        calculatedParameters.add(createQuantityParameter(quantity));
+        return calculatedParameters;
+    }
+
+    @Override
+    public CalculatedParameter createQuantityParameter(int quantity) {
         String parameterName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
         String unitMeasurement = constUnit.get(String.valueOf(UnitMeasurementType.PIECES));
-        Double firstValue = parameters.get(parameterName).getValue();
-        CalculatedParameter quantity = parameterMeasurements.get(parameters.get(parameterName).getParameterId());
-        if (quantity == null) {
-            quantity = mapper.maToEmptyParameter(parameterName, unitMeasurement);
-        }
-        if (quantity.getMinValue() == null && firstValue == null) {
-            quantity.setMinValue(1.0);
-        } else {
-            if (firstValue != null) {
-                quantity.setMinValue(quantity.getMinValue() + firstValue);
-            } else {
-                quantity.setMinValue(quantity.getMinValue() + 1.0);
-            }
-        }
-        parameterMeasurements.put(quantity.getId(), quantity);
-        return new HashSet<>(parameterMeasurements.values());
+        return mapper.mapToQuantity(parameterName, unitMeasurement, quantity);
     }
 
     @Override
     public Integer getQuantity(Integer quantityDb, Integer quantityDto) {
         int quantity = 1;
         if (quantityDb == null && quantityDto == null) {
-            log.info("quantity № 1");
             return quantity;
         } else if (quantityDb == null) {
-            log.info("quantity № 2");
             return quantityDto;
         } else if (quantityDto == null) {
-            log.info("quantity № 3");
             return quantityDb + quantity;
         } else {
-            log.info("quantity № 4");
-            log.info("quantityDb = {}", quantityDb);
-            log.info("quantityDto = {}", quantityDto);
             return quantityDb + quantityDto;
         }
     }
 
     @Override
-    public Set<CalculatedParameter> countSquare(Map<Long, CalculatedParameter> parameterMeasurements
-                                              , Map<String, ParameterMeasurement> parameters) {
-        String measuredParameter = constParameter.get(String.valueOf(MeasuredParameterType.SQUARE));
+    public List<CalculatedParameter> countSquare(Set<ParameterMeasurement> measurements) {
+        List<CalculatedParameter> calculatedParameters = new ArrayList<>();
+        Map<String, ParameterMeasurement> parameters = measurements.stream()
+                                             .collect(Collectors.toMap(ParameterMeasurement::getParameterName, p -> p));
+        String parameterName = constParameter.get(String.valueOf(MeasuredParameterType.SQUARE));
         String unitMeasurement = constUnit.get(String.valueOf(UnitMeasurementType.M_2));
         String length = constParameter.get(String.valueOf(MeasuredParameterType.LENGTH));
         String width = constParameter.get(String.valueOf(MeasuredParameterType.WIDTH));
         String height = constParameter.get(String.valueOf(MeasuredParameterType.HEIGHT));
         String diameter = constParameter.get(String.valueOf(MeasuredParameterType.DIAMETER));
-        CalculatedParameter parameterMeasurement
-                = parameterMeasurements.get(parameters.get(measuredParameter).getParameterId());
-        Double square = parameters.get(measuredParameter).getValue();
-        if (square == null) {
-            if (parameters.get(length) != null) {
-                if (parameters.get(width) != null) {
-                    square = parameters.get(length).getValue() * parameters.get(width).getValue();
-                }
-                if (parameters.get(height) != null && parameters.get(width) == null) {
-                    square = parameters.get(length).getValue() * parameters.get(height).getValue();
-                }
+        double square = 0.0;
+        if (parameters.get(length) != null) {
+            if (parameters.get(width) != null) {
+                square = parameters.get(length).getValue() * parameters.get(width).getValue();
             }
-            if (parameters.get(diameter) != null) {
-                double rad = parameters.get(diameter).getValue() / 2;
-                if (parameters.get(height) != null) {
-                    square = 2 * Math.PI * rad * parameters.get(height).getValue() * 100 / 100;
-                } else {
-                    square = Math.PI * rad * rad * 100 / 100;
-                }
-            }
-            if (square != null && parameterMeasurement.getUnitMeasurement().equals(unitMeasurement)) {
-                square /= 1000000;
-            }
-            parameterMeasurement.setMinValue(square);
-            parameterMeasurements.put(parameterMeasurement.getId(), parameterMeasurement);
-            if (Objects.equals(square, parameterMeasurement.getMinValue())) {
-                return countQuantity(parameterMeasurements, parameters);
+            if (parameters.get(height) != null && parameters.get(width) == null) {
+                square = parameters.get(length).getValue() * parameters.get(height).getValue();
             }
         }
-        return new HashSet<>(parameterMeasurements.values());
+        if (parameters.get(diameter) != null) {
+            double rad = parameters.get(diameter).getValue() / 2;
+            if (parameters.get(height) != null) {
+                square = 2 * Math.PI * rad * parameters.get(height).getValue() * 100 / 100;
+            } else {
+                square = Math.PI * rad * rad * 100 / 100;
+            }
+        }
+        square /= 1000000;
+        calculatedParameters.add(mapper.mapToSquare(parameterName, unitMeasurement, square));
+        return calculatedParameters;
     }
 }

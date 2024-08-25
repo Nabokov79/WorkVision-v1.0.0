@@ -30,7 +30,7 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     public IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto) {
         QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
         QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
-        BooleanBuilder builder = createPredicateByCIdentifiedDefectData(defectDto, defect);
+        BooleanBuilder builder = createPredicateByIdentifiedDefectData(defectDto, defect);
         createPredicateByParameterMeasurement(builder, defectDto.getParameterMeasurements());
         return new JPAQueryFactory(em).from(defect)
                                       .select(defect)
@@ -43,12 +43,12 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
         QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
         return new HashSet<>(new JPAQueryFactory(em).from(defect)
                 .select(defect)
-                .where(createPredicateByCIdentifiedDefectData(defectDto, defect))
+                .where(createPredicateByIdentifiedDefectData(defectDto, defect))
                 .fetch());
     }
 
-    private BooleanBuilder createPredicateByCIdentifiedDefectData(IdentifiedDefectDto defectDto
-                                                                , QIdentifiedDefect defect) {
+    private BooleanBuilder createPredicateByIdentifiedDefectData(IdentifiedDefectDto defectDto
+                                                               , QIdentifiedDefect defect) {
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(defect.equipmentId.eq(defectDto.getEquipmentId()));
         builder.and(defect.defectId.eq(defectDto.getDefectId()));
