@@ -66,15 +66,8 @@ public class MethodCalculateServiceImpl implements MethodCalculateService {
     }
 
     @Override
-    public Set<CalculatedParameter> countQuantity(Set<Integer> parameters) {
-        return Set.of(createQuantityParameter(parameters.stream().mapToInt(q -> q).sum()));
-    }
-
-    @Override
-    public CalculatedParameter createQuantityParameter(int quantity) {
-        String parameterName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
-        String unitMeasurement = constUnit.get(String.valueOf(UnitMeasurementType.PIECES));
-        return mapper.mapToQuantity(parameterName, unitMeasurement, quantity);
+    public int countQuantity(Set<Integer> parameters) {
+        return parameters.stream().mapToInt(q -> q).sum();
     }
 
     @Override

@@ -52,14 +52,5 @@ public interface CalculationMeasurementMapper {
     @Mapping(target = "repair", ignore = true)
     CalculatedParameter mapToSquare(String parameterName, String unitMeasurement, Double minValue);
 
-    @Mapping(source = "parameterName", target = "parameterName")
-    @Mapping(source = "unitMeasurement", target = "unitMeasurement")
-    @Mapping(source = "quantity", target = "minValue")
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "measurementNumber", ignore = true)
-    @Mapping(target = "parameterNumber", ignore = true)
-    @Mapping(target = "maxValue", ignore = true)
-    @Mapping(target = "defect", ignore = true)
-    @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToQuantity(String parameterName, String unitMeasurement, Integer quantity);
+
 }
