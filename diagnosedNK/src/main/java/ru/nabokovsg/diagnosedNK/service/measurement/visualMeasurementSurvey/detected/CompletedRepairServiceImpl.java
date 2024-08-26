@@ -12,7 +12,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.CompletedRepairRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
-import ru.nabokovsg.diagnosedNK.service.measurement.CalculationMeasurementService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.MethodCalculateService;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedRepairService;
 import ru.nabokovsg.diagnosedNK.service.norms.ElementRepairService;
@@ -32,7 +32,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     private final ParameterMeasurementService parameterMeasurementService;
     private final QueryDSLRequestService requestService;
     private final EquipmentElementService elementService;
-    private final CalculationMeasurementService calculationService;
+    private final MethodCalculateService calculationService;
     private final CalculatedRepairService calculatedRepairService;
 
     @Override

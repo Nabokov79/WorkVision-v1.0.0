@@ -28,10 +28,11 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
     public void save(Set<CompletedRepair> repairs, CompletedRepair repair, ElementRepair elementRepair) {
         CalculatedRepair calculatedRepair = getByPredicate(repair);
         if (calculatedRepair == null) {
-            calculatedRepair = repository.save(mapper.mapToCalculatedDefect(repair));
+            CalculatedElement element = elementService.get(repair.getEquipmentId(), repair.getElementName());
+            calculatedRepair = repository.save(mapper.mapToCalculatedDefect(repair, element));
+            elementService.addRepair(element, calculatedRepair);
         }
         parameterService.saveForRepair(repairs, calculatedRepair, elementRepair.getCalculation());
-        elementService.addRepair(repair, calculatedRepair);
     }
 
     @Override

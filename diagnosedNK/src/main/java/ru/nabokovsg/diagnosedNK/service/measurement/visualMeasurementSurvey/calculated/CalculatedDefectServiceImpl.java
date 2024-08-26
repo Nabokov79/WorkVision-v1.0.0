@@ -28,10 +28,11 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
     public void save(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
         if (calculatedDefect == null) {
-            calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect));
+            CalculatedElement element = elementService.get(identifiedDefect.getEquipmentId(), identifiedDefect.getElementName());
+            calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect, element));
+            elementService.addDefect(element, calculatedDefect);
         }
         parameterService.saveForDefect(defects, calculatedDefect, defect.getCalculation());
-        elementService.addDefect(identifiedDefect, calculatedDefect);
     }
 
     @Override

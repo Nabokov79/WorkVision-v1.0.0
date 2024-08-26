@@ -1,14 +1,12 @@
-package ru.nabokovsg.diagnosedNK.service.measurement;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
 import java.util.List;
 import java.util.Set;
 
-public interface CalculationMeasurementService {
+public interface MethodCalculateService {
 
     List<CalculatedParameter> countMin(Set<ParameterMeasurement> measurements);
 
@@ -18,9 +16,7 @@ public interface CalculationMeasurementService {
 
     List<CalculatedParameter> countSquare(Set<ParameterMeasurement> measurements);
 
-   Set<CalculatedParameter> countQuantityDefect(Set<IdentifiedDefect> defects);
-
-    Set<CalculatedParameter> countQuantityRepair(Set<CompletedRepair> repairs);
+   Set<CalculatedParameter> countQuantity(Set<Integer> parameters);
 
     CalculatedParameter createQuantityParameter(int quantity);
 

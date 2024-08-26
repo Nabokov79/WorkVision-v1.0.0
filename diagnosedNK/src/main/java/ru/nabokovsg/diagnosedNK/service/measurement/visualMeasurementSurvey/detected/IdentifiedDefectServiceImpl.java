@@ -12,7 +12,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.IdentifiedDefectRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
-import ru.nabokovsg.diagnosedNK.service.measurement.CalculationMeasurementService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.MethodCalculateService;
 import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
@@ -32,7 +32,7 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
     private final ParameterMeasurementService parameterMeasurementService;
     private final EquipmentElementService elementService;
     private final QueryDSLRequestService requestService;
-    private final CalculationMeasurementService calculationService;
+    private final MethodCalculateService calculationService;
     private final CalculatedDefectService calculatedDefectService;
 
     @Override

@@ -8,9 +8,9 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 
 public interface CalculatedElementService {
 
-    void addDefect(IdentifiedDefect defect, CalculatedDefect calculatedDefect);
+    void addDefect(CalculatedElement element, CalculatedDefect calculatedDefect);
 
-    void addRepair(CompletedRepair repair, CalculatedRepair calculatedRepair);
+    void addRepair(CalculatedElement element, CalculatedRepair calculatedRepair);
 
     CalculatedElement get(Long equipmentId, String elementName);
 }

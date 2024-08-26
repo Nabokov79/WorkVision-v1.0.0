@@ -1,12 +1,10 @@
-package ru.nabokovsg.diagnosedNK.service.measurement;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculationMeasurementMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.model.norms.UnitMeasurementType;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CalculationMeasurementServiceImpl implements CalculationMeasurementService {
+public class MethodCalculateServiceImpl implements MethodCalculateService {
 
     private final ConstParameterMeasurementService constParameter;
     private final ConstUnitMeasurementService constUnit;
@@ -68,25 +66,8 @@ public class CalculationMeasurementServiceImpl implements CalculationMeasurement
     }
 
     @Override
-    public Set<CalculatedParameter> countQuantityDefect(Set<IdentifiedDefect> defects) {
-        Set<CalculatedParameter> calculatedParameters = new HashSet<>();
-        int quantity = 0;
-        for (IdentifiedDefect defect : defects) {
-            quantity = quantity + defect.getQuantity();
-        }
-        calculatedParameters.add(createQuantityParameter(quantity));
-        return calculatedParameters;
-    }
-
-    @Override
-    public Set<CalculatedParameter> countQuantityRepair(Set<CompletedRepair> repairs) {
-        Set<CalculatedParameter> calculatedParameters = new HashSet<>();
-        int quantity = 0;
-        for (CompletedRepair repair : repairs) {
-            quantity = quantity + repair.getQuantity();
-        }
-        calculatedParameters.add(createQuantityParameter(quantity));
-        return calculatedParameters;
+    public Set<CalculatedParameter> countQuantity(Set<Integer> parameters) {
+        return Set.of(createQuantityParameter(parameters.stream().mapToInt(q -> q).sum()));
     }
 
     @Override
