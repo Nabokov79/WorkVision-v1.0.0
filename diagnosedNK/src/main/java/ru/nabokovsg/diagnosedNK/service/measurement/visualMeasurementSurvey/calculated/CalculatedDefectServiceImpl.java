@@ -32,7 +32,11 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
             calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect, element));
             elementService.addDefect(element, calculatedDefect);
         }
-        parameterService.saveForDefect(defects, calculatedDefect, defect.getCalculation());
+        parameterService.save(new CalculatedParameterData.Builder()
+                                                        .defects(defects)
+                                                        .defect(calculatedDefect)
+                                                        .calculationType(defect.getCalculation())
+                                                        .build());
     }
 
     @Override
@@ -42,7 +46,11 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
             throw new NotFoundException(
                     String.format("Calculated defect=%s not found for update", identifiedDefect.getDefectName()));
         }
-        parameterService.updateForDefect(defects, calculatedDefect, defect.getCalculation());
+        parameterService.save(new CalculatedParameterData.Builder()
+                                                         .defects(defects)
+                                                         .defect(calculatedDefect)
+                                                         .calculationType(defect.getCalculation())
+                                                         .build());
     }
 
     private CalculatedDefect getByPredicate(IdentifiedDefect identifiedDefect) {

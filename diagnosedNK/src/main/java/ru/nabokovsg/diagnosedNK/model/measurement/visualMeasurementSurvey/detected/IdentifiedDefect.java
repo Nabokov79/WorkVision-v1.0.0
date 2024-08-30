@@ -42,5 +42,21 @@ public class IdentifiedDefect {
     @Column(name = "quantity")
     private Integer quantity;
 
-
+    @Override
+    public String toString() {
+        return "IdentifiedDefect{" +
+                "id=" + id +
+                ", equipmentId=" + equipmentId +
+                ", defectId=" + defectId +
+                ", defectName='" + defectName + '\'' +
+                ", notMeetRequirements=" + notMeetRequirements +
+                ", useCalculateThickness=" + useCalculateThickness +
+                ", elementId=" + elementId +
+                ", elementName='" + elementName + '\'' +
+                ", partElementId=" + partElementId +
+                ", partElementName='" + partElementName + '\'' +
+                ", parameterMeasurements=" + parameterMeasurements +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

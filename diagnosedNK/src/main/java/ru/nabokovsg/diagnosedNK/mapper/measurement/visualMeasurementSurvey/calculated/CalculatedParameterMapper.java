@@ -12,9 +12,11 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 public interface CalculatedParameterMapper {
 
     @Mapping(source = "defect", target = "defect")
+    @Mapping(target = "id", ignore = true)
     CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameter, CalculatedDefect defect);
 
     @Mapping(source = "repair", target = "repair")
+    @Mapping(target = "id", ignore = true)
     CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameter, CalculatedRepair repair);
 
 
@@ -26,6 +28,7 @@ public interface CalculatedParameterMapper {
     @Mapping(target = "parameterNumber", ignore = true)
     @Mapping(source = "parameter.defect", target = "defect")
     @Mapping(source = "parameter.repair", target = "repair")
+    @Mapping(target = "id", ignore = true)
     CalculatedParameter mapToUpdateCalculatedParameter(@MappingTarget CalculatedParameter parameterDb
                                                                     , CalculatedParameter parameter);
 

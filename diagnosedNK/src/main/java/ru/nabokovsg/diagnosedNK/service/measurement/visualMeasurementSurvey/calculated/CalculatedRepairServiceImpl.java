@@ -12,7 +12,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedRepairRepository;
 
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,11 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
             calculatedRepair = repository.save(mapper.mapToCalculatedDefect(repair, element));
             elementService.addRepair(element, calculatedRepair);
         }
-        parameterService.saveForRepair(repairs, calculatedRepair, elementRepair.getCalculation());
+        parameterService.save(new CalculatedParameterData.Builder()
+                                                        .repairs(repairs)
+                                                        .repair(calculatedRepair)
+                                                        .calculationType(elementRepair.getCalculation())
+                                                        .build());
     }
 
     @Override
@@ -42,7 +46,11 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
             throw new NotFoundException(
                     String.format("Calculated repair=%s not found for update", repair.getRepairName()));
         }
-        parameterService.updateForRepair(repairs, calculatedRepair, elementRepair.getCalculation());
+        parameterService.save(new CalculatedParameterData.Builder()
+                                                         .repairs(repairs)
+                                                         .repair(calculatedRepair)
+                                                         .calculationType(elementRepair.getCalculation())
+                                                         .build());
     }
 
     private CalculatedRepair getByPredicate(CompletedRepair completedRepair) {
@@ -62,4 +70,6 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
                 .innerJoin(repair.element, element)
                 .fetchOne();
     }
+
+
 }

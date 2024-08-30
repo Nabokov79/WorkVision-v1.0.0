@@ -16,7 +16,7 @@ public interface MethodCalculateService {
 
     List<CalculatedParameter> countSquare(Set<ParameterMeasurement> measurements);
 
-    int countQuantity(Set<Integer> parameters);
+    int countQuantity(List<Integer> parameters);
 
     Integer getQuantity(Integer quantityDb, Integer quantityDto);
 }

@@ -29,9 +29,9 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
                                                            .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
         return new HashSet<>(
                 repository.saveAll(parametersDto.stream()
-                                        .map(p -> mapper.mapWithIdentifiedDefect(measuredParameter.get(p.getParameterId())
-                                                                                 , p
-                                                                                 , identifiedDefect))
+                                      .map(p -> mapper.mapWithIdentifiedDefect(measuredParameter.get(p.getParameterId())
+                                                                             , p
+                                                                             , identifiedDefect))
                                         .toList())
         );
     }

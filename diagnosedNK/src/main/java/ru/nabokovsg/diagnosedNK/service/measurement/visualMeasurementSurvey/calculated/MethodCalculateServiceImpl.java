@@ -66,7 +66,7 @@ public class MethodCalculateServiceImpl implements MethodCalculateService {
     }
 
     @Override
-    public int countQuantity(Set<Integer> parameters) {
+    public int countQuantity(List<Integer> parameters) {
         return parameters.stream().mapToInt(q -> q).sum();
     }
 
@@ -93,27 +93,22 @@ public class MethodCalculateServiceImpl implements MethodCalculateService {
         String unitMeasurement = constUnit.get(String.valueOf(UnitMeasurementType.M_2));
         String length = constParameter.get(String.valueOf(MeasuredParameterType.LENGTH));
         String width = constParameter.get(String.valueOf(MeasuredParameterType.WIDTH));
-        String height = constParameter.get(String.valueOf(MeasuredParameterType.HEIGHT));
         String diameter = constParameter.get(String.valueOf(MeasuredParameterType.DIAMETER));
         double square = 0.0;
         if (parameters.get(length) != null) {
-            if (parameters.get(width) != null) {
-                square = parameters.get(length).getValue() * parameters.get(width).getValue();
-            }
-            if (parameters.get(height) != null && parameters.get(width) == null) {
-                square = parameters.get(length).getValue() * parameters.get(height).getValue();
-            }
+            square = parameters.get(length).getValue() * parameters.get(width).getValue();
         }
         if (parameters.get(diameter) != null) {
             double rad = parameters.get(diameter).getValue() / 2;
-            if (parameters.get(height) != null) {
-                square = 2 * Math.PI * rad * parameters.get(height).getValue() * 100 / 100;
-            } else {
-                square = Math.PI * rad * rad * 100 / 100;
-            }
+            square = Math.PI * rad * rad * 100 / 100;
         }
         square /= 1000000;
         calculatedParameters.add(mapper.mapToSquare(parameterName, unitMeasurement, square));
+        measurements.forEach(parameter -> {
+            if(!parameter.getParameterName().equals(length) && !parameter.getParameterName().equals(width) && !parameter.getParameterName().equals(diameter)) {
+                calculatedParameters.add(mapper.mapToMinValue(parameter, parameter.getValue()));
+            }
+        });
         return calculatedParameters;
     }
 }

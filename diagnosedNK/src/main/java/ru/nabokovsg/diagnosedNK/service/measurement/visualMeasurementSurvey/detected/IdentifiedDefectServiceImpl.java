@@ -1,14 +1,17 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.ResponseIdentifiedDefectDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.IdentifiedDefectMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.IdentifiedDefectRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
@@ -17,13 +20,12 @@ import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     private final IdentifiedDefectRepository repository;
@@ -37,7 +39,7 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     @Override
     public ResponseIdentifiedDefectDto save(IdentifiedDefectDto defectDto) {
-        IdentifiedDefect identifiedDefect = requestService.getIdentifiedDefect(defectDto);
+        IdentifiedDefect identifiedDefect = searchDuplicate(defectDto, requestService.getAllIdentifiedDefect(defectDto));
         Defect defect = defectsService.getById(defectDto.getDefectId());
         if (identifiedDefect == null) {
             EquipmentElement element = elementService.get(defectDto.getElementId());
@@ -107,5 +109,33 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
     private IdentifiedDefect get(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Identified defect with id=%s not found", id)));
+    }
+
+    private IdentifiedDefect searchDuplicate(IdentifiedDefectDto defectDto, Set<IdentifiedDefect> defects) {
+        Map<Long, Integer> coincidences = new HashMap<>();
+        Map<Long, ParameterMeasurementDto> parametersDto = defectDto.getParameterMeasurements()
+                .stream()
+                .collect(Collectors.toMap(ParameterMeasurementDto::getParameterId, p -> p));
+        Map<Long, IdentifiedDefect> defectsDb = defects.stream()
+                                                       .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
+        List<Long> ids = new ArrayList<>();
+        for (IdentifiedDefect d : defectsDb.values()) {
+            Set<ParameterMeasurement> parameterMeasurements = d.getParameterMeasurements();
+            for (ParameterMeasurement parameter : parameterMeasurements) {
+                ParameterMeasurementDto parameterDto = parametersDto.get(parameter.getParameterId());
+                if (parameterDto != null && parameterDto.getValue().equals(parameter.getValue())) {
+                    coincidences.merge(d.getId(), 1, Integer::sum);
+                }
+            }
+            coincidences.forEach((k,v) -> {
+                if (v == parametersDto.size()) {
+                    ids.add(k);
+                }
+            });
+            if (ids.size() == 1) {
+                return defectsDb.get(ids.get(0));
+            }
+        }
+        return null;
     }
 }

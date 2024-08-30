@@ -35,4 +35,19 @@ public class CalculatedParameter {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "repair_id",  nullable = false)
     private CalculatedRepair repair;
+
+    @Override
+    public String toString() {
+        return "CalculatedParameter{" +
+                "id=" + id +
+                ", measurementNumber=" + measurementNumber +
+                ", parameterNumber=" + parameterNumber +
+                ", parameterName='" + parameterName + '\'' +
+                ", minValue=" + minValue +
+                ", maxValue=" + maxValue +
+                ", unitMeasurement='" + unitMeasurement + '\'' +
+                ", defect=" + defect +
+                ", repair=" + repair +
+                '}';
+    }
 }

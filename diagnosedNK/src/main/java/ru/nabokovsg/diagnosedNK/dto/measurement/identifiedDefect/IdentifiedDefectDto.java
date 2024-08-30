@@ -30,4 +30,17 @@ public class IdentifiedDefectDto {
     private Integer quantity;
     @Schema(description = "Измеренные параметры дефекта")
     private List<ParameterMeasurementDto> parameterMeasurements;
+
+    @Override
+    public String toString() {
+        return "IdentifiedDefectDto{" +
+                "id=" + id +
+                ", equipmentId=" + equipmentId +
+                ", elementId=" + elementId +
+                ", partElementId=" + partElementId +
+                ", defectId=" + defectId +
+                ", quantity=" + quantity +
+                ", parameterMeasurements=" + parameterMeasurements +
+                '}';
+    }
 }

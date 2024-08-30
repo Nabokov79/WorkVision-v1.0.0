@@ -19,4 +19,13 @@ public class ParameterMeasurementDto {
     private Long parameterId;
     @Schema(description = "Значение параметра")
     private Double value;
+
+    @Override
+    public String toString() {
+        return "ParameterMeasurementDto{" +
+                "id=" + id +
+                ", parameterId=" + parameterId +
+                ", value=" + value +
+                '}';
+    }
 }
