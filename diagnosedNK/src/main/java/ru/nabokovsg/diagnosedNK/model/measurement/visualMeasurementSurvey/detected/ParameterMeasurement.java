@@ -35,4 +35,15 @@ public class ParameterMeasurement {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "vm_control_id", nullable = false)
     private VisualMeasurementControl visualMeasurementControl;
+
+    @Override
+    public String toString() {
+        return "ParameterMeasurement{" +
+                "id=" + id +
+                ", parameterId=" + parameterId +
+                ", parameterName='" + parameterName + '\'' +
+                ", value=" + value +
+                ", unitMeasurement='" + unitMeasurement + '\'' +
+                '}';
+    }
 }

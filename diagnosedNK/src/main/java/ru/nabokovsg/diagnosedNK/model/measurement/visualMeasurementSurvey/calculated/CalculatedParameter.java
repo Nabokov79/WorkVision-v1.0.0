@@ -45,9 +45,7 @@ public class CalculatedParameter {
                 ", parameterName='" + parameterName + '\'' +
                 ", minValue=" + minValue +
                 ", maxValue=" + maxValue +
-                ", unitMeasurement='" + unitMeasurement + '\'' +
-                ", defect=" + defect +
-                ", repair=" + repair +
+                ", unitMeasurement='" + unitMeasurement +
                 '}';
     }
 }

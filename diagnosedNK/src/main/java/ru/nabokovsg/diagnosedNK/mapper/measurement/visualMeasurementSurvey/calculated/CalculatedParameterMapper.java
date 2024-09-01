@@ -12,26 +12,14 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 public interface CalculatedParameterMapper {
 
     @Mapping(source = "defect", target = "defect")
-    @Mapping(target = "id", ignore = true)
-    CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameter, CalculatedDefect defect);
+    @Mapping(source = "parameterDb.id", target = "id")
+    CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameter
+                                                   , CalculatedParameter parameterDb
+                                                   , CalculatedDefect defect);
 
     @Mapping(source = "repair", target = "repair")
     @Mapping(target = "id", ignore = true)
     CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameter, CalculatedRepair repair);
-
-
-    @Mapping(source = "parameter.parameterName", target = "parameterName")
-    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
-    @Mapping(source = "parameter.minValue", target = "minValue")
-    @Mapping(source = "parameter.maxValue", target = "maxValue")
-    @Mapping(target = "measurementNumber", ignore = true)
-    @Mapping(target = "parameterNumber", ignore = true)
-    @Mapping(source = "parameter.defect", target = "defect")
-    @Mapping(source = "parameter.repair", target = "repair")
-    @Mapping(target = "id", ignore = true)
-    CalculatedParameter mapToUpdateCalculatedParameter(@MappingTarget CalculatedParameter parameterDb
-                                                                    , CalculatedParameter parameter);
-
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")

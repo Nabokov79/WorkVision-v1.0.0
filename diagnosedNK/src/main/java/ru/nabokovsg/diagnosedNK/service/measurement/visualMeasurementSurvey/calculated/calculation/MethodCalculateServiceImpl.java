@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
