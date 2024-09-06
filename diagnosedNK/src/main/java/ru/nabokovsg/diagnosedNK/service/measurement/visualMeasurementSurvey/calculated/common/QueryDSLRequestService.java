@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.service.measurement;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common;
 
 import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;

@@ -13,12 +13,16 @@ public interface CalculatedParameterMapper {
 
     @Mapping(source = "defect", target = "defect")
     @Mapping(source = "parameterDb.id", target = "id")
+    @Mapping(target = "minValue", ignore = true)
+    @Mapping(target = "maxValue", ignore = true)
     CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameter
                                                    , CalculatedParameter parameterDb
                                                    , CalculatedDefect defect);
 
     @Mapping(source = "repair", target = "repair")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "minValue", ignore = true)
+    @Mapping(target = "maxValue", ignore = true)
     CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameter, CalculatedRepair repair);
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")

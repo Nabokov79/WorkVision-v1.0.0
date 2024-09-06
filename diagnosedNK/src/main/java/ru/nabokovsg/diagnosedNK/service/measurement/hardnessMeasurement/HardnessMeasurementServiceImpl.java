@@ -11,7 +11,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement
 import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableHardness;
 import ru.nabokovsg.diagnosedNK.repository.measurement.hardnessMeasurement.HardnessMeasurementRepository;
-import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.norms.AcceptableHardnessService;
 
 @Service

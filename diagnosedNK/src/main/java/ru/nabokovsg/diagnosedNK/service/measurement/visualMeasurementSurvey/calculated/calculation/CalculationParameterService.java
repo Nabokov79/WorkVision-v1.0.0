@@ -8,10 +8,5 @@ import java.util.*;
 
 public interface CalculationParameterService {
 
-    Map<String, CalculatedParameter> calculation(Set<ParameterMeasurement> parameters
-                                        , ParameterCalculationType calculation
-                                        , int measurementNumber
-                                        , Integer quantity
-                                        , List<Integer> quantityParameters);
-
+    List<CalculatedParameter> calculation(Set<ParameterMeasurement> parameters, ParameterCalculationType calculation);
 }

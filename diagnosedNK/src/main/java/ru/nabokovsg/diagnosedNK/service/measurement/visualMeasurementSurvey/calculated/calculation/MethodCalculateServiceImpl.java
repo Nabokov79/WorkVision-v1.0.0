@@ -66,11 +66,6 @@ public class MethodCalculateServiceImpl implements MethodCalculateService {
     }
 
     @Override
-    public int countQuantity(List<Integer> parameters) {
-        return parameters.stream().mapToInt(q -> q).sum();
-    }
-
-    @Override
     public Integer getQuantity(Integer quantityDb, Integer quantityDto) {
         int quantity = 1;
         if (quantityDb == null && quantityDto == null) {
@@ -105,7 +100,9 @@ public class MethodCalculateServiceImpl implements MethodCalculateService {
         square /= 1000000;
         calculatedParameters.add(mapper.mapToSquare(parameterName, unitMeasurement, square));
         measurements.forEach(parameter -> {
-            if(!parameter.getParameterName().equals(length) && !parameter.getParameterName().equals(width) && !parameter.getParameterName().equals(diameter)) {
+            if(!parameter.getParameterName().equals(length)
+               && !parameter.getParameterName().equals(width)
+              && !parameter.getParameterName().equals(diameter)) {
                 calculatedParameters.add(mapper.mapToMinValue(parameter, parameter.getValue()));
             }
         });

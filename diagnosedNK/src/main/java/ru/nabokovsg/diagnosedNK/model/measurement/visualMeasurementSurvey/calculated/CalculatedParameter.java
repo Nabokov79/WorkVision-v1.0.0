@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -47,5 +49,23 @@ public class CalculatedParameter {
                 ", maxValue=" + maxValue +
                 ", unitMeasurement='" + unitMeasurement +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CalculatedParameter parameter = (CalculatedParameter) o;
+        return Objects.equals(parameterName, parameter.parameterName)
+                && Objects.equals(minValue, parameter.minValue)
+                && Objects.equals(maxValue, parameter.maxValue)
+                && Objects.equals(unitMeasurement, parameter.unitMeasurement)
+                && Objects.equals(defect, parameter.defect)
+                && Objects.equals(repair, parameter.repair);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, measurementNumber, parameterNumber, parameterName, minValue, maxValue, unitMeasurement, defect, repair);
     }
 }

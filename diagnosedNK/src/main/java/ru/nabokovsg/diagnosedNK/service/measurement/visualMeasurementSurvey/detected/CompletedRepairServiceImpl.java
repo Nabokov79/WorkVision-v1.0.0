@@ -13,7 +13,7 @@ import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.CompletedRepairRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.MethodCalculateService;
-import ru.nabokovsg.diagnosedNK.service.measurement.QueryDSLRequestService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedRepairService;
 import ru.nabokovsg.diagnosedNK.service.norms.ElementRepairService;
 

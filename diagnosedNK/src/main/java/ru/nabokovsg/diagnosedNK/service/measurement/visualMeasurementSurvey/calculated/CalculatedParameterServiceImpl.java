@@ -1,7 +1,6 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
@@ -10,26 +9,29 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
+import ru.nabokovsg.diagnosedNK.model.norms.UnitMeasurementType;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedParameterRepository;
 import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasurementService;
+import ru.nabokovsg.diagnosedNK.service.constantService.ConstUnitMeasurementService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.CalculationParameterService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CalculatedParameterServiceImpl implements CalculatedParameterService {
 
     private final CalculatedParameterRepository repository;
     private final CalculatedParameterMapper mapper;
     private final CalculationParameterService calculationService;
     private final ConstParameterMeasurementService measurementService;
+    private final ConstParameterMeasurementService constParameter;
+    private final ConstUnitMeasurementService constUnit;
     private final static Integer MEASUREMENT = 1;
 
     @Override
     public void save(CalculatedParameterData parameterData) {
-        log.info("-----------Start SAVE---------------------");
         Map<String, CalculatedParameter> parameters = new HashMap<>();
         if (parameterData.getDefects() != null && parameterData.getRepairs() == null) {
             calculateByDefect(parameters, parameterData);
@@ -40,56 +42,18 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
                     String.format("Defects=%s and Repairs=%s not be null", parameterData.getDefects()
                             , parameterData.getRepairs()));
         }
-
-        log.info("-----------End SAVE---------------------");
         repository.saveAll(parameters.values());
-    }
-
-    private void mapWithDefect(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
-        List<CalculatedParameter> parametersDb = convertParameters(parameterData.getDefect().getParameters());
-        log.info("          ");
-        log.info("-----------start map with defect---------------------");
-        log.info(String.format("CalculatedParameter defect parameters = %s",parameterData.getDefect().getParameters()));
-        log.info(String.format("parameters = %s",parameters.values()));
-        log.info("   ");
-        parameters.forEach((k, v) -> {
-            if (parametersDb.isEmpty()) {
-                parameters.put(k, mapper.mapWithDefect(v, null, parameterData.getDefect()));
-            } else {
-                parameters.put(k, mapper.mapWithDefect(v, parametersDb.get(0), parameterData.getDefect()));
-                parametersDb.remove(0);
-            }
-        });
-        log.info(" BEFORE MAP  ");
-        log.info(String.format("CalculatedParameter defect parameters = %s",parameterData.getDefect().getParameters()));
-        log.info(String.format("parameters = %s",parameters.values()));
-        log.info("-----------End map with defect---------------------");
-        log.info("          ");
-    }
-
-    private void mapWithRepair(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
-        List<Long> ids = getIds(parameterData.getRepair().getParameters());
-        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithRepair(v, parameterData.getRepair())));
     }
 
     private void calculateByDefect(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
         int measurementNumber = MEASUREMENT;
-        List<Integer> quantity = parameterData.getDefects()
-                .stream()
-                .map(IdentifiedDefect::getQuantity)
-                .toList();
         for (IdentifiedDefect defect : parameterData.getDefects()) {
-            log.info(String.format("IdentifiedDefect Parameters = %s", defect.getParameterMeasurements()));
-            Map<String, CalculatedParameter> calculatedParameters = calculationService.calculation(defect.getParameterMeasurements()
-                    , parameterData.getCalculationType()
-                    , measurementNumber
-                    , defect.getQuantity()
-                    , quantity);
-            Map<Integer, Integer> coincidences = getNumberOfMatches(parameters, calculatedParameters);
-            if (parameterData.getDefect().getParameters() == null && coincidences.isEmpty()) {
-                addAll(parameters, calculatedParameters.values().stream().toList());
+            List<CalculatedParameter> calculatedParameters = calculationService.calculation(defect.getParameterMeasurements()
+                    , parameterData.getCalculationType());
+            if (!parameters.isEmpty()) {
+                compareParameters(parameters, calculatedParameters);
             } else {
-                compareParameters(parameters, calculatedParameters, coincidences);
+                setSequentialParameterNumber(calculatedParameters, measurementNumber);
             }
             measurementNumber++;
         }
@@ -98,59 +62,52 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
 
     private void calculateByRepair(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
         int measurementNumber = MEASUREMENT;
-        List<Integer> quantity = parameterData.getRepairs()
-                .stream()
-                .map(CompletedRepair::getQuantity)
-                .toList();
         for (CompletedRepair repair : parameterData.getRepairs()) {
-            Map<String, CalculatedParameter> calculatedParameters = calculationService.calculation(repair.getParameterMeasurements()
-                    , parameterData.getCalculationType()
-                    , measurementNumber
-                    , repair.getQuantity()
-                    , quantity);
-            Map<Integer, Integer> coincidences = getNumberOfMatches(parameters, calculatedParameters);
-            if (parameterData.getDefect().getParameters() == null && coincidences.isEmpty()) {
-                addAll(parameters, calculatedParameters.values().stream().toList());
-            } else {
-                compareParameters(parameters, calculatedParameters, coincidences);
+            List<CalculatedParameter> calculatedParameters =
+                                                    calculationService.calculation(repair.getParameterMeasurements()
+                                                                                 , parameterData.getCalculationType());
+            if (!parameters.isEmpty()) {
+                compareParameters(parameters, calculatedParameters);
             }
+            setSequentialParameterNumber(calculatedParameters, measurementNumber);
             measurementNumber++;
         }
         mapWithRepair(parameters, parameterData);
     }
 
-    private void addAll(Map<String, CalculatedParameter> parameters, List<CalculatedParameter> calculatedParameters) {
-        calculatedParameters.forEach(p -> parameters.put(getKey(p.getMeasurementNumber(), p.getParameterName()), p));
-    }
-
-    private void compareParameters(Map<String, CalculatedParameter> parameters, Map<String, CalculatedParameter> calculatedParameters,  Map<Integer, Integer> coincidences) {
-        log.info("          ");
-        log.info("-----------start compare parameters---------------------");
-        log.info("-----------INPUT DATA---------------------");
-        log.info("Parameters: key = {}", parameters.keySet());
-        log.info("Parameters: values = {}", parameters.values());
-        log.info("CalculatedParameters: key = {}", calculatedParameters.keySet());
-        log.info("CalculatedParameters: values = {}", calculatedParameters.values());
-        String quantityName = measurementService.get(String.valueOf(MeasuredParameterType.QUANTITY));
+    private void compareParameters(Map<String, CalculatedParameter> parameters
+                                 , List<CalculatedParameter> calculatedParameters) {
+        String quantity = measurementService.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        Map<String, CalculatedParameter> newParameters = calculatedParameters.stream()
+                                              .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
+        Map<Integer, Integer> coincidences = getNumberOfMatches(parameters, newParameters);
+        int size = calculatedParameters.size();
         parameters.forEach((k, v) -> {
-                    Integer coincidence = coincidences.get(v.getMeasurementNumber());
-                    if (coincidence == calculatedParameters.size()) {
-                        CalculatedParameter parameter = calculatedParameters.get(v.getParameterName());
-                        parameter.setMinValue(v.getMinValue() + parameter.getMinValue());
-                        parameters.put(k, parameter);
+            Integer coincidence = coincidences.get(v.getMeasurementNumber());
+            if (coincidence == size) {
+                CalculatedParameter parameter = parameters.get(quantity);
+                CalculatedParameter newParameter = newParameters.get(quantity);
+                if (parameter == null) {
+                    if (newParameter == null) {
+                        parameter = createQuantityParameter();
+                    } else {
+                        parameter = newParameter;
+                        parameter.setMinValue(newParameter.getMinValue() + 1.0);
                     }
-                });
-        log.info(String.format("parameters = %s",parameters.values()));
-        log.info("-----------end compare parameters---------------------");
-        log.info("       ");
-    }
-
-    private String getKey(Integer measurementNumber, String parameterName) {
-        return String.join("_", parameterName, String.valueOf(measurementNumber));
+                } else {
+                    if (newParameter == null) {
+                        parameter.setMinValue(parameter.getMinValue() + 1.0);
+                    } else {
+                        parameter.setMinValue(parameter.getMinValue() + newParameter.getMinValue());
+                    }
+                }
+                parameters.put(parameter.getParameterName(), parameter);
+            }
+        });
     }
 
     private Map<Integer, Integer> getNumberOfMatches(Map<String, CalculatedParameter> parameters
-                                                   , Map<String, CalculatedParameter> calculatedParameters) {
+            , Map<String, CalculatedParameter> calculatedParameters) {
         Map<Integer, Integer> coincidences = new HashMap<>();
         parameters.forEach((k, v) -> {
             CalculatedParameter parameter = calculatedParameters.get(v.getParameterName());
@@ -158,18 +115,7 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
                 coincidences.merge(v.getMeasurementNumber(), 1, Integer::sum);
             }
         });
-        log.info("coincidences: key = {}", coincidences.keySet());
-        log.info("coincidences: values = {}", coincidences.values());
         return coincidences;
-    }
-
-    private List<Long> getIds(Set<CalculatedParameter> parameters) {
-        if (parameters == null) {
-            return new ArrayList<>();
-        }
-        return new ArrayList<>(parameters.stream()
-                .map(CalculatedParameter::getId)
-                .toList());
     }
 
     private List<CalculatedParameter> convertParameters(Set<CalculatedParameter> parameters) {
@@ -178,5 +124,49 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
             parametersDb.addAll(parameters);
         }
         return parametersDb;
+    }
+
+    private void setSequentialParameterNumber(List<CalculatedParameter> calculatedParameters
+            , Integer measurementNumber) {
+        int sequentialNumber = 1;
+        String square = measurementService.get(String.valueOf(MeasuredParameterType.SQUARE));
+        String quantity = measurementService.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        int size = calculatedParameters.size();
+        for (CalculatedParameter parameter : calculatedParameters) {
+            if (parameter.getMeasurementNumber() == null) {
+                if (parameter.getParameterName().equals(square)) {
+                    mapper.mapWithSequenceNumber(parameter, measurementNumber, sequentialNumber);
+                    sequentialNumber++;
+                } else if (parameter.getParameterName().equals(quantity)) {
+                    mapper.mapWithSequenceNumber(parameter, measurementNumber, size);
+                } else {
+                    mapper.mapWithSequenceNumber(parameter, measurementNumber, sequentialNumber);
+                    sequentialNumber++;
+                }
+            }
+        }
+    }
+    private CalculatedParameter createQuantityParameter() {
+        return mapper.mapToQuantity(constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY))
+                , constUnit.get(String.valueOf(UnitMeasurementType.PIECES))
+                , 2);
+    }
+
+    private void mapWithDefect(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
+        Map<String, CalculatedParameter> parametersDb = convertParameters(parameterData.getDefect()
+                .getParameters())
+                .stream()
+                .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
+        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithDefect(v, parametersDb.get(v.getParameterName())
+                , parameterData.getDefect())));
+    }
+
+    private void mapWithRepair(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
+        Map<String, CalculatedParameter> parametersDb = convertParameters(parameterData.getRepair()
+                .getParameters())
+                .stream()
+                .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
+        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithDefect(v, parametersDb.get(v.getParameterName())
+                , parameterData.getDefect())));
     }
 }
