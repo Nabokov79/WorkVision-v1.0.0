@@ -21,12 +21,13 @@ public class ElementRepairServiceImpl implements ElementRepairService {
     private final ElementRepairRepository repository;
     private final ElementRepairMapper mapper;
     private final MeasuredParameterService parameterService;
-
+    private final ValidateMeasuredParameterService validateMeasuredParameterService;
 
     @Override
     public ResponseElementRepairDto save(ElementRepairDto repairDto) {
         ElementRepair repair = repository.findByRepairName(repairDto.getRepairName());
         if (repair == null) {
+            validate(repairDto);
             repair = repository.save(mapper.mapToElementRepair(repairDto
                                                         , getTypeCalculation(repairDto.getCalculation())));
             repair.setMeasuredParameters(
@@ -38,6 +39,7 @@ public class ElementRepairServiceImpl implements ElementRepairService {
     @Override
     public ResponseElementRepairDto update(ElementRepairDto repairDto) {
         if (repository.existsById(repairDto.getId())) {
+            validate(repairDto);
             ElementRepair repair =  repository.save(mapper.mapToElementRepair(repairDto
                                                                 , getTypeCalculation(repairDto.getCalculation())));
             repair.setMeasuredParameters(parameterService.update(repairDto.getMeasuredParameters()));
@@ -78,5 +80,10 @@ public class ElementRepairServiceImpl implements ElementRepairService {
         return ParameterCalculationType.from(calculation).orElseThrow(
                 () -> new BadRequestException(
                         String.format("Unsupported element repair calculation type=%s", calculation)));
+    }
+
+    private void validate(ElementRepairDto repairDto) {
+        validateMeasuredParameterService.validateByCalculationType(repairDto.getMeasuredParameters()
+                                                                 , repairDto.getCalculation());
     }
 }

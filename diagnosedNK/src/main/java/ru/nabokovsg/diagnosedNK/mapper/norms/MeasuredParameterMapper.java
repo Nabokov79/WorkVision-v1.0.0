@@ -11,13 +11,8 @@ import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
 @Mapper(componentModel = "spring")
 public interface MeasuredParameterMapper {
 
-    @Mapping(source = "parameterMeasurement", target = "parameterName")
-    @Mapping(source = "unitMeasurement", target = "unitMeasurement")
-    @Mapping(target = "defect", ignore = true)
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "elementRepair", ignore = true)
-    MeasuredParameter mapToMeasuredParameter(String parameterMeasurement
-                                           , String unitMeasurement);
+    MeasuredParameter mapToMeasuredParameter(MeasuredParameterDto parameter);
 
     @Mapping(source = "defect", target = "defect")
     @Mapping(target = "id", ignore = true)

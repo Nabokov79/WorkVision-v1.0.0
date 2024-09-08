@@ -9,7 +9,9 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
+import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.ParameterMeasurementRepository;
+import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasurementService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,19 +22,21 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
 
     private final ParameterMeasurementRepository repository;
     private final ParameterMeasurementMapper mapper;
+    private final ConstParameterMeasurementService constParameter;
 
     @Override
-    public Set<ParameterMeasurement> saveForIdentifiedDefect(IdentifiedDefect identifiedDefect
-                                        , Set<MeasuredParameter> parameters
-                                        , List<ParameterMeasurementDto> parametersDto) {
-        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
-                                                           .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
-        return new HashSet<>(
-                repository.saveAll(parametersDto.stream()
-                                      .map(p -> mapper.mapWithIdentifiedDefect(measuredParameter.get(p.getParameterId())
-                                                                             , p
-                                                                             , identifiedDefect))
-                                        .toList())
+    public Set<ParameterMeasurement> saveForIdentifiedDefect(IdentifiedDefect defect
+                                                           , Set<MeasuredParameter> parameters
+                                                           , List<ParameterMeasurementDto> parametersDto) {
+        if (defect.getParameterMeasurements() != null) {
+            return new HashSet<>(
+                    repository.saveAll(sumQuantity(parametersDto, defect.getParameterMeasurements()))
+            );
+        }
+        return new HashSet<>(repository.saveAll(map(parametersDto, parameters)
+                                                                    .stream()
+                                                                    .map(p -> mapper.mapWithIdentifiedDefect(p, defect))
+                                                                    .toList())
         );
     }
 
@@ -40,14 +44,10 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     public Set<ParameterMeasurement> saveForCompletedRepair(CompletedRepair repair
                                                           , Set<MeasuredParameter> parameters
                                                           , List<ParameterMeasurementDto> parametersDto) {
-        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
-                .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
-        return new HashSet<>(
-                repository.saveAll(parametersDto.stream()
-                        .map(p -> mapper.mapWithIdentifiedDefect(measuredParameter.get(p.getParameterId())
-                                , p
-                                , repair))
-                        .toList())
+        return new HashSet<>(repository.saveAll(map(parametersDto, parameters)
+                                                                    .stream()
+                                                                    .map(p -> mapper.mapWithCompletedRepair(p, repair))
+                                                                    .toList())
         );
     }
 
@@ -55,14 +55,11 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     public Set<ParameterMeasurement> saveForVMControl(VisualMeasurementControl vmControl
                                                     , Set<MeasuredParameter> parameters
                                                     , List<ParameterMeasurementDto> parametersDto) {
-        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
-                .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
         return new HashSet<>(
-                repository.saveAll(parametersDto.stream()
-                        .map(p -> mapper.mapWithVisualMeasurementControl(measuredParameter.get(p.getParameterId())
-                                , p
-                                , vmControl))
-                        .toList())
+                repository.saveAll(map(parametersDto, parameters)
+                                                .stream()
+                                                .map(p -> mapper.mapWithVisualMeasurementControl(p, vmControl))
+                                                .toList())
         );
     }
 
@@ -70,7 +67,7 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     public Set<ParameterMeasurement> update(Set<ParameterMeasurement> parameters
                                           , List<ParameterMeasurementDto> parametersDto) {
         Map<Long, ParameterMeasurement> parametersDb = parameters.stream()
-                                              .collect(Collectors.toMap(ParameterMeasurement::getParameterId, p -> p));
+                                               .collect(Collectors.toMap(ParameterMeasurement::getParameterId, p -> p));
         return new HashSet<>(
                 repository.saveAll(parametersDto.stream()
                         .map(p -> mapper.mapToUpdateParameterMeasurement(parametersDb.get(p.getParameterId()), p))
@@ -81,5 +78,57 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     @Override
     public void deleteAll(Set<ParameterMeasurement> parameters) {
         repository.deleteAll(parameters);
+    }
+
+    private List<ParameterMeasurement> sumQuantity(List<ParameterMeasurementDto> parametersDto
+                                                 , Set<ParameterMeasurement> parametersDb) {
+        Map<Long, ParameterMeasurementDto> parameters = parametersDto
+                .stream()
+                .collect(Collectors.toMap(ParameterMeasurementDto::getParameterId, p -> p));
+        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        parametersDb.forEach(p -> {
+            if (p.getParameterName().equals(quantityName)) {
+                ParameterMeasurementDto parameter = parameters.get(p.getParameterId());
+                p.setValue(p.getValue() + parameter.getValue());
+            }
+        });
+        return new ArrayList<>(parametersDb);
+    }
+
+    @Override
+    public List<ParameterMeasurement> map(List<ParameterMeasurementDto> parametersDto
+                                        , Set<MeasuredParameter> parameters) {
+        Map<Long, MeasuredParameter> measuredParameter = parameters.stream()
+                .collect(Collectors.toMap(MeasuredParameter::getId, m -> m));
+        return parametersDto.stream()
+                            .map(p -> mapper.mapToParameterMeasurement(p, measuredParameter.get(p.getParameterId())))
+                            .toList();
+    }
+
+    @Override
+    public boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements, Map<String, ParameterMeasurement> parameters) {
+        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        int coincidences = 0;
+        for (ParameterMeasurement parameterDb : parameterMeasurements) {
+            ParameterMeasurement parameter = parameters.get(parameterDb.getParameterName());
+            if (parameter != null) {
+                if (parameter.getParameterName().equals(quantityName)) {
+                    coincidences++;
+                } else if (parameterDb.getValue().equals(parameter.getValue())) {
+                    coincidences++;
+                }
+            }
+        }
+        if (coincidences == parameters.size()) {
+            parameterMeasurements.forEach(v -> {
+                if (v.getParameterName().equals(quantityName)) {
+                    ParameterMeasurement parameter = parameters.get(quantityName);
+                    v.setValue(v.getValue() + parameter.getValue());
+                    v = repository.save(v);
+                }
+            });
+            return true;
+        }
+        return false;
     }
 }

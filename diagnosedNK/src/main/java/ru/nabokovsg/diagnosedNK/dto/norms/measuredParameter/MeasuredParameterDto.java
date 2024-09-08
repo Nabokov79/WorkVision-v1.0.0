@@ -10,15 +10,13 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Данные для добавления/ихмерения сведений об измеряемом параметре")
+@Schema(description = "Данные для добавления/измерения сведений об измеряемом параметре")
 public class MeasuredParameterDto {
 
-    @Schema(description = "Иднентификатор")
+    @Schema(description = "Идентификатор")
     private Long id;
     @Schema(description = "Наименование параметра")
-    private String measuredParameter;
+    private String parameterName;
     @Schema(description = "Единица измерения параметра")
     private String unitMeasurement;
-    @Schema(description = "Требуемые вычисления параметров дефекта")
-    private String calculation;
 }

@@ -26,8 +26,6 @@ public class ResponseIdentifiedDefectDto {
     private String partName;
     @Schema(description = "Наименование дефекта")
     private String defectName;
-    @Schema(description = "Количество дефектов")
-    private Integer quantity;
     @Schema(description = "Указание недопустимого дефекта")
     private Boolean notMeetRequirements;
     @Schema(description = "Рассчитанные параметры дефекта")

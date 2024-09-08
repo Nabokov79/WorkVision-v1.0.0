@@ -13,7 +13,7 @@ import lombok.Setter;
 @Schema(description = "Измеряемый параметр")
 public class ResponseParameterMeasurementDto {
 
-    @Schema(description = "Индентификатор")
+    @Schema(description = "Идентификатор")
     private Long id;
     @Schema(description = "Идентификатор параметра")
     private Long parameterId;

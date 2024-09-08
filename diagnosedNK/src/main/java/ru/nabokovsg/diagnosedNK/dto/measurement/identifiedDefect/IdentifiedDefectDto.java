@@ -26,8 +26,7 @@ public class IdentifiedDefectDto {
     private Long partElementId;
     @Schema(description = "Идентификатор дефекта")
     private Long defectId;
-    @Schema(description = "Количество дефектов")
-    private Integer quantity;
+
     @Schema(description = "Измеренные параметры дефекта")
     private List<ParameterMeasurementDto> parameterMeasurements;
 
@@ -39,7 +38,6 @@ public class IdentifiedDefectDto {
                 ", elementId=" + elementId +
                 ", partElementId=" + partElementId +
                 ", defectId=" + defectId +
-                ", quantity=" + quantity +
                 ", parameterMeasurements=" + parameterMeasurements +
                 '}';
     }

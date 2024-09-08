@@ -8,11 +8,12 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface ParameterMeasurementService {
 
-    Set<ParameterMeasurement> saveForIdentifiedDefect(IdentifiedDefect identifiedDefect
+    Set<ParameterMeasurement> saveForIdentifiedDefect(IdentifiedDefect defect
                                                     , Set<MeasuredParameter> parameters
                                                     , List<ParameterMeasurementDto> parametersDto);
 
@@ -27,4 +28,9 @@ public interface ParameterMeasurementService {
     Set<ParameterMeasurement> update(Set<ParameterMeasurement> parameters, List<ParameterMeasurementDto> parametersDto);
 
     void deleteAll(Set<ParameterMeasurement> parameters);
+
+    List<ParameterMeasurement> map(List<ParameterMeasurementDto> parametersDto
+            , Set<MeasuredParameter> parameters);
+
+    boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements, Map<String, ParameterMeasurement> parameters);
 }

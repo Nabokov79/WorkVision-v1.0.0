@@ -6,8 +6,6 @@ import ru.nabokovsg.diagnosedNK.dto.norms.measuredParameter.MeasuredParameterDto
 import ru.nabokovsg.diagnosedNK.mapper.norms.MeasuredParameterMapper;
 import ru.nabokovsg.diagnosedNK.model.norms.*;
 import ru.nabokovsg.diagnosedNK.repository.norms.MeasuredParameterRepository;
-import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasurementService;
-import ru.nabokovsg.diagnosedNK.service.constantService.ConstUnitMeasurementService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,13 +16,10 @@ public class MeasuredParameterServiceImpl implements MeasuredParameterService {
 
     private final MeasuredParameterRepository repository;
     private final MeasuredParameterMapper mapper;
-    private final ConstParameterMeasurementService constParameterService;
-    private final ConstUnitMeasurementService constUnitService;
-    private final ConstParameterMeasurementService measurementService;
 
     @Override
     public Set<MeasuredParameter> saveForDefect(Defect defect, List<MeasuredParameterDto> parametersDto) {
-        return new HashSet<>(repository.saveAll(createParameter(parametersDto)
+        return new HashSet<>(repository.saveAll(mapMeasuredParameterDto(parametersDto)
                                        .stream()
                                        .map(p -> mapper.mapWithDefect(p, defect))
                                        .toList()));
@@ -32,20 +27,16 @@ public class MeasuredParameterServiceImpl implements MeasuredParameterService {
 
     @Override
     public Set<MeasuredParameter> saveForElementRepair(ElementRepair repair, List<MeasuredParameterDto> parametersDto) {
-        return new HashSet<>(repository.saveAll(createParameter(parametersDto)
+        return new HashSet<>(repository.saveAll(mapMeasuredParameterDto(parametersDto)
                                        .stream()
                                        .map(p -> mapper.mapWithElementRepair(p, repair))
                                        .toList()));
     }
 
-    private List<MeasuredParameter> createParameter(List<MeasuredParameterDto> parametersDto) {
-        List<MeasuredParameter> parameters = parametersDto.stream()
-                .map(p -> mapper.mapToMeasuredParameter(
-                          constParameterService.get(p.getMeasuredParameter())
-                        , constUnitService.get(p.getUnitMeasurement())))
-                .toList();
-        validateQuantityParameter(parameters);
-        return parameters;
+    private List<MeasuredParameter> mapMeasuredParameterDto(List<MeasuredParameterDto> parametersDto) {
+        return parametersDto.stream()
+                            .map(mapper::mapToMeasuredParameter)
+                            .toList();
     }
 
     @Override
@@ -83,21 +74,6 @@ public class MeasuredParameterServiceImpl implements MeasuredParameterService {
         });
         if (!ids.isEmpty()) {
             delete(ids);
-        }
-    }
-
-    private void validateQuantityParameter(List<MeasuredParameter> parameters) {
-        boolean flag = true;
-        String quantity = measurementService.get(String.valueOf(MeasuredParameterType.QUANTITY));
-        String unit = constUnitService.get(String.valueOf(UnitMeasurementType.PIECES));
-        for (MeasuredParameter parameter : parameters) {
-            if (parameter.getParameterName().equals(quantity)) {
-                flag = false;
-                break;
-            }
-        }
-        if (flag) {
-            parameters.add(mapper.mapToMeasuredParameter(quantity, unit));
         }
     }
 }

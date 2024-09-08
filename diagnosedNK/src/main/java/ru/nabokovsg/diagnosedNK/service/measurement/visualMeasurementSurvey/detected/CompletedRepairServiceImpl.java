@@ -12,7 +12,6 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.CompletedRepairRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.MethodCalculateService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common.QueryDSLRequestService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedRepairService;
 import ru.nabokovsg.diagnosedNK.service.norms.ElementRepairService;
@@ -32,7 +31,6 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     private final ParameterMeasurementService parameterMeasurementService;
     private final QueryDSLRequestService requestService;
     private final EquipmentElementService elementService;
-    private final MethodCalculateService calculationService;
     private final CalculatedRepairService calculatedRepairService;
 
     @Override
@@ -49,15 +47,12 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                         .get(repairDto.getPartElementId());
                 mapper.mapWithEquipmentPartElement(repair, partElement);
             }
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(null, repairDto.getQuantity()));
             repair = repository.save(repair);
             repair.setParameterMeasurements(parameterMeasurementService.saveForCompletedRepair(
                                                                               repair
                                                                             , elementRepair.getMeasuredParameters()
                                                                             , repairDto.getParameterMeasurements()));
         } else {
-            mapper.mapToWithQuantity(repair, calculationService.getQuantity(repair.getQuantity()
-                                                                          , repairDto.getQuantity()));
             repair = repository.save(repair);
         }
         calculatedRepairService.save(requestService.getAllCompletedRepair(repairDto), repair, elementRepair);
@@ -73,13 +68,9 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
         ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         if (repairDb == null) {
             repairDb = repairs.get(repairDto.getId());
-            repairDb =  mapper.mapToWithQuantity(repairDb, calculationService.getQuantity(repairDb.getQuantity()
-                    , repairDto.getQuantity()));
             repairDb.setParameterMeasurements(parameterMeasurementService.update(repairDb.getParameterMeasurements()
                     , repairDto.getParameterMeasurements()));
         } else {
-            repairDb =  mapper.mapToWithQuantity(repairDb, calculationService.getQuantity(repairDb.getQuantity()
-                    ,repairDto.getQuantity()));
             delete(repairDto.getId());
             repairs.remove(repairDto.getId());
         }

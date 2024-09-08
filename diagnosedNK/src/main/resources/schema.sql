@@ -330,7 +330,6 @@ CREATE TABLE IF NOT EXISTS CALCULATED_PARAMETERS
     min_value          DOUBLE PRECISION                        NOT NULL,
     max_value          DOUBLE PRECISION,
     unit_measurement   VARCHAR                                 NOT NULL,
-    quantity           INTEGER,
     defect_id          BIGINT,
     repair_id          BIGINT,
     control_id         BIGINT,
@@ -353,7 +352,6 @@ CREATE TABLE IF NOT EXISTS IDENTIFIED_DEFECTS
     element_name            VARCHAR                                 NOT NULL,
     part_element_id         BIGINT,
     part_element_name       VARCHAR,
-    quantity                INTEGER                                 NOT NULL,
     CONSTRAINT pk_identifiedDefect PRIMARY KEY (id)
 );
 
@@ -365,7 +363,6 @@ CREATE TABLE IF NOT EXISTS COMPLETED_REPAIRS
     repair_name       VARCHAR                                 NOT NULL,
     element_id        BIGINT                                  NOT NULL,
     element_name      VARCHAR                                 NOT NULL,
-    quantity          INTEGER                                 NOT NULL,
     part_element_id   BIGINT,
     part_element_name VARCHAR,
     CONSTRAINT pk_completedRepair PRIMARY KEY (id)

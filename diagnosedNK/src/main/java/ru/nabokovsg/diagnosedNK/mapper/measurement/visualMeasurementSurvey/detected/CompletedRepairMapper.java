@@ -34,7 +34,4 @@ public interface CompletedRepairMapper {
     @Mapping(source = "partElement.partElementName", target = "partElementName")
     void mapWithEquipmentPartElement(@MappingTarget CompletedRepair repair
             , EquipmentPartElement partElement);
-
-    @Mapping(source = "quantity", target = "quantity")
-    CompletedRepair mapToWithQuantity(@MappingTarget CompletedRepair repair, Integer quantity);
 }

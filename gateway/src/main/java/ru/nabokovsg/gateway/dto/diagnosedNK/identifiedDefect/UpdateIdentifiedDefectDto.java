@@ -33,8 +33,6 @@ public class UpdateIdentifiedDefectDto {
     private Long partElementId;
     @Schema(description = "Идентификатор дефекта")
     private Long defectId;
-    @Schema(description = "Количество дефектов")
-    private Integer quantity;
     @Schema(description = "Измеренные параметры выполненного ремонта элемента")
     private List<@Valid UpdateParameterMeasurementDto> parameterMeasurements;
 }

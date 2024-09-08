@@ -1,4 +1,4 @@
-package ru.nabokovsg.gateway.client.diagnosedNK.measurements;
+package ru.nabokovsg.gateway.controller.diagnosedNK.measurements;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

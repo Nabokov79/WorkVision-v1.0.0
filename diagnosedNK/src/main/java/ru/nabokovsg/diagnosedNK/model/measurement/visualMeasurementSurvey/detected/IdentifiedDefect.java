@@ -39,8 +39,6 @@ public class IdentifiedDefect {
     private String partElementName;
     @OneToMany(mappedBy = "identifiedDefect", fetch = FetchType.LAZY)
     private Set<ParameterMeasurement> parameterMeasurements;
-    @Column(name = "quantity")
-    private Integer quantity;
 
     @Override
     public String toString() {
@@ -56,7 +54,6 @@ public class IdentifiedDefect {
                 ", partElementId=" + partElementId +
                 ", partElementName='" + partElementName + '\'' +
                 ", parameterMeasurements=" + parameterMeasurements +
-                ", quantity=" + quantity +
                 '}';
     }
 }

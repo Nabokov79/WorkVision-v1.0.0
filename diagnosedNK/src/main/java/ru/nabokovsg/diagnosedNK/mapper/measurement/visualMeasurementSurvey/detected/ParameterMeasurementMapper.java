@@ -17,31 +17,25 @@ public interface ParameterMeasurementMapper {
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameterDto.value", target = "value")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
+    @Mapping(source = "parameterDto.id", target = "id")
+    @Mapping(target = "identifiedDefect", ignore = true)
+    @Mapping(target = "completedRepair", ignore = true)
+    ParameterMeasurement mapToParameterMeasurement(ParameterMeasurementDto parameterDto, MeasuredParameter parameter);
+
     @Mapping(source = "defect", target = "identifiedDefect")
     @Mapping(target = "id", ignore = true)
-    ParameterMeasurement mapWithIdentifiedDefect(MeasuredParameter parameter
-                                               , ParameterMeasurementDto parameterDto
-                                               , IdentifiedDefect defect);
+    ParameterMeasurement mapWithIdentifiedDefect(@MappingTarget ParameterMeasurement parameter
+                                                              , IdentifiedDefect defect);
 
-    @Mapping(source = "parameter.id", target = "parameterId")
-    @Mapping(source = "parameter.parameterName", target = "parameterName")
-    @Mapping(source = "parameterDto.value", target = "value")
-    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
     @Mapping(source = "repair", target = "completedRepair")
     @Mapping(target = "id", ignore = true)
-    ParameterMeasurement mapWithIdentifiedDefect(MeasuredParameter parameter
-                                               , ParameterMeasurementDto parameterDto
+    ParameterMeasurement mapWithCompletedRepair(@MappingTarget ParameterMeasurement parameter
                                                , CompletedRepair repair);
 
-    @Mapping(source = "parameter.id", target = "parameterId")
-    @Mapping(source = "parameter.parameterName", target = "parameterName")
-    @Mapping(source = "parameterDto.value", target = "value")
-    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
     @Mapping(source = "vmControl", target = "visualMeasurementControl")
     @Mapping(target = "id", ignore = true)
-    ParameterMeasurement mapWithVisualMeasurementControl(MeasuredParameter parameter
-                                                       , ParameterMeasurementDto parameterDto
-                                                       , VisualMeasurementControl vmControl);
+    ParameterMeasurement mapWithVisualMeasurementControl(@MappingTarget ParameterMeasurement parameter
+                                                                      , VisualMeasurementControl vmControl);
 
     @Mapping(source = "parameterDto.value", target = "value")
     @Mapping(target = "parameterId", ignore = true)

@@ -13,12 +13,10 @@ import lombok.Setter;
 @Schema(description = "Измеряемый параметр")
 public class ResponseMeasuredParameterDto {
 
-    @Schema(description = "Индентификатор")
+    @Schema(description = "Идентификатор")
     private Long id;
     @Schema(description = "Наименование параметра")
     private String parameterName;
     @Schema(description = "Единица измерения параметра")
     private String unitMeasurement;
-    @Schema(description = "Требуемые вычисления параметров дефекта")
-    private String calculation;
 }

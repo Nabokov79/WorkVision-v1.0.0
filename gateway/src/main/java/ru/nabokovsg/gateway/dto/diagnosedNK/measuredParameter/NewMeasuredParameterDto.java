@@ -15,12 +15,9 @@ import lombok.Setter;
 public class NewMeasuredParameterDto {
 
     @Schema(description = "Наименование параметра")
-    @NotBlank(message = "measuredParameter should not be blank")
-    private String measuredParameter;
+    @NotBlank(message = "parameterName should not be blank")
+    private String parameterName;
     @Schema(description = "Единица измерения параметра")
     @NotBlank(message = "unitMeasurement should not be blank")
     private String unitMeasurement;
-    @Schema(description = "Требуемые вычисления параметров дефекта")
-    @NotBlank(message = "calculation should not be blank")
-    private String calculation;
 }

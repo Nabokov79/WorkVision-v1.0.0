@@ -4,7 +4,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
@@ -23,7 +22,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+
 public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
 
     private final EntityManager em;
@@ -96,20 +95,11 @@ public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
     }
 
     private void createPredicateByParameterMeasurement(BooleanBuilder builder
-            , QParameterMeasurement parameter
-            , List<ParameterMeasurementDto> parameters) {
-        int predicate = 0;
+                                                     , QParameterMeasurement parameter
+                                                     , List<ParameterMeasurementDto> parameters) {
         for (ParameterMeasurementDto parameterDto : parameters) {
-            if (predicate != 0) {
-                builder.or(parameter.parameterId.eq(parameterDto.getParameterId()));
-                builder.and(parameter.value.eq(parameterDto.getValue()));
-            } else {
-                builder.and(parameter.parameterId.eq(parameterDto.getParameterId()));
-                builder.and(parameter.value.eq(parameterDto.getValue()));
-                predicate++;
-            }
+            builder.or(parameter.parameterId.eq(parameterDto.getParameterId()));
         }
-        log.info("BooleanBuilder builder = {}", builder);
     }
 
     @Override

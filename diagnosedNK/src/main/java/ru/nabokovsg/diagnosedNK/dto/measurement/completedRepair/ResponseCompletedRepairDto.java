@@ -26,8 +26,6 @@ public class ResponseCompletedRepairDto {
     private String partName;
     @Schema(description = "Наименование ремонта")
     private String repairName;
-    @Schema(description = "Количество ремонтов")
-    private Integer quantity;
     @Schema(description = "Рассчитанные параметры выполненного ремонта элемента")
     private Set<ResponseParameterMeasurementDto> parameterMeasurements;
 }

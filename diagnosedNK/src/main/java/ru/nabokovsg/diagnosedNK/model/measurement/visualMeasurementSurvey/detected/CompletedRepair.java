@@ -35,6 +35,4 @@ public class CompletedRepair {
     private String partElementName;
     @OneToMany(mappedBy = "completedRepair", fetch = FetchType.LAZY)
     private Set<ParameterMeasurement> parameterMeasurements;
-    @Column(name = "quantity")
-    private Integer quantity;
 }
