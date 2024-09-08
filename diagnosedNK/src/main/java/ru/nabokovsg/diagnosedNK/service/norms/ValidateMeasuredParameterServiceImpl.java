@@ -1,0 +1,95 @@
+package ru.nabokovsg.diagnosedNK.service.norms;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.nabokovsg.diagnosedNK.dto.norms.measuredParameter.MeasuredParameterDto;
+import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
+import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
+import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
+import ru.nabokovsg.diagnosedNK.model.norms.UnitMeasurementType;
+import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasurementService;
+import ru.nabokovsg.diagnosedNK.service.constantService.ConstUnitMeasurementService;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ValidateMeasuredParameterServiceImpl implements ValidateMeasuredParameterService {
+
+    private final ConstParameterMeasurementService constParameter;
+    private final ConstUnitMeasurementService unitMeasurement;
+
+    @Override
+    public void validateByCalculationType(List<MeasuredParameterDto> parameters, String calculation) {
+        setConstParameters(parameters);
+        switch (getTypeCalculation(calculation)) {
+            case SQUARE -> validateBySquare(parameters);
+            case MAX, MIN, MAX_MIN, NO_ACTION -> validateQuantityParameter(parameters);
+        }
+    }
+
+    private void setConstParameters(List<MeasuredParameterDto> parameters) {
+        parameters.forEach(p -> {
+            p.setParameterName(constParameter.get(p.getParameterName()));
+            p.setUnitMeasurement(unitMeasurement.get(p.getUnitMeasurement()));
+        });
+    }
+
+    private void validateBySquare(List<MeasuredParameterDto> parameters) {
+        String squareName = constParameter.get(String.valueOf(MeasuredParameterType.SQUARE));
+        String lengthName = constParameter.get(String.valueOf(MeasuredParameterType.LENGTH));
+        String widthName = constParameter.get(String.valueOf(MeasuredParameterType.WIDTH));
+        String diameterName = constParameter.get(String.valueOf(MeasuredParameterType.DIAMETER));
+        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        String unit = unitMeasurement.get(String.valueOf(UnitMeasurementType.PIECES));
+        boolean length = false;
+        boolean width = false;
+        boolean diameter = false;
+        boolean quantity = true;
+        for (MeasuredParameterDto parameter : parameters) {
+            if (parameter.getParameterName().equals(squareName)) {
+                throw new BadRequestException(String.format("The parameter = %s cannot be set", squareName));
+            }
+            if (parameter.getParameterName().equals(lengthName)) {
+                length = true;
+            }
+            if (parameter.getParameterName().equals(widthName)) {
+                width = true;
+            }
+            if (parameter.getParameterName().equals(diameterName)) {
+                diameter = true;
+            }
+            if (parameter.getParameterName().equals(quantityName)) {
+                quantity = false;
+            }
+        }
+        if (!length && !width && !diameter) {
+            throw new BadRequestException(
+                    String.format("Incorrect measurement parameters have been set for calculating the area" +
+                            "                       , length=%s, width=%s, diameter=%s", length, width, diameter));
+        }
+        if (quantity) {
+            parameters.add(new MeasuredParameterDto(null, quantityName, unit));
+        }
+    }
+
+    private void validateQuantityParameter(List<MeasuredParameterDto> parameters) {
+        boolean flag = true;
+        String quantity = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        String unit = unitMeasurement.get(String.valueOf(UnitMeasurementType.PIECES));
+        for (MeasuredParameterDto parameter : parameters) {
+            if (parameter.getParameterName().equals(quantity)) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            parameters.add(new MeasuredParameterDto(null, quantity, unit));
+        }
+    }
+
+    private ParameterCalculationType getTypeCalculation(String calculation) {
+        return ParameterCalculationType.from(calculation).orElseThrow(
+                () -> new BadRequestException(String.format("Unsupported defect calculation type=%s", calculation)));
+    }
+}
