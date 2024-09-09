@@ -32,5 +32,6 @@ public interface ParameterMeasurementService {
     List<ParameterMeasurement> map(List<ParameterMeasurementDto> parametersDto
             , Set<MeasuredParameter> parameters);
 
-    boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements, Map<String, ParameterMeasurement> parameters);
+    boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements
+                                   , Map<String, ParameterMeasurement> parameters);
 }

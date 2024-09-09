@@ -5,9 +5,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.CompletedRepairDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.model.equipment.QEquipmentDiagnosed;
@@ -17,7 +14,6 @@ import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -26,81 +22,6 @@ import java.util.Set;
 public class QueryDSLRequestServiceImpl implements QueryDSLRequestService {
 
     private final EntityManager em;
-
-    @Override
-    public IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto) {
-        QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
-        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
-        BooleanBuilder builder = createPredicateByIdentifiedDefectData(defectDto, defect);
-        createPredicateByParameterMeasurement(builder, parameter, defectDto.getParameterMeasurements());
-        return new JPAQueryFactory(em).from(defect)
-                                      .select(defect)
-                                      .innerJoin(defect.parameterMeasurements, parameter)
-                                      .where(builder)
-                                      .fetchOne();
-    }
-
-    @Override
-    public Set<IdentifiedDefect> getAllIdentifiedDefect(IdentifiedDefectDto defectDto) {
-        QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
-        return new HashSet<>(new JPAQueryFactory(em).from(defect)
-                .select(defect)
-                .where(createPredicateByIdentifiedDefectData(defectDto, defect))
-                .fetch());
-    }
-
-    private BooleanBuilder createPredicateByIdentifiedDefectData(IdentifiedDefectDto defectDto
-            , QIdentifiedDefect defect) {
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(defect.equipmentId.eq(defectDto.getEquipmentId()));
-        builder.and(defect.defectId.eq(defectDto.getDefectId()));
-        builder.and(defect.elementId.eq(defectDto.getElementId()));
-        if (defectDto.getPartElementId() != null) {
-            builder.and(defect.partElementId.eq(defectDto.getPartElementId()));
-        }
-        return builder;
-    }
-
-    @Override
-    public CompletedRepair getCompletedRepair(CompletedRepairDto repairDto) {
-        QCompletedRepair repair = QCompletedRepair.completedRepair;
-        QParameterMeasurement parameter = QParameterMeasurement.parameterMeasurement;
-        BooleanBuilder builder = createPredicateByCompletedRepairData(repairDto, repair);
-        createPredicateByParameterMeasurement(builder, parameter, repairDto.getParameterMeasurements());
-        return new JPAQueryFactory(em).from(repair)
-                .select(repair)
-                .innerJoin(repair.parameterMeasurements, parameter)
-                .where(builder)
-                .fetchOne();
-    }
-
-    @Override
-    public Set<CompletedRepair> getAllCompletedRepair(CompletedRepairDto repairDto) {
-        QCompletedRepair repair = QCompletedRepair.completedRepair;
-        return new HashSet<>(new JPAQueryFactory(em).from(repair)
-                .select(repair)
-                .where(createPredicateByCompletedRepairData(repairDto, repair))
-                .fetch());
-    }
-
-    private BooleanBuilder createPredicateByCompletedRepairData(CompletedRepairDto repairDto, QCompletedRepair repair) {
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(repair.equipmentId.eq(repairDto.getEquipmentId()));
-        builder.and(repair.repairId.eq(repairDto.getRepairId()));
-        builder.and(repair.elementId.eq(repairDto.getElementId()));
-        if (repairDto.getPartElementId() != null) {
-            builder.and(repair.partElementId.eq(repairDto.getPartElementId()));
-        }
-        return builder;
-    }
-
-    private void createPredicateByParameterMeasurement(BooleanBuilder builder
-                                                     , QParameterMeasurement parameter
-                                                     , List<ParameterMeasurementDto> parameters) {
-        for (ParameterMeasurementDto parameterDto : parameters) {
-            builder.or(parameter.parameterId.eq(parameterDto.getParameterId()));
-        }
-    }
 
     @Override
     public Long getEquipmentTypeId(Long elementId) {

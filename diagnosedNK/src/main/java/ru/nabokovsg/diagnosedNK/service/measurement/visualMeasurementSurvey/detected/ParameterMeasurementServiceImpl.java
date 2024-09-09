@@ -106,7 +106,8 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     }
 
     @Override
-    public boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements, Map<String, ParameterMeasurement> parameters) {
+    public boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements
+                                          , Map<String, ParameterMeasurement> parameters) {
         String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
         int coincidences = 0;
         for (ParameterMeasurement parameterDb : parameterMeasurements) {
@@ -119,14 +120,17 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
                 }
             }
         }
+        List<ParameterMeasurement> parameterMeasurement = new ArrayList<>(1);
         if (coincidences == parameters.size()) {
             parameterMeasurements.forEach(v -> {
                 if (v.getParameterName().equals(quantityName)) {
                     ParameterMeasurement parameter = parameters.get(quantityName);
                     v.setValue(v.getValue() + parameter.getValue());
-                    v = repository.save(v);
+                    parameterMeasurement.add(parameter);
+                    parameterMeasurements.remove(v);
                 }
             });
+            parameterMeasurements.add(repository.save(parameterMeasurement.get(0)));
             return true;
         }
         return false;

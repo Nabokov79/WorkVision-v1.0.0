@@ -1,27 +1,15 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common;
 
-import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.CompletedRepairDto;
-import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ReferencePoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.UTPredicateData;
 import ru.nabokovsg.diagnosedNK.model.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurement;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 
 import java.util.Set;
 
 public interface QueryDSLRequestService {
-
-    IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto);
-
-    CompletedRepair getCompletedRepair(CompletedRepairDto repairDto);
-
-    Set<IdentifiedDefect> getAllIdentifiedDefect(IdentifiedDefectDto defectDto);
-
-    Set<CompletedRepair> getAllCompletedRepair(CompletedRepairDto repairDto);
 
     Long getEquipmentTypeId(Long elementId);
 
