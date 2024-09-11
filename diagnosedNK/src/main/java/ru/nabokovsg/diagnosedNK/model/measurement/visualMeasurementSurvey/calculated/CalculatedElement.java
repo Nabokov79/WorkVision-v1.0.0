@@ -31,4 +31,15 @@ public class CalculatedElement {
     private Set<CalculatedRepair> repairs;
     @OneToMany(mappedBy = "element", fetch = FetchType.LAZY)
     private Set<CalculatedPartElement> partElements;
+
+    @Override
+    public String toString() {
+        return "CalculatedElement{" +
+                "id=" + id +
+                ", equipmentId=" + equipmentId +
+                ", elementName='" + elementName + '\'' +
+                ", inspection='" + inspection + '\'' +
+                ", partElements=" + partElements +
+                '}';
+    }
 }

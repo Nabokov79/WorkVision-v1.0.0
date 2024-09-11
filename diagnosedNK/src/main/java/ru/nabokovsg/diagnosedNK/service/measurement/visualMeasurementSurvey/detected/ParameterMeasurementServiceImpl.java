@@ -113,24 +113,18 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
         for (ParameterMeasurement parameterDb : parameterMeasurements) {
             ParameterMeasurement parameter = parameters.get(parameterDb.getParameterName());
             if (parameter != null) {
-                if (parameter.getParameterName().equals(quantityName)) {
-                    coincidences++;
-                } else if (parameterDb.getValue().equals(parameter.getValue())) {
+                if (parameter.getParameterName().equals(quantityName) || parameterDb.getValue().equals(parameter.getValue())) {
                     coincidences++;
                 }
             }
         }
-        List<ParameterMeasurement> parameterMeasurement = new ArrayList<>(1);
         if (coincidences == parameters.size()) {
+            ParameterMeasurement parameter = parameters.get(quantityName);
             parameterMeasurements.forEach(v -> {
                 if (v.getParameterName().equals(quantityName)) {
-                    ParameterMeasurement parameter = parameters.get(quantityName);
-                    v.setValue(v.getValue() + parameter.getValue());
-                    parameterMeasurement.add(parameter);
-                    parameterMeasurements.remove(v);
+                   mapper.mapToUpdateQuantity(v, v.getValue() + parameter.getValue());
                 }
             });
-            parameterMeasurements.add(repository.save(parameterMeasurement.get(0)));
             return true;
         }
         return false;

@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedDefectMapper;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     private final CalculatedDefectRepository repository;
@@ -26,17 +28,26 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     @Override
     public void save(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
+        log.info(" ");
+        log.info("-------START Calculated  Defect ----------");
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
+        log.info(" ");
+        log.info("CalculatedDefect calculatedDefect = {}", calculatedDefect);
         if (calculatedDefect == null) {
             CalculatedElement element = elementService.get(identifiedDefect.getEquipmentId(), identifiedDefect.getElementName());
             calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect, element));
             elementService.addDefect(element, calculatedDefect);
+            log.info("CalculatedDefect calculatedDefect before save = {}", calculatedDefect);
+            log.info("CalculatedElement element = {}", calculatedDefect);
         }
+        log.info(" ");
         parameterService.save(new CalculatedParameterData.Builder()
-                                                        .defects(defects)
-                                                        .defect(calculatedDefect)
-                                                        .calculationType(defect.getCalculation())
-                                                        .build());
+                                                         .defects(defects)
+                                                         .defect(calculatedDefect)
+                                                         .calculationType(defect.getCalculation())
+                                                         .build());
+        log.info(" ");
+        log.info("-------START Calculated  Defect ----------");
     }
 
     @Override

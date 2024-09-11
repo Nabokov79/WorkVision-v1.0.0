@@ -65,20 +65,28 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
 
     @Override
     public ResponseCompletedRepairDto update(CompletedRepairDto repairDto) {
+        ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         Map<Long, CompletedRepair> repairs = getAllByPredicate(repairDto)
                                                             .stream()
                                                             .collect(Collectors.toMap(CompletedRepair::getId, d -> d));
         CompletedRepair repairDb = repairs.get(repairDto.getId());
-        ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         if (repairDb == null) {
-            repairDb = repairs.get(repairDto.getId());
-            repairDb.setParameterMeasurements(parameterService.update(repairDb.getParameterMeasurements()
-                    , repairDto.getParameterMeasurements()));
+            EquipmentElement element = elementService.get(repairDto.getElementId());
+            repairDb = mapper.mapToCompletedRepair(repairDto, elementRepair, element);
+            if (repairDto.getPartElementId() != null) {
+                EquipmentPartElement partElement = element.getPartsElement()
+                        .stream()
+                        .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
+                        .get(repairDto.getPartElementId());
+                mapper.mapWithEquipmentPartElement(repairDb, partElement);
+                repairDb = repository.save(repairDb);
+                repairDb.setParameterMeasurements(parameterService.update(repairDb.getParameterMeasurements()
+                                                                       , repairDto.getParameterMeasurements()));
+            }
+
         } else {
             delete(repairDto.getId());
-            repairs.remove(repairDto.getId());
         }
-        repairs.put(repairDb.getId(),repairDb);
         calculatedRepairService.update(new HashSet<>(repairs.values()), repairDb, elementRepair);
         return mapper.mapToResponseCompletedRepairDto(repairDb);
     }

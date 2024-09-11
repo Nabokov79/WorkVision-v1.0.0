@@ -329,6 +329,7 @@ CREATE TABLE IF NOT EXISTS CALCULATED_PARAMETERS
     parameter_name     VARCHAR                                 NOT NULL,
     min_value          DOUBLE PRECISION                        NOT NULL,
     max_value          DOUBLE PRECISION,
+    integer_value           INTEGER,
     unit_measurement   VARCHAR                                 NOT NULL,
     defect_id          BIGINT,
     repair_id          BIGINT,

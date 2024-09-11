@@ -22,6 +22,9 @@ public class UpdateDefectDto {
     @NotNull(message = "id should not be null")
     @Positive(message = "id can only be positive")
     private Long id;
+    @Schema(description = "Наименование дефекта")
+    @NotBlank(message = "defectName should not be blank")
+    private String defectName;
     @Schema(description = "Указание недопустимости дефекта")
     @NotNull(message = "notMeetRequirements should not be null")
     private Boolean notMeetRequirements;

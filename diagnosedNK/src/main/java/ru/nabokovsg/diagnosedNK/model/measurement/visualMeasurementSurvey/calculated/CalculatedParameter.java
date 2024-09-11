@@ -29,6 +29,8 @@ public class CalculatedParameter {
     private Double minValue;
     @Column(name = "max_value")
     private Double maxValue;
+    @Column(name = "integer_value")
+    private Integer integerValue;
     @Column(name = "unit_measurement")
     private String unitMeasurement;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

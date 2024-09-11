@@ -37,4 +37,19 @@ public class CalculatedDefect {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "part_element_id", nullable = false)
     private CalculatedPartElement partElement;
+
+    @Override
+    public String toString() {
+        return "CalculatedDefect{" +
+                "id=" + id +
+                ", defectId=" + defectId +
+                ", defectName='" + defectName + '\'' +
+                ", weldedJointNumber=" + weldedJointNumber +
+                ", notMeetRequirements=" + notMeetRequirements +
+                ", useCalculateThickness=" + useCalculateThickness +
+                ", parameters=" + parameters +
+                ", element=" + element +
+                ", partElement=" + partElement +
+                '}';
+    }
 }

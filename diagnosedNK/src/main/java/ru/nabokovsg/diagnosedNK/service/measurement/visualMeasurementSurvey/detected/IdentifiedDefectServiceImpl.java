@@ -61,20 +61,27 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     @Override
     public ResponseIdentifiedDefectDto update(IdentifiedDefectDto defectDto) {
-        Map<Long, IdentifiedDefect> defects = getAllIdByPredicate(defectDto)
-                .stream()
-                .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
-        IdentifiedDefect defectDb = defects.get(defectDto.getId());
         Defect defect = defectsService.getById(defectDto.getDefectId());
+        Map<Long, IdentifiedDefect> defects = getAllIdByPredicate(defectDto).stream()
+                .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
+        IdentifiedDefect defectDb = searchDuplicate(defectDto, defect, new HashSet<>(defects.values()));
         if (defectDb == null) {
+            EquipmentElement element = elementService.get(defectDto.getElementId());
             defectDb = defects.get(defectDto.getId());
-            defectDb.setParameterMeasurements(parameterService.update(defectDb.getParameterMeasurements()
-                    ,  defectDto.getParameterMeasurements()));
+            if (defectDto.getPartElementId() != null) {
+                EquipmentPartElement partElement = element.getPartsElement()
+                        .stream()
+                        .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
+                        .get(defectDto.getPartElementId());
+                mapper.mapWithEquipmentPartElement(defectDb, partElement);
+                defectDb = repository.save(defectDb);
+                defectDb.setParameterMeasurements(parameterService.update(defectDb.getParameterMeasurements()
+                                                                        , defectDto.getParameterMeasurements()));
+            }
+            defects.put(defectDb.getId(), defectDb);
         } else {
             delete(defectDto.getId());
-            defects.remove(defectDto.getId());
         }
-        defects.put(defectDb.getId(), defectDb);
         calculatedDefectService.update(new HashSet<>(defects.values()), defectDb, defect);
         return mapper.mapToResponseIdentifiedDefectDto(repository.save(defectDb));
     }

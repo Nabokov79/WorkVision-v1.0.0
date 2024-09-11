@@ -40,7 +40,7 @@ public class DefectServiceImpl implements DefectService {
         if (repository.existsById(defectDto.getId())) {
             validate(defectDto);
             Defect defect = repository.save(mapper.mapToDefect(defectDto
-                                                           , getTypeCalculation(defectDto.getCalculation())));
+                                                             , getTypeCalculation(defectDto.getCalculation())));
             defect.setMeasuredParameters(parameterService.update(defectDto.getMeasuredParameters()));
             return mapper.mapToResponseDefectDto(defect);
         }

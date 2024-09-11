@@ -1,6 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedElementMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedDefect;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalculatedElementServiceImpl implements CalculatedElementService {
 
     private final CalculatedElementRepository repository;

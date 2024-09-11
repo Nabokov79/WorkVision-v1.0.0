@@ -47,4 +47,8 @@ public interface ParameterMeasurementMapper {
     @Mapping(source = "parameterDto.id", target = "id")
     ParameterMeasurement mapToUpdateParameterMeasurement(@MappingTarget ParameterMeasurement parameter
                                                                       , ParameterMeasurementDto parameterDto);
+
+    @Mapping(source = "quantity", target = "value")
+    @Mapping(target = "id", ignore = true)
+    void mapToUpdateQuantity(@MappingTarget ParameterMeasurement parameter, Double quantity);
 }

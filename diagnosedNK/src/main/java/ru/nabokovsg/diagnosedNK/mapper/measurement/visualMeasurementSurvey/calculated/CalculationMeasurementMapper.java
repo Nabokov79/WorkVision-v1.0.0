@@ -52,5 +52,46 @@ public interface CalculationMeasurementMapper {
     @Mapping(target = "repair", ignore = true)
     CalculatedParameter mapToSquare(String parameterName, String unitMeasurement, Double minValue);
 
+    @Mapping(source = "parameter.parameterName", target = "parameterName")
+    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
+    @Mapping(source = "parameter.value", target = "minValue")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "measurementNumber", ignore = true)
+    @Mapping(target = "parameterNumber", ignore = true)
+    @Mapping(target = "maxValue", ignore = true)
+    @Mapping(target = "defect", ignore = true)
+    @Mapping(target = "repair", ignore = true)
+    CalculatedParameter mapToMinValue(ParameterMeasurement parameter);
 
+    @Mapping(source = "parameter.parameterName", target = "parameterName")
+    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
+    @Mapping(source = "parameter.value", target = "maxValue")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "measurementNumber", ignore = true)
+    @Mapping(target = "parameterNumber", ignore = true)
+    @Mapping(target = "minValue", ignore = true)
+    @Mapping(target = "defect", ignore = true)
+    @Mapping(target = "repair", ignore = true)
+    CalculatedParameter mapToMaxValue(ParameterMeasurement parameter);
+
+    @Mapping(source = "parameter.parameterName", target = "parameterName")
+    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
+    @Mapping(source = "parameter.value", target = "minValue")
+    @Mapping(source = "parameter.value", target = "maxValue")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "measurementNumber", ignore = true)
+    @Mapping(target = "parameterNumber", ignore = true)
+    @Mapping(target = "defect", ignore = true)
+    @Mapping(target = "repair", ignore = true)
+    CalculatedParameter mapToMaxMinValue(ParameterMeasurement parameter);
+
+    @Mapping(source = "parameter.parameterName", target = "parameterName")
+    @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
+    @Mapping(source = "parameter.value", target = "integerValue")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "measurementNumber", ignore = true)
+    @Mapping(target = "parameterNumber", ignore = true)
+    @Mapping(target = "defect", ignore = true)
+    @Mapping(target = "repair", ignore = true)
+    CalculatedParameter mapToQuantity(ParameterMeasurement parameter)
 }
