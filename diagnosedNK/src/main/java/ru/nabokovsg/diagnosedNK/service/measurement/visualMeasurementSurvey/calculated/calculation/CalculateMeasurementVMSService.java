@@ -4,13 +4,12 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public interface CalculateMeasurementVMSService {
 
-    List<CalculatedParameter> calculation(Map<String, CalculatedParameter> calculatedParameters
-                                        , Set<ParameterMeasurement> parameters
-                                        , ParameterCalculationType calculation);
+    void calculation(Map<String, CalculatedParameter> calculatedParameters
+                   , Set<ParameterMeasurement> parameters
+                   , ParameterCalculationType calculation);
 }

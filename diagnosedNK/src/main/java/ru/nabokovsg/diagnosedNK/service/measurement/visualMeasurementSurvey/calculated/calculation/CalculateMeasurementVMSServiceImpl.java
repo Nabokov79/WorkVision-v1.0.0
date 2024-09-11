@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
-import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculationMeasurementMapper;
+import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculateMeasurementVMSMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
@@ -23,30 +23,25 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
 
     private final ConstParameterMeasurementService constParameter;
     private final ConstUnitMeasurementService constUnit;
-    private final CalculationMeasurementMapper mapper;
+    private final CalculateMeasurementVMSMapper mapper;
 
     @Override
-    public List<CalculatedParameter> calculation(Map<String, CalculatedParameter> calculatedParameters
+    public void calculation(Map<String, CalculatedParameter> calculatedParameters
             , Set<ParameterMeasurement> parameters
             , ParameterCalculationType calculation) {
-        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
         switch (calculation) {
             case NO_ACTION ->
                     map(parameters).forEach(parameter -> calculatedParameters.put(parameter.getParameterName(), parameter));
-            case SQUARE -> calculateMeasurementService.countSquare(parameters.stream().map(p -> {
-                if (p.getParameterName().equals(quantityName)) {
-                    return mapper.mapToQuantity(p);
-                } else {
-                    return mapper.mapToMinValue(p);
-                }
-            }).toList());
-            case MIN -> countMin(calculatedParameters, map(parameters));
-            case MAX -> countMax(calculatedParameters, map(parameters));
-            case MAX_MIN -> countMaxMin(calculatedParameters, map(parameters));
+            case SQUARE -> countSquare(calculatedParameters, map(parameters));
+            case MIN -> countMin(calculatedParameters
+                               , parameters.stream().map(mapper::mapToMinValue).toList());
+            case MAX -> countMax(calculatedParameters
+                               , parameters.stream().map(mapper::mapToMaxValue).toList());
+            case MAX_MIN -> countMaxMin(calculatedParameters
+                                      , parameters.stream().map(mapper::mapToMaxMinValue).toList());
             default ->
                     throw new NotFoundException(String.format("Unknown type=%s calculation parameters", calculation));
         }
-        return calculatedParameters;
     }
 
 
@@ -96,24 +91,24 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
     private List<CalculatedParameter> map(Set<ParameterMeasurement> parameters) {
         String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
         return parameters.stream()
-                         .map(p -> {
-                             if (p.getParameterName().equals(quantityName)) {
-                                 return mapper.mapToQuantity(p);
-                             } else {
-                                 return mapper.mapToMaxMinValue(p);
-                             }
-                         })
-                        .toList();
+                .map(p -> {
+                    if (p.getParameterName().equals(quantityName)) {
+                        return mapper.mapToQuantity(p);
+                    } else {
+                        return mapper.mapToMaxMinValue(p);
+                    }
+                })
+                .toList();
     }
-    public List<CalculatedParameter> countSquare(List<CalculatedParameter> measurements) {
-        List<CalculatedParameter> calculatedParameters = new ArrayList<>();
+
+    private void countSquare(Map<String, CalculatedParameter> calculatedParameters, List<CalculatedParameter> measurements) {
         Map<String, CalculatedParameter> parameters = measurements.stream()
                 .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
         String parameterName = constParameter.get(String.valueOf(MeasuredParameterType.SQUARE));
-        String unitMeasurement = constUnit.get(String.valueOf(UnitMeasurementType.M_2));
         String length = constParameter.get(String.valueOf(MeasuredParameterType.LENGTH));
         String width = constParameter.get(String.valueOf(MeasuredParameterType.WIDTH));
         String diameter = constParameter.get(String.valueOf(MeasuredParameterType.DIAMETER));
+        String unitMeasurement = constUnit.get(String.valueOf(UnitMeasurementType.M_2));
         double square = 0.0;
         if (parameters.get(length) != null) {
             square = parameters.get(length).getMinValue() * parameters.get(width).getMinValue();
@@ -123,15 +118,38 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
             square = Math.PI * rad * rad * 100 / 100;
         }
         square /= 1000000;
-        calculatedParameters.add(mapper.mapToSquare(parameterName, unitMeasurement, square));
-        measurements.forEach(parameter -> {
-            if (!parameter.getParameterName().equals(length)
-                    && !parameter.getParameterName().equals(width)
-                    && !parameter.getParameterName().equals(diameter)) {
-                calculatedParameters.add(parameter);
+        calculatedParameters.put(parameterName, mapper.mapToSquare(parameterName, unitMeasurement, square));
+        compareParameters(calculatedParameters, parameters);
+    }
+
+    private void compareParameters(Map<String, CalculatedParameter> calculatedParameters
+            , Map<String, CalculatedParameter> parameters) {
+        if (calculatedParameters.isEmpty()) {
+            return;
+        }
+        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        Map<Integer, Integer> coincidences = getNumberOfMatches(calculatedParameters, parameters);
+        int size = parameters.size();
+        parameters.forEach((k, v) -> {
+            if (coincidences.get(v.getMeasurementNumber()) == size) {
+                CalculatedParameter calculatedParameter = parameters.get(quantityName);
+                CalculatedParameter parameter = parameters.get(quantityName);
+                calculatedParameter.setIntegerValue(calculatedParameter.getIntegerValue() + parameter.getIntegerValue());
+                calculatedParameters.put(quantityName, calculatedParameter);
             }
         });
-        return calculatedParameters;
+    }
+
+    private Map<Integer, Integer> getNumberOfMatches(Map<String, CalculatedParameter> calculatedParameters
+            , Map<String, CalculatedParameter> parameters) {
+        Map<Integer, Integer> coincidences = new HashMap<>();
+        calculatedParameters.forEach((k, v) -> {
+            CalculatedParameter parameter = parameters.get(v.getParameterName());
+            if (parameter != null && Objects.equals(parameter.getMinValue(), v.getMinValue())) {
+                coincidences.merge(v.getMeasurementNumber(), 1, Integer::sum);
+            }
+        });
+        return coincidences;
     }
 
     private void sumQuantity(Map<String, CalculatedParameter> calculatedParameters, CalculatedParameter parameter, String quantityName) {
