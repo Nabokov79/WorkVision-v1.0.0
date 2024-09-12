@@ -85,7 +85,7 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
         Map<Long, ParameterMeasurementDto> parameters = parametersDto
                 .stream()
                 .collect(Collectors.toMap(ParameterMeasurementDto::getParameterId, p -> p));
-        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        String quantityName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.QUANTITY));
         parametersDb.forEach(p -> {
             if (p.getParameterName().equals(quantityName)) {
                 ParameterMeasurementDto parameter = parameters.get(p.getParameterId());
@@ -108,7 +108,7 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     @Override
     public boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements
                                           , Map<String, ParameterMeasurement> parameters) {
-        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        String quantityName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.QUANTITY));
         int coincidences = 0;
         for (ParameterMeasurement parameterDb : parameterMeasurements) {
             ParameterMeasurement parameter = parameters.get(parameterDb.getParameterName());

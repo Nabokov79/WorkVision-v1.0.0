@@ -28,26 +28,20 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     @Override
     public void save(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
-        log.info(" ");
-        log.info("-------START Calculated  Defect ----------");
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
-        log.info(" ");
-        log.info("CalculatedDefect calculatedDefect = {}", calculatedDefect);
         if (calculatedDefect == null) {
             CalculatedElement element = elementService.get(identifiedDefect.getEquipmentId(), identifiedDefect.getElementName());
             calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect, element));
             elementService.addDefect(element, calculatedDefect);
-            log.info("CalculatedDefect calculatedDefect before save = {}", calculatedDefect);
-            log.info("CalculatedElement element = {}", calculatedDefect);
         }
-        log.info(" ");
+        if (defects.isEmpty()) {
+            defects.add(identifiedDefect);
+        }
         parameterService.save(new CalculatedParameterData.Builder()
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())
                                                          .build());
-        log.info(" ");
-        log.info("-------START Calculated  Defect ----------");
     }
 
     @Override

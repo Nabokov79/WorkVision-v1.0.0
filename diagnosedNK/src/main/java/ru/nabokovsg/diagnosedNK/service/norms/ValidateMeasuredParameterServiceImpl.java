@@ -8,7 +8,6 @@ import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.model.norms.UnitMeasurementType;
 import ru.nabokovsg.diagnosedNK.service.constantService.ConstParameterMeasurementService;
-import ru.nabokovsg.diagnosedNK.service.constantService.ConstUnitMeasurementService;
 
 import java.util.List;
 
@@ -17,7 +16,6 @@ import java.util.List;
 public class ValidateMeasuredParameterServiceImpl implements ValidateMeasuredParameterService {
 
     private final ConstParameterMeasurementService constParameter;
-    private final ConstUnitMeasurementService unitMeasurement;
 
     @Override
     public void validateByCalculationType(List<MeasuredParameterDto> parameters, String calculation) {
@@ -30,18 +28,18 @@ public class ValidateMeasuredParameterServiceImpl implements ValidateMeasuredPar
 
     private void setConstParameters(List<MeasuredParameterDto> parameters) {
         parameters.forEach(p -> {
-            p.setParameterName(constParameter.get(p.getParameterName()));
-            p.setUnitMeasurement(unitMeasurement.get(p.getUnitMeasurement()));
+            p.setParameterName(constParameter.getParameterName(p.getParameterName()));
+            p.setUnitMeasurement(constParameter.getUnitMeasurement(p.getUnitMeasurement()));
         });
     }
 
     private void validateBySquare(List<MeasuredParameterDto> parameters) {
-        String squareName = constParameter.get(String.valueOf(MeasuredParameterType.SQUARE));
-        String lengthName = constParameter.get(String.valueOf(MeasuredParameterType.LENGTH));
-        String widthName = constParameter.get(String.valueOf(MeasuredParameterType.WIDTH));
-        String diameterName = constParameter.get(String.valueOf(MeasuredParameterType.DIAMETER));
-        String quantityName = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
-        String unit = unitMeasurement.get(String.valueOf(UnitMeasurementType.PIECES));
+        String squareName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.SQUARE));
+        String lengthName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.LENGTH));
+        String widthName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.WIDTH));
+        String diameterName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.DIAMETER));
+        String quantityName = constParameter.getParameterName(String.valueOf(MeasuredParameterType.QUANTITY));
+        String unit = constParameter.getUnitMeasurement(String.valueOf(UnitMeasurementType.PIECES));
         boolean length = false;
         boolean width = false;
         boolean diameter = false;
@@ -75,8 +73,8 @@ public class ValidateMeasuredParameterServiceImpl implements ValidateMeasuredPar
 
     private void validateQuantityParameter(List<MeasuredParameterDto> parameters) {
         boolean flag = true;
-        String quantity = constParameter.get(String.valueOf(MeasuredParameterType.QUANTITY));
-        String unit = unitMeasurement.get(String.valueOf(UnitMeasurementType.PIECES));
+        String quantity = constParameter.getParameterName(String.valueOf(MeasuredParameterType.QUANTITY));
+        String unit = constParameter.getUnitMeasurement(String.valueOf(UnitMeasurementType.PIECES));
         for (MeasuredParameterDto parameter : parameters) {
             if (parameter.getParameterName().equals(quantity)) {
                 flag = false;

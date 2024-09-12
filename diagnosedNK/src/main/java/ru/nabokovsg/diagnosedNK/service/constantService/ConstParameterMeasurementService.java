@@ -2,5 +2,7 @@ package ru.nabokovsg.diagnosedNK.service.constantService;
 
 public interface ConstParameterMeasurementService {
 
-    String get(String measuredParameter);
+    String getParameterName(String measuredParameter);
+
+    String getUnitMeasurement(String unitMeasurement);
 }

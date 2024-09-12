@@ -1,7 +1,6 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
@@ -21,31 +20,20 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CalculatedParameterServiceImpl implements CalculatedParameterService {
 
     private final CalculatedParameterRepository repository;
     private final CalculatedParameterMapper mapper;
-    private final ConstParameterMeasurementService measurementService;
+    private final ConstParameterMeasurementService constParameter;
     private final CalculateMeasurementVMSService calculateMeasurementService;
     private final static Integer MEASUREMENT = 1;
 
     @Override
     public void save(CalculatedParameterData parameterData) {
-        log.info("-------START Calculated  Parameters ----------");
         Map<String, CalculatedParameter> parameters = new HashMap<>();
-        log.info("Set<IdentifiedDefect> defects = {}", parameterData.getDefects());
-        log.info("CalculatedDefect defect = {}", parameterData.getDefect());
-        log.info("Set<CompletedRepair> repairs = {}", parameterData.getRepairs());
-        log.info("CalculatedRepair repair = {}", parameterData.getRepair());
-        log.info("ParameterCalculationType calculationType = {}", parameterData.getCalculationType());
         if (parameterData.getDefects() != null && parameterData.getRepairs() == null) {
-            log.info("  ");
-            log.info("-------START Calculated Defect Parameters ----------");
             calculateByDefect(parameters, parameterData);
         } else if (parameterData.getRepairs() != null && parameterData.getDefects() == null) {
-            log.info("  ");
-            log.info("-------START Calculated Repair Parameters ----------");
             calculateByRepair(parameters, parameterData);
         } else {
             throw new BadRequestException(
@@ -53,9 +41,6 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
                             , parameterData.getRepairs()));
         }
         repository.saveAll(parameters.values());
-        log.info("Map<String, CalculatedParameter> parameters = {}", parameters);
-        log.info("  ");
-        log.info("-------END Calculated Parameters ----------");
     }
 
     private void calculateByDefect(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
@@ -113,8 +98,8 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
     private void setSequentialParameterNumber(List<CalculatedParameter> calculatedParameters
             , Integer measurementNumber) {
         int sequentialNumber = 1;
-        String square = measurementService.get(String.valueOf(MeasuredParameterType.SQUARE));
-        String quantity = measurementService.get(String.valueOf(MeasuredParameterType.QUANTITY));
+        String square = constParameter.getParameterName(String.valueOf(MeasuredParameterType.SQUARE));
+        String quantity = constParameter.getParameterName(String.valueOf(MeasuredParameterType.QUANTITY));
         int size = calculatedParameters.size();
         for (CalculatedParameter parameter : calculatedParameters) {
             if (parameter.getMeasurementNumber() == null) {
