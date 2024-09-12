@@ -1,6 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalculatedParameterServiceImpl implements CalculatedParameterService {
 
     private final CalculatedParameterRepository repository;
@@ -44,6 +46,13 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
     }
 
     private void calculateByDefect(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
+        log.info(" ");
+        log.info("----- START sum Quantity-------");
+        log.info("INPUT parameters = {}", parameters);
+        log.info("INPUT defects = {}", parameterData.getDefects());
+        log.info("INPUT defect = {}", parameterData.getDefect());
+        log.info("INPUT defect parameters = {}", parameterData.getDefect().getParameters());
+        log.info("INPUT CalculationType = {}", parameterData.getCalculationType());
         int measurementNumber = MEASUREMENT;
         switch (parameterData.getCalculationType()) {
             case SQUARE -> parameterData.getDefects().forEach(defect ->
@@ -117,12 +126,16 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
     }
 
     private void mapWithDefect(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
-        Map<String, CalculatedParameter> parametersDb = convertParameters(parameterData.getDefect()
-                .getParameters())
-                .stream()
-                .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
-        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithDefect(v, parametersDb.get(v.getParameterName())
-                , parameterData.getDefect())));
+        if (parameterData.getDefect().getParameters() != null) {
+            Map<String, CalculatedParameter> parametersDb = convertParameters(parameterData.getDefect()
+                    .getParameters())
+                    .stream()
+                    .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
+            parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithDefect(parametersDb.get(v.getParameterName())
+                    , v
+                    , parameterData.getDefect())));
+        }
+        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithDefect(v, v, parameterData.getDefect())));
     }
 
     private void mapWithRepair(Map<String, CalculatedParameter> parameters, CalculatedParameterData parameterData) {
@@ -130,7 +143,8 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
                 .getParameters())
                 .stream()
                 .collect(Collectors.toMap(CalculatedParameter::getParameterName, p -> p));
-        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithDefect(v, parametersDb.get(v.getParameterName())
-                , parameterData.getDefect())));
+        parameters.forEach((k, v) -> parameters.put(k, mapper.mapWithRepair(parametersDb.get(v.getParameterName())
+                                                                            , v
+                                                                            , parameterData.getRepair())));
     }
 }

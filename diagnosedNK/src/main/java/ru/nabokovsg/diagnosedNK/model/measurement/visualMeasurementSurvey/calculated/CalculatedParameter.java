@@ -49,6 +49,7 @@ public class CalculatedParameter {
                 ", parameterName='" + parameterName + '\'' +
                 ", minValue=" + minValue +
                 ", maxValue=" + maxValue +
+                ", integerValue=" + integerValue +
                 ", unitMeasurement='" + unitMeasurement +
                 '}';
     }
@@ -61,6 +62,7 @@ public class CalculatedParameter {
         return Objects.equals(parameterName, parameter.parameterName)
                 && Objects.equals(minValue, parameter.minValue)
                 && Objects.equals(maxValue, parameter.maxValue)
+                && Objects.equals(integerValue, parameter.integerValue)
                 && Objects.equals(unitMeasurement, parameter.unitMeasurement)
                 && Objects.equals(defect, parameter.defect)
                 && Objects.equals(repair, parameter.repair);
@@ -68,6 +70,6 @@ public class CalculatedParameter {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, measurementNumber, parameterNumber, parameterName, minValue, maxValue, unitMeasurement, defect, repair);
+        return Objects.hash(id, measurementNumber, parameterNumber, parameterName, minValue, maxValue, integerValue, unitMeasurement, defect, repair);
     }
 }
