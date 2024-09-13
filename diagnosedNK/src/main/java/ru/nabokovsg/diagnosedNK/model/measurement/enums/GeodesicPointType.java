@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.model.measurement.geodesy;
+package ru.nabokovsg.diagnosedNK.model.measurement.enums;
 
 public enum GeodesicPointType {
 

@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
-import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicPointType;
+import ru.nabokovsg.diagnosedNK.model.measurement.enums.GeodesicPointType;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.PointDifference;
 
 @Mapper(componentModel = "spring")
