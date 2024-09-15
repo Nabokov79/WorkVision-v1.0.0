@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedRepairMapper;
+import ru.nabokovsg.diagnosedNK.model.measurement.enums.TypeVMSData;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.*;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
@@ -36,6 +37,7 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
                                                         .repairs(repairs)
                                                         .repair(calculatedRepair)
                                                         .calculationType(elementRepair.getCalculation())
+                                                        .typeData(TypeVMSData.REPAIR)
                                                         .build());
     }
 
@@ -50,6 +52,7 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
                                                          .repairs(repairs)
                                                          .repair(calculatedRepair)
                                                          .calculationType(elementRepair.getCalculation())
+                                                         .typeData(TypeVMSData.REPAIR)
                                                          .build());
     }
 

@@ -1,21 +1,16 @@
 package ru.nabokovsg.diagnosedNK.model.norms;
 
-import java.util.Optional;
-
 public enum UnitMeasurementType {
 
-    MM,
-    M_2,
-    MM_2,
-    PIECES,
-    NOT;
+    MM( "мм"),
+    M_2("м2"),
+    MM_2("мм2"),
+    PIECES("шт"),
+    NOT(" ");
 
-    public static Optional<UnitMeasurementType> from(String unit) {
-        for (UnitMeasurementType type : values()) {
-            if (type.name().equalsIgnoreCase(unit)) {
-                return Optional.of(type);
-            }
-        }
-        return Optional.empty();
+    public final String label;
+
+    UnitMeasurementType(String label) {
+        this.label = label;
     }
 }

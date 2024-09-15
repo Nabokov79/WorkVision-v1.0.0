@@ -1,24 +1,19 @@
 package ru.nabokovsg.diagnosedNK.model.norms;
 
-import java.util.Optional;
-
 public enum MeasuredParameterType {
 
-    LENGTH,
-    WIDTH,
-    HEIGHT,
-    DEPTH,
-    DIAMETER,
-    SQUARE,
-    QUANTITY,
-    DIRECTION;
+    LENGTH("длина"),
+    WIDTH("ширина"),
+    HEIGHT("высота"),
+    DEPTH("глубина"),
+    DIAMETER("диаметр"),
+    SQUARE("площадь"),
+    QUANTITY("количество"),
+    DIRECTION("направление");
 
-    public static Optional<MeasuredParameterType> from(String parameter) {
-        for (MeasuredParameterType type : values()) {
-            if (type.name().equalsIgnoreCase(parameter)) {
-                return Optional.of(type);
-            }
-        }
-        return Optional.empty();
+    public final String label;
+
+    MeasuredParameterType(String label) {
+        this.label = label;
     }
 }

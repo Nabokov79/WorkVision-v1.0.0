@@ -10,27 +10,19 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 @Mapper(componentModel = "spring")
 public interface CalculatedParameterMapper {
 
+
     @Mapping(source = "defect", target = "defect")
-    @Mapping(source = "parameter.minValue", target = "minValue")
-    @Mapping(source = "parameter.maxValue", target = "maxValue")
-    @Mapping(source = "parameter.integerValue", target = "integerValue")
     @Mapping(target = "id", ignore = true)
-    CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameterDb
-                                                   , CalculatedParameter parameter
-                                                   , CalculatedDefect defect);
+    CalculatedParameter mapWithDefect(@MappingTarget CalculatedParameter parameter, CalculatedDefect defect);
 
     @Mapping(source = "repair", target = "repair")
+    @Mapping(target = "id", ignore = true)
+    CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameter, CalculatedRepair repair);
+
     @Mapping(source = "parameter.minValue", target = "minValue")
     @Mapping(source = "parameter.maxValue", target = "maxValue")
     @Mapping(source = "parameter.integerValue", target = "integerValue")
+    @Mapping(target = "parameterName", ignore = true)
     @Mapping(target = "id", ignore = true)
-    CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameterDb
-            , CalculatedParameter parameter
-            , CalculatedRepair repair);
-
-    @Mapping(source = "measurementNumber", target = "measurementNumber")
-    @Mapping(source = "parameterNumber", target = "parameterNumber")
-    void mapWithSequenceNumber(@MappingTarget CalculatedParameter parameter
-                                            , Integer measurementNumber
-                                            , Integer parameterNumber);
+    void mapToUpdateCalculatedParameter(@MappingTarget CalculatedParameter parameterDb, CalculatedParameter parameter);
 }

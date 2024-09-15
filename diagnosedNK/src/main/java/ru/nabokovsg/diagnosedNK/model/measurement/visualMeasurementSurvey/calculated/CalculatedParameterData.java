@@ -1,5 +1,6 @@
 package ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated;
 
+import ru.nabokovsg.diagnosedNK.model.measurement.enums.TypeVMSData;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
@@ -13,6 +14,7 @@ public class CalculatedParameterData {
     private final ParameterCalculationType calculationType;
     private final CalculatedDefect defect;
     private final CalculatedRepair repair;
+    private final TypeVMSData typeData;
 
     public CalculatedParameterData(Builder builder) {
         this.defects = builder.defects;
@@ -20,6 +22,7 @@ public class CalculatedParameterData {
         this.calculationType = builder.calculationType;
         this.defect = builder.defect;
         this.repair = builder.repair;
+        this.typeData = builder.typeData;
     }
 
     public Set<IdentifiedDefect> getDefects() {
@@ -42,6 +45,10 @@ public class CalculatedParameterData {
         return repair;
     }
 
+    public TypeVMSData getTypeData() {
+        return typeData;
+    }
+
     public static class Builder {
 
         private Set<IdentifiedDefect> defects;
@@ -49,6 +56,7 @@ public class CalculatedParameterData {
         private ParameterCalculationType calculationType;
         private CalculatedDefect defect;
         private CalculatedRepair repair;
+        private TypeVMSData typeData;
 
         public Builder defects(Set<IdentifiedDefect> defects) {
             this.defects = defects;
@@ -72,6 +80,11 @@ public class CalculatedParameterData {
 
         public Builder repair(CalculatedRepair repair) {
             this.repair = repair;
+            return this;
+        }
+
+        public Builder typeData(TypeVMSData typeData) {
+            this.typeData = typeData;
             return this;
         }
 

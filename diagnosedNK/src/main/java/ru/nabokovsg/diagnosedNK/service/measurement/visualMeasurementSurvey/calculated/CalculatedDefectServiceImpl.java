@@ -4,10 +4,10 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedDefectMapper;
+import ru.nabokovsg.diagnosedNK.model.measurement.enums.TypeVMSData;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.*;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
@@ -17,7 +17,6 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     private final CalculatedDefectRepository repository;
@@ -41,6 +40,7 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())
+                                                         .typeData(TypeVMSData.DEFECT)
                                                          .build());
     }
 
@@ -55,6 +55,7 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())
+                                                         .typeData(TypeVMSData.DEFECT)
                                                          .build());
     }
 
