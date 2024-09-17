@@ -10,10 +10,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedParameterRepository;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.ParameterCalculationManagerService;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -22,42 +19,42 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
 
     private final CalculatedParameterRepository repository;
     private final CalculatedParameterMapper mapper;
-    private final ParameterCalculationManagerService calculationManagerService;
+    private final  ParameterCalculationManagerService calculationManagerService;
 
     @Override
     public void save(CalculatedParameterData parameterData) {
         log.info(" ");
-        log.info(" ----------------       Class : CalculatedParameterServiceImpl -----------------------");
-        log.info(" ----------------  START save parameters -----------------------");
+        log.info("Start calculation parameters");
         Set<CalculatedParameter> parametersDb = getAll(parameterData);
         Map<String, CalculatedParameter> calculatedParameters = calculationManagerService.calculate(parameterData);
-        if (parametersDb == null) {
-            mapTo(parameterData, calculatedParameters);
-            parametersDb = new HashSet<>(calculatedParameters.values());
-        } else {
+        log.info("Before calculation :");
+        log.info("calculatedParameters = {}", calculatedParameters.values());
+        mapTo(parameterData, calculatedParameters);
+        if (parametersDb != null) {
             update(parametersDb, calculatedParameters);
         }
-        log.info("Before mapping parametersDb ={}", parametersDb);
-        repository.saveAll(parametersDb);
-        log.info(" ----------------  END save parameters -----------------------");
+        log.info("save to db");
+        repository.saveAll(calculatedParameters.values());
+        log.info("End calculation parameters");
     }
 
-    private void mapTo(CalculatedParameterData parameterData, Map<String, CalculatedParameter> calculatedParameters) {
+    private void update(Set<CalculatedParameter> parametersDb, Map<String, CalculatedParameter> calculatedParameters) {
         log.info(" ");
-        log.info(" ----------------       START mapping -----------------------");
+        log.info("Start update parameters");
+        parametersDb.forEach(parameter -> calculatedParameters.put(parameter.getParameterName()
+                      , mapper.mapToUpdateCalculatedParameter(parameter, calculatedParameters.get(parameter.getParameterName()))));
+        log.info("End update parameters");
+    }
+
+    private void mapTo(CalculatedParameterData parameterData,Map<String, CalculatedParameter> calculatedParameters) {
         switch (parameterData.getTypeData()) {
-            case DEFECT -> {
-                log.info(" ----------------      mapping with DEFECT -----------------------");
-                log.info("INPUT defect ={}", parameterData.getDefect());
-                log.info("INPUT calculatedParameters ={}", calculatedParameters.values());
-                calculatedParameters.forEach((k,v) -> calculatedParameters.put(k, mapper.mapWithDefect(v, parameterData.getDefect())));
-            }
-            case REPAIR -> {
-                log.info(" ----------------      mapping with REPAIR -----------------------");
-                log.info("INPUT defect ={}", parameterData.getRepair());
-                log.info("INPUT calculatedParameters ={}", calculatedParameters.values());
-                calculatedParameters.forEach((k,v) -> calculatedParameters.put(k, mapper.mapWithRepair(v, parameterData.getRepair())));
-            }
+            case DEFECT ->
+                calculatedParameters.forEach((k,v) ->
+                    calculatedParameters.put(k, mapper.mapWithDefect(v, parameterData.getDefect()))
+               );
+            case REPAIR -> calculatedParameters.forEach((k,v) ->
+                    calculatedParameters.put(k, mapper.mapWithRepair(v, parameterData.getRepair()))
+            );
             default -> throw new NotFoundException(String.format("Completed repair calculation type=%s not supported"
                     , parameterData.getCalculationType()));
         }
@@ -74,15 +71,5 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
             default -> throw new NotFoundException(String.format("Completed repair calculation type=%s not supported"
                     , parameterData.getCalculationType()));
         }
-    }
-
-    private void update(Set<CalculatedParameter> parametersDb, Map<String, CalculatedParameter> calculatedParameters) {
-        log.info(" ");
-        log.info(" ----------------       START update -----------------------");
-        log.info("INPUT parametersDb ={}", parametersDb);
-        log.info("INPUT calculatedParameters ={}", calculatedParameters.values());
-        parametersDb.forEach(
-                parameter -> mapper.mapToUpdateCalculatedParameter(parameter
-                                                             , calculatedParameters.get(parameter.getParameterName())));
     }
 }

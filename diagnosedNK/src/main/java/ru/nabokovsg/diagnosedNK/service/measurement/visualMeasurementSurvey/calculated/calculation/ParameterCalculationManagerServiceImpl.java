@@ -1,7 +1,6 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
@@ -19,17 +18,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ParameterCalculationManagerServiceImpl implements ParameterCalculationManagerService {
 
-    private final CalculateMeasurementVMSService calculateMeasurementService;
     private final ParameterCalculationManagerMapper mapper;
+    private final CalculateMeasurementVMSService calculateMeasurementService;
 
     @Override
     public Map<String, CalculatedParameter> calculate(CalculatedParameterData parameterData) {
-        log.info(" ");
-        log.info(" ----------------       Class : ParameterCalculationManagerServiceImpl -----------------------");
-        log.info(" ----------------       START calculate -----------------------");
         Map<String, CalculatedParameter> parameters = new HashMap<>();
         switch (parameterData.getCalculationType()) {
             case SQUARE -> calculateOneByOne(parameterData, parameters);
@@ -37,96 +32,114 @@ public class ParameterCalculationManagerServiceImpl implements ParameterCalculat
             default -> throw new NotFoundException(String.format("Completed repair calculation type=%s not supported"
                     , parameterData.getCalculationType()));
         }
-        log.info(" ");
-        log.info("OUTPUT parameters = {}", parameters);
-        log.info(" ----------------       END calculate -----------------------");
         return parameters;
     }
 
     private void calculateOneByOne(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
-        log.info(" ");
-        log.info(" ----------------       START calculateOneByOne -----------------------");
-        int measurementNumber = 1;
         switch (parameterData.getTypeData()) {
-            case DEFECT -> {
-                for (IdentifiedDefect defect : parameterData.getDefects()) {
-                    compareParameters(parameters, calculateMeasurementService.calculation(defect.getParameterMeasurements().stream().map(p -> map(p, parameterData.getCalculationType())).collect(Collectors.toSet()), parameterData.getCalculationType()));
-                    setSequentialParameterNumber(parameters, measurementNumber);
-                    measurementNumber++;
-                }
-            }
-            case REPAIR -> {
-                for (CompletedRepair repair : parameterData.getRepairs()) {
-                    compareParameters(parameters, calculateMeasurementService.calculation(repair.getParameterMeasurements().stream().map(p -> map(p, parameterData.getCalculationType())).collect(Collectors.toSet()), parameterData.getCalculationType()));
-                    setSequentialParameterNumber(parameters, measurementNumber);
-                    measurementNumber++;
-                }
-            }
+            case DEFECT ->  calculateDefectsOneByOne(parameterData, parameters);
+            case REPAIR ->  calculateRepairOneByOne(parameterData, parameters);
             default -> throw new NotFoundException(String.format("Completed repair calculation type=%s not supported"
                     , parameterData.getCalculationType()));
         }
-        log.info(" ----------------  END calculateOneByOne -----------------------");
     }
 
     private void calculateAll(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
-        log.info(" ");
-        log.info(" ----------------       START calculate ALL -----------------------");
         switch (parameterData.getTypeData()) {
-            case DEFECT ->
-                    parameters.putAll(calculateMeasurementService.calculation(
-                                                     parameterData.getDefects()
-                                                                  .stream()
-                                                                  .map(IdentifiedDefect::getParameterMeasurements)
-                                                                  .flatMap(Collection::stream)
-                                                                  .map(p -> map(p, parameterData.getCalculationType()))
-                                                                  .collect(Collectors.toSet())
-                                                   , parameterData.getCalculationType()));
-            case REPAIR ->
-                    parameters.putAll(calculateMeasurementService.calculation(
-                                                    parameterData.getRepairs()
-                                                                 .stream()
-                                                                 .map(CompletedRepair::getParameterMeasurements)
-                                                                 .flatMap(Collection::stream)
-                                                                 .map(p -> map(p, parameterData.getCalculationType()))
-                                                                 .collect(Collectors.toSet())
-                                                    , parameterData.getCalculationType()));
+            case DEFECT -> calculateAllDefects(parameterData, parameters);
+            case REPAIR -> calculateAllRepairs(parameterData, parameters);
             default -> throw new NotFoundException(String.format("Completed repair calculation type=%s not supported"
                     , parameterData.getCalculationType()));
         }
-        setSequentialParameterNumber(parameters, 1);
-        log.info(" ----------------  END calculate ALL -----------------------");
     }
 
-    private void compareParameters(Map<String, CalculatedParameter> parameters
-                                 , Map<String, CalculatedParameter> calculatedParameters) {
-        log.info(" ");
-        log.info(" ----------------       START compare parameters -----------------------");
-        log.info("INPUT parameters = {}", parameters);
-        log.info("INPUT calculatedParameters = {}", calculatedParameters);
+    private void calculateDefectsOneByOne(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+        int measurementNumber = 1;
+        for (IdentifiedDefect defect : parameterData.getDefects()) {
+            compareParameters(parameters, calculationCalculationType(
+                                                        defect.getParameterMeasurements()
+                                                                .stream()
+                                                                .map(p -> map(p, parameterData.getCalculationType()))
+                                                                .collect(Collectors.toSet())
+                                                        , parameterData.getCalculationType()));
+            setSequentialParameterNumber(parameters, measurementNumber);
+            measurementNumber++;
+        }
+    }
+
+    private void calculateAllDefects(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+        Set<CalculatedParameter> calculatedParameters =
+                parameterData.getDefects()
+                        .stream()
+                        .map(IdentifiedDefect::getParameterMeasurements)
+                        .flatMap(Collection::stream)
+                        .map(p -> map(p, parameterData.getCalculationType()))
+                        .collect(Collectors.toSet());
+        calculationCalculationType(calculatedParameters, parameterData.getCalculationType());
+        addAllParameters(parameters, calculatedParameters);
+        setSequentialParameterNumber(parameters, 1);
+    }
+
+    private void calculateRepairOneByOne(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+        int measurementNumber = 1;
+        for (CompletedRepair repair : parameterData.getRepairs()) {
+            compareParameters(parameters, calculationCalculationType(
+                    repair.getParameterMeasurements()
+                            .stream()
+                            .map(p -> map(p, parameterData.getCalculationType()))
+                            .collect(Collectors.toSet())
+                    , parameterData.getCalculationType()));
+            setSequentialParameterNumber(parameters, measurementNumber);
+            measurementNumber++;
+        }
+    }
+
+    private void calculateAllRepairs(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+        Set<CalculatedParameter> calculatedParameters = parameterData.getRepairs()
+                .stream()
+                .map(CompletedRepair::getParameterMeasurements)
+                .flatMap(Collection::stream)
+                .map(p -> map(p, parameterData.getCalculationType()))
+                .collect(Collectors.toSet());
+        calculationCalculationType(calculatedParameters, parameterData.getCalculationType());
+        addAllParameters(parameters, calculatedParameters);
+        setSequentialParameterNumber(parameters, 1);
+    }
+
+    public Map<String, CalculatedParameter> calculationCalculationType(Set<CalculatedParameter> parameters, ParameterCalculationType calculation) {
+        Map<String, CalculatedParameter> calculatedParameters = new HashMap<>();
+        switch (calculation) {
+            case NO_ACTION -> parameters.forEach(parameter ->
+                    calculatedParameters.put(parameter.getParameterName(), parameter)
+            );
+            case SQUARE -> calculateMeasurementService.countSquare(calculatedParameters, parameters);
+            case MIN -> calculateMeasurementService.countMin(calculatedParameters, parameters);
+            case MAX -> calculateMeasurementService.countMax(calculatedParameters, parameters);
+            case MAX_MIN -> calculateMeasurementService.countMaxMin(calculatedParameters, parameters);
+            default ->
+                    throw new NotFoundException(String.format("Unknown type=%s calculation parameters", calculation));
+        }
+        return calculatedParameters;
+    }
+
+    private void compareParameters(Map<String, CalculatedParameter> parameters, Map<String, CalculatedParameter> calculatedParameters) {
         if (parameters.isEmpty()) {
-            log.info("parameters is empty. put All calculatedParameters");
             parameters.putAll(calculatedParameters);
             return;
         }
         String quantityName = MeasuredParameterType.valueOf("QUANTITY").label;
-        Map<Integer, Integer> coincidences = getNumberOfMatches(calculatedParameters, parameters);
-        log.info("INPUT coincidences = {}", coincidences);
+        Map<Integer, Integer> coincidences = calculationNumberOfMatches(calculatedParameters, parameters);
         parameters.forEach((k, v) -> {
             if (quantityName.equals(v.getParameterName()) && coincidences.get(v.getMeasurementNumber()) == parameters.size()) {
-                log.info("values= {}", v);
-                CalculatedParameter calculatedParameter = parameters.get(quantityName);
+                CalculatedParameter calculatedParameter = calculatedParameters.get(quantityName);
                 CalculatedParameter parameter = parameters.get(quantityName);
                 calculatedParameter.setIntegerValue(calculatedParameter.getIntegerValue() + parameter.getIntegerValue());
-                sumQuantity(parameters, calculatedParameters);
                 calculatedParameters.put(quantityName, calculatedParameter);
             }
         });
-        log.info("OUTPUT parameters = {}", parameters);
-        log.info(" ----------------       END compare parameters -----------------------");
-        log.info(" ");
     }
 
-    private Map<Integer, Integer> getNumberOfMatches(Map<String, CalculatedParameter>parameters
+    private Map<Integer, Integer> calculationNumberOfMatches(Map<String, CalculatedParameter> parameters
             , Map<String, CalculatedParameter> calculatedParameters) {
         Map<Integer, Integer> coincidences = new HashMap<>();
         boolean coincidence = true;
@@ -180,12 +193,24 @@ public class ParameterCalculationManagerServiceImpl implements ParameterCalculat
         }
     }
 
-    private void sumQuantity(Map<String, CalculatedParameter> parameters, Map<String, CalculatedParameter> calculatedParameters) {
-        parameters.forEach((k,v) -> {
-            if (v.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
-                CalculatedParameter quantity = calculatedParameters.get(MeasuredParameterType.valueOf("QUANTITY").label);
-                v.setIntegerValue(v.getIntegerValue() + quantity.getIntegerValue());
+    private void addAllParameters(Map<String, CalculatedParameter> parameters, Set<CalculatedParameter> calculatedParameters) {
+        String parameterName = MeasuredParameterType.valueOf("QUANTITY").label;
+        calculatedParameters.forEach(parameter -> {
+            if (parameter.getParameterName().equals(parameterName)) {
+                addQuantity(parameters, parameter);
+            } else {
+                parameters.put(parameter.getParameterName(), parameter);
             }
         });
+    }
+
+    private void addQuantity(Map<String, CalculatedParameter> parameters, CalculatedParameter parameter) {
+        if (!parameters.isEmpty()) {
+            CalculatedParameter quantity = parameters.get(parameter.getParameterName());
+            parameter.setIntegerValue(parameter.getIntegerValue() + quantity.getIntegerValue());
+        }
+        if (parameter.getIntegerValue() > 1) {
+            parameters.put(parameter.getParameterName(), parameter);
+        }
     }
 }

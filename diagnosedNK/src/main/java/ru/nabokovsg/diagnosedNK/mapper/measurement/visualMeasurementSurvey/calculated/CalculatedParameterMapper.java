@@ -10,6 +10,13 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 @Mapper(componentModel = "spring")
 public interface CalculatedParameterMapper {
 
+    @Mapping(source = "parameter.minValue", target = "minValue")
+    @Mapping(source = "parameter.maxValue", target = "maxValue")
+    @Mapping(source = "parameter.integerValue", target = "integerValue")
+    @Mapping(target = "parameterName", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    CalculatedParameter mapToUpdateCalculatedParameter(@MappingTarget CalculatedParameter parameterDb, CalculatedParameter parameter);
+
 
     @Mapping(source = "defect", target = "defect")
     @Mapping(target = "id", ignore = true)
@@ -18,11 +25,4 @@ public interface CalculatedParameterMapper {
     @Mapping(source = "repair", target = "repair")
     @Mapping(target = "id", ignore = true)
     CalculatedParameter mapWithRepair(@MappingTarget CalculatedParameter parameter, CalculatedRepair repair);
-
-    @Mapping(source = "parameter.minValue", target = "minValue")
-    @Mapping(source = "parameter.maxValue", target = "maxValue")
-    @Mapping(source = "parameter.integerValue", target = "integerValue")
-    @Mapping(target = "parameterName", ignore = true)
-    @Mapping(target = "id", ignore = true)
-    void mapToUpdateCalculatedParameter(@MappingTarget CalculatedParameter parameterDb, CalculatedParameter parameter);
 }
