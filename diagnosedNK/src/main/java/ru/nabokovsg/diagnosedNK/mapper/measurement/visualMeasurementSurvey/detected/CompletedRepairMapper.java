@@ -32,6 +32,7 @@ public interface CompletedRepairMapper {
 
     @Mapping(source = "partElement.id", target = "partElementId")
     @Mapping(source = "partElement.partElementName", target = "partElementName")
+    @Mapping(target = "id", ignore = true)
     void mapWithEquipmentPartElement(@MappingTarget CompletedRepair repair
-            , EquipmentPartElement partElement);
+                                                  , EquipmentPartElement partElement);
 }
