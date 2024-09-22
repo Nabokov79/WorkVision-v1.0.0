@@ -23,7 +23,7 @@ public class ResponseCompletedRepairDto {
     @Schema(description = "Идентификатор подэлемента")
     private Long partElementId;
     @Schema(description = "Наименование подэлемента")
-    private String partName;
+    private String partElement;
     @Schema(description = "Наименование ремонта")
     private String repairName;
     @Schema(description = "Рассчитанные параметры выполненного ремонта элемента")

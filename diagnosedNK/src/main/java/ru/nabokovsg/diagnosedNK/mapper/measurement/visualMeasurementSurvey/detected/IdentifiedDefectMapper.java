@@ -28,6 +28,7 @@ public interface IdentifiedDefectMapper {
 
     @Mapping(source = "partElement.id", target = "partElementId")
     @Mapping(source = "partElement.partElementName", target = "partElementName")
+    @Mapping(target = "id", ignore = true)
     void mapWithEquipmentPartElement(@MappingTarget IdentifiedDefect defect, EquipmentPartElement partElement);
 
     ResponseIdentifiedDefectDto mapToResponseIdentifiedDefectDto(IdentifiedDefect defect);

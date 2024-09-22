@@ -43,10 +43,10 @@ public class EquipmentTypePartElementController {
         return client.update(partElementDto);
     }
 
-    @Operation(summary = "Получить все подэлементы элементы")
+    @Operation(summary = "Получить все подэлементы элемента")
     @GetMapping("/all/{id}")
     public Flux<Object> getAll(@PathVariable(name = "id") @NotNull @Positive
-                                @Parameter(description = "Индентификатор элемента") Long elementId) {
+                                @Parameter(description = "Идентификатор элемента") Long elementId) {
         return client.getAll(elementId);
     }
 }

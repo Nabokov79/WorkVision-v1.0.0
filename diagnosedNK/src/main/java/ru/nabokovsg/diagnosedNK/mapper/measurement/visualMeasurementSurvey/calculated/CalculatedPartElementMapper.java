@@ -12,5 +12,7 @@ public interface CalculatedPartElementMapper {
     @Mapping(source = "partElementName", target = "partElementName")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "inspection", ignore = true)
+    @Mapping(target = "defects", ignore = true)
+    @Mapping(target = "repairs", ignore = true)
     CalculatedPartElement mapToCalculatedPartElement(CalculatedElement element, String partElementName);
 }

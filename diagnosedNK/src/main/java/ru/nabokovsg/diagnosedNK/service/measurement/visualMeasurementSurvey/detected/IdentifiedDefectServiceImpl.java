@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.ResponseIdentifiedDefectDto;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     private final IdentifiedDefectRepository repository;
@@ -40,6 +42,12 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
         Defect defect = defectsService.getById(defectDto.getDefectId());
         Set<IdentifiedDefect> defects = getAllIdByPredicate(defectDto);
         IdentifiedDefect defectDb = searchDuplicate(defectDto, defect, defects);
+        log.info(" ");
+        log.info("START save IdentifiedDefect :");
+        log.info("INPUT DATA :");
+        log.info(String.format("defects=%s", defects));
+        log.info(String.format("Dto defect=%s", defectDto));
+        log.info(String.format("Duplicate defectDb=%s", defectDb));
         if (defectDb == null) {
             EquipmentElement element = elementService.get(defectDto.getElementId());
             defectDb = mapper.mapToIdentifiedDefect(defectDto, defect, element);
@@ -50,12 +58,19 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
                         .get(defectDto.getPartElementId());
                 mapper.mapWithEquipmentPartElement(defectDb, partElement);
             }
+            log.info(String.format("After save defectDb=%s", defectDb));
             defectDb = repository.save(defectDb);
+            log.info(String.format("Before save defectDb=%s", defectDb));
             defectDb.setParameterMeasurements(parameterService.saveForIdentifiedDefect(defectDb
                                                                             , defect.getMeasuredParameters()
                                                                             , defectDto.getParameterMeasurements()));
+            defects.add(defectDb);
         }
         calculatedDefectService.save(defects, defectDb, defect);
+        log.info("OUTPUT DATA :");
+        log.info(String.format("defectDb=%s", defectDb));
+        log.info("END save IdentifiedDefect");
+        log.info(" ");
         return mapper.mapToResponseIdentifiedDefectDto(defectDb);
     }
 

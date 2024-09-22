@@ -5,7 +5,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 
 import java.util.*;
 
-public interface ParameterCalculationManagerService {
+public interface CalculateAllParametersService {
 
-    Map<String, CalculatedParameter> calculate(CalculatedParameterData parameterData);
+    void calculateAll(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters);
 }

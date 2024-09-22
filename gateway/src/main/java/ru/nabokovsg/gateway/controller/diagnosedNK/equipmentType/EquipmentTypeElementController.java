@@ -46,7 +46,7 @@ public class EquipmentTypeElementController {
     @Operation(summary = "Получить все элементы оборудования")
     @GetMapping("/all/{id}")
     public Flux<Object> getAll(@PathVariable(name = "id") @NotNull @Positive
-                               @Parameter(description = "Индентификатор оборудования") Long equipmentId) {
+                               @Parameter(description = "Идентификатор оборудования") Long equipmentId) {
         return client.getAll(equipmentId);
     }
 }

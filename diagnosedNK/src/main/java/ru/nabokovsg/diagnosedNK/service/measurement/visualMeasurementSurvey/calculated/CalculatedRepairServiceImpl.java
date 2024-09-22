@@ -24,14 +24,20 @@ public class CalculatedRepairServiceImpl implements CalculatedRepairService {
     private final EntityManager em;
     private final CalculatedParameterService parameterService;
     private final CalculatedElementService elementService;
+    private final CalculatedPartElementService partElementService;
 
     @Override
     public void save(Set<CompletedRepair> repairs, CompletedRepair repair, ElementRepair elementRepair) {
         CalculatedRepair calculatedRepair = getByPredicate(repair);
         if (calculatedRepair == null) {
-            CalculatedElement element = elementService.get(repair.getEquipmentId(), repair.getElementName());
-            calculatedRepair = repository.save(mapper.mapToCalculatedDefect(repair, element));
-            elementService.addRepair(element, calculatedRepair);
+            CalculatedElement element = elementService.get(repair.getEquipmentId(), repair.getElementName(), repair.getPartElementName());
+            if (repair.getPartElementName() != null) {
+                CalculatedPartElement partElement = partElementService.get(element, repair.getPartElementName());
+                calculatedRepair = mapper.mapWithCalculatedPartElement(repair, element, partElement);
+            } else {
+                calculatedRepair = mapper.mapWithCalculatedElement(repair, element);
+            }
+            calculatedRepair = repository.save(calculatedRepair);
         }
         parameterService.save(new CalculatedParameterData.Builder()
                                                         .repairs(repairs)

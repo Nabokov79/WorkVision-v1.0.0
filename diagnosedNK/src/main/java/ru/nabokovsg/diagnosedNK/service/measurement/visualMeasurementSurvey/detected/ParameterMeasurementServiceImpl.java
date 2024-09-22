@@ -1,6 +1,7 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.ParameterMeasurementMapper;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ParameterMeasurementServiceImpl implements ParameterMeasurementService {
 
     private final ParameterMeasurementRepository repository;
@@ -107,14 +109,20 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
                                           , Map<String, ParameterMeasurement> parameters) {
         String quantityName = MeasuredParameterType.valueOf("QUANTITY").label;
         int coincidences = 0;
+        log.info(" ");
+        log.info("START searchParameterDuplicate :");
         for (ParameterMeasurement parameterDb : parameterMeasurements) {
+            log.info(String.format("parameterDb=%s", parameterDb));
             ParameterMeasurement parameter = parameters.get(parameterDb.getParameterName());
+            log.info(String.format("parameter=%s", parameter));
             if (parameter != null) {
                 if (parameter.getParameterName().equals(quantityName) || parameterDb.getValue().equals(parameter.getValue())) {
                     coincidences++;
                 }
             }
         }
+        log.info(String.format("coincidences=%s", coincidences));
+        log.info(String.format("parameters size=%s", parameters.size()));
         if (coincidences == parameters.size()) {
             ParameterMeasurement parameter = parameters.get(quantityName);
             parameterMeasurements.forEach(v -> {

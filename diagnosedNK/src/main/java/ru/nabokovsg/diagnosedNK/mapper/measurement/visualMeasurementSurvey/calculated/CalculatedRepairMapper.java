@@ -3,6 +3,7 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calc
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedElement;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 
@@ -15,5 +16,13 @@ public interface CalculatedRepairMapper {
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "partElement", ignore = true)
     @Mapping(target = "id", ignore = true)
-    CalculatedRepair mapToCalculatedDefect(CompletedRepair repair, CalculatedElement element);
+    CalculatedRepair mapWithCalculatedElement(CompletedRepair repair, CalculatedElement element);
+
+    @Mapping(source = "repair.repairId", target = "repairId")
+    @Mapping(source = "repair.repairName", target = "repairName")
+    @Mapping(source = "element", target = "element")
+    @Mapping(source = "partElement", target = "partElement")
+    @Mapping(target = "parameters", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    CalculatedRepair mapWithCalculatedPartElement(CompletedRepair repair, CalculatedElement element, CalculatedPartElement partElement);
 }

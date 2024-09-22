@@ -23,7 +23,7 @@ public class ResponseIdentifiedDefectDto {
     @Schema(description = "Идентификатор подэлемента")
     private Long partElementId;
     @Schema(description = "Наименование подэлемента")
-    private String partName;
+    private String partElementName;
     @Schema(description = "Наименование дефекта")
     private String defectName;
     @Schema(description = "Указание недопустимого дефекта")

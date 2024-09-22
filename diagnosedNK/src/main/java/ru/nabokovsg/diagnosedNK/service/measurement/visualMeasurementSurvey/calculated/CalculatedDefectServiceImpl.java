@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedDefectMapper;
@@ -17,6 +18,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     private final CalculatedDefectRepository repository;
@@ -24,24 +26,36 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
     private final EntityManager em;
     private final CalculatedParameterService parameterService;
     private final CalculatedElementService elementService;
+    private final CalculatedPartElementService partElementService;
 
     @Override
     public void save(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
+        log.info(" ");
+        log.info("START save CalculatedDefect :");
+        log.info(String.format("INPUT DATA : defects=%s", defects));
+        log.info(String.format("INPUT DATA : identifiedDefect=%s", identifiedDefect));
+        log.info(String.format("INPUT DATA : calculatedDefect=%s", calculatedDefect));
         if (calculatedDefect == null) {
-            CalculatedElement element = elementService.get(identifiedDefect.getEquipmentId(), identifiedDefect.getElementName());
-            calculatedDefect = repository.save(mapper.mapToCalculatedDefect(identifiedDefect, element));
-            elementService.addDefect(element, calculatedDefect);
+            CalculatedElement element = elementService.get(identifiedDefect.getEquipmentId(), identifiedDefect.getElementName(), identifiedDefect.getPartElementName());
+            if (identifiedDefect.getPartElementName() != null) {
+                CalculatedPartElement partElement = partElementService.get(element, identifiedDefect.getPartElementName());
+                calculatedDefect = mapper.mapWithCalculatedPartElement(identifiedDefect, element, partElement);
+            } else {
+                calculatedDefect = mapper.mapWithCalculatedElement(identifiedDefect, element);
+            }
+            calculatedDefect = repository.save(calculatedDefect);
         }
-        if (defects.isEmpty()) {
-            defects.add(identifiedDefect);
-        }
+        defects.add(identifiedDefect);
+        log.info(String.format("Before add identifiedDefect : defects=%s", defects));
         parameterService.save(new CalculatedParameterData.Builder()
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())
                                                          .typeData(TypeVMSData.DEFECT)
                                                          .build());
+        log.info("END save CalculatedDefect");
+        log.info(" ");
     }
 
     @Override
@@ -74,6 +88,7 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
                 .select(defect)
                 .where(builder)
                 .innerJoin(defect.element, element)
+                .innerJoin(element.partElements, partElement)
                 .fetchOne();
     }
 }
