@@ -3,5 +3,6 @@ package ru.nabokovsg.diagnosedNK.model.measurement.enums;
 public enum TypeVMSData {
 
     DEFECT,
-    REPAIR
+    REPAIR,
+    VM_CONTROL
 }

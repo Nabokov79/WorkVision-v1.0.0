@@ -31,11 +31,6 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
     @Override
     public void save(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
-        log.info(" ");
-        log.info("START save CalculatedDefect :");
-        log.info(String.format("INPUT DATA : defects=%s", defects));
-        log.info(String.format("INPUT DATA : identifiedDefect=%s", identifiedDefect));
-        log.info(String.format("INPUT DATA : calculatedDefect=%s", calculatedDefect));
         if (calculatedDefect == null) {
             CalculatedElement element = elementService.get(identifiedDefect.getEquipmentId(), identifiedDefect.getElementName(), identifiedDefect.getPartElementName());
             if (identifiedDefect.getPartElementName() != null) {
@@ -47,19 +42,20 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
             calculatedDefect = repository.save(calculatedDefect);
         }
         defects.add(identifiedDefect);
-        log.info(String.format("Before add identifiedDefect : defects=%s", defects));
         parameterService.save(new CalculatedParameterData.Builder()
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())
                                                          .typeData(TypeVMSData.DEFECT)
                                                          .build());
-        log.info("END save CalculatedDefect");
-        log.info(" ");
     }
 
     @Override
     public void update(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
+        log.info(" update INPUT:");
+        log.info(" defects={}", defects);
+        log.info(" identifiedDefect={}", identifiedDefect);
+        log.info(" defect={}", defect);
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
         if (calculatedDefect == null) {
             throw new NotFoundException(

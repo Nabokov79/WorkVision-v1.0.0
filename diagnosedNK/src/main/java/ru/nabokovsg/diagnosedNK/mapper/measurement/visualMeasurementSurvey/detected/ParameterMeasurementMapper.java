@@ -24,18 +24,16 @@ public interface ParameterMeasurementMapper {
 
     @Mapping(source = "defect", target = "identifiedDefect")
     @Mapping(target = "id", ignore = true)
-    ParameterMeasurement mapWithIdentifiedDefect(@MappingTarget ParameterMeasurement parameter
-                                                              , IdentifiedDefect defect);
+    void mapWithIdentifiedDefect(@MappingTarget ParameterMeasurement parameter, IdentifiedDefect defect);
 
     @Mapping(source = "repair", target = "completedRepair")
     @Mapping(target = "id", ignore = true)
-    ParameterMeasurement mapWithCompletedRepair(@MappingTarget ParameterMeasurement parameter
-                                               , CompletedRepair repair);
+    void mapWithCompletedRepair(@MappingTarget ParameterMeasurement parameter, CompletedRepair repair);
 
     @Mapping(source = "vmControl", target = "visualMeasurementControl")
     @Mapping(target = "id", ignore = true)
-    ParameterMeasurement mapWithVisualMeasurementControl(@MappingTarget ParameterMeasurement parameter
-                                                                      , VisualMeasurementControl vmControl);
+    void mapWithVisualMeasurementControl(@MappingTarget ParameterMeasurement parameter
+                                                      , VisualMeasurementControl vmControl);
 
     @Mapping(source = "parameterDto.value", target = "value")
     @Mapping(target = "parameterId", ignore = true)
@@ -44,7 +42,7 @@ public interface ParameterMeasurementMapper {
     @Mapping(target = "identifiedDefect", ignore = true)
     @Mapping(target = "completedRepair", ignore = true)
     @Mapping(target = "visualMeasurementControl", ignore = true)
-    @Mapping(source = "parameterDto.id", target = "id")
+    @Mapping(target = "id", ignore = true)
     ParameterMeasurement mapToUpdateParameterMeasurement(@MappingTarget ParameterMeasurement parameter
                                                                       , ParameterMeasurementDto parameterDto);
 

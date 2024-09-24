@@ -37,14 +37,6 @@ public class BaseClient {
                 .bodyToMono(Object.class);
     }
 
-    public <T> Flux<Object> patchAll(String path, T body) {
-        return client.patch()
-                .uri(path)
-                .bodyValue(body)
-                .retrieve()
-                .bodyToFlux(Object.class);
-    }
-
     public Mono<Object> get(String path) {
         return client.get()
                 .uri(path)
@@ -53,16 +45,6 @@ public class BaseClient {
                         HttpStatus.NOT_FOUND::equals,
                         response -> response.bodyToMono(String.class).map(NotFoundException::new))
                 .bodyToMono(Object.class);
-    }
-
-    public Mono<String> create(String path) {
-        return client.get()
-                .uri(path)
-                .retrieve()
-                .onStatus(
-                        HttpStatus.NOT_FOUND::equals,
-                        response -> response.bodyToMono(String.class).map(NotFoundException::new))
-                .bodyToMono(String.class);
     }
 
     public Mono<Object> get(String path, String paramName, String param) {
@@ -124,6 +106,18 @@ public class BaseClient {
     public Mono<String> delete(String path) {
         return client.delete()
                 .uri(path)
+                .retrieve()
+                .onStatus(
+                        HttpStatus.NOT_FOUND::equals,
+                        response -> response.bodyToMono(String.class).map(NotFoundException::new))
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> delete(String path, String paramName, String param) {
+        return client.delete()
+                .uri(uriBuilder -> uriBuilder.path(path)
+                        .queryParam(paramName, param)
+                        .build())
                 .retrieve()
                 .onStatus(
                         HttpStatus.NOT_FOUND::equals,

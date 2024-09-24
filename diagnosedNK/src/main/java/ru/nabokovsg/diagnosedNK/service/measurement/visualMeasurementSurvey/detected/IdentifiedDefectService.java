@@ -13,5 +13,5 @@ public interface IdentifiedDefectService {
 
     List<ResponseIdentifiedDefectDto> getAll(Long equipmentId);
 
-    void delete(Long id);
+    void delete(Long id, Integer quantity);
 }

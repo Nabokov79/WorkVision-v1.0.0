@@ -7,6 +7,7 @@ import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.VisualM
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControlMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl.VisualMeasurementControl;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.builders.ParameterMeasurementBuilder;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControlRepository;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
@@ -19,7 +20,7 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
 
     private final VisualMeasurementControlRepository repository;
     private final VisualMeasurementControlMapper mapper;
-    private final ParameterMeasurementService parameterMeasurementService;
+    private final ParameterMeasurementService parameterService;
     private final DefectService defectsService;
     private final static String SUITABLE = "Удовл.";
     private final static String NOT_SUITABLE = "Не удовл.";
@@ -30,10 +31,12 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
         VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto
                                                                             , defect
                                                                             , getEstimation(defectDto.isEstimation()));
-        vmControl.setParameterMeasurements(parameterMeasurementService.saveForVMControl(
-                                                                              vmControl
-                                                                            , defect.getMeasuredParameters()
-                                                                            , defectDto.getParameterMeasurements()));
+        vmControl.setParameterMeasurements(parameterService.save(
+                             new ParameterMeasurementBuilder.Builder()
+                                                            .vmControl(vmControl)
+                                                            .measuredParameter(defect.getMeasuredParameters())
+                                                            .parameterMeasurements(defectDto.getParameterMeasurements())
+                                                            .build()));
         return mapper.mapToResponseVisualMeasuringSurveyDto(vmControl);
     }
 
@@ -43,8 +46,8 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
         VisualMeasurementControl vmControl = mapper.mapToVisualMeasurementControl(defectDto
                                                                             , defect
                                                                             , getEstimation(defectDto.isEstimation()));
-        vmControl.setParameterMeasurements(parameterMeasurementService.update(vmControl.getParameterMeasurements()
-                                                                            , defectDto.getParameterMeasurements()));
+        vmControl.setParameterMeasurements(parameterService.update(vmControl.getParameterMeasurements()
+                                                                 , defectDto.getParameterMeasurements()));
         return mapper.mapToResponseVisualMeasuringSurveyDto(vmControl);
     }
 

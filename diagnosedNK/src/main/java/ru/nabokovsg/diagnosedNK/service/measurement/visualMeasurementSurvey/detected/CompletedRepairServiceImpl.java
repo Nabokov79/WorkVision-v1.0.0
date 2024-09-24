@@ -11,6 +11,7 @@ import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.CompletedRepairMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.builders.ParameterMeasurementBuilder;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.QCompletedRepair;
@@ -54,10 +55,12 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                 mapper.mapWithEquipmentPartElement(repair, partElement);
             }
             repair = repository.save(repair);
-            repair.setParameterMeasurements(parameterService.saveForCompletedRepair(
-                                                                              repair
-                                                                            , elementRepair.getMeasuredParameters()
-                                                                            , repairDto.getParameterMeasurements()));
+            repair.setParameterMeasurements(parameterService.save(
+                    new ParameterMeasurementBuilder.Builder()
+                                                   .repair(repair)
+                                                   .measuredParameter(elementRepair.getMeasuredParameters())
+                                                   .parameterMeasurements(repairDto.getParameterMeasurements())
+                                                   .build()));
         }
         calculatedRepairService.save(repairs, repair, elementRepair);
         return mapper.mapToResponseCompletedRepairDto(repair);

@@ -27,16 +27,10 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
     public void save(CalculatedParameterData parameterData) {
         Set<CalculatedParameter> parametersDb = getAll(parameterData);
         Map<String, CalculatedParameter> calculatedParameters = calculate(parameterData);
-        log.info(" ");
-        log.info("START save CalculatedParameter :");
-        log.info(String.format("INPUT DATA : Identified defects=%s", parameterData.getDefects()));
-        log.info(String.format("INPUT DATA : CalculatedParameter defect=%s", parameterData.getDefect()));
-        log.info(String.format("INPUT DATA : CalculatedParameter parametersDb=%s", parameterData.getDefect().getParameters()));
         mapTo(parameterData, calculatedParameters);
         if (parametersDb != null) {
             update(parametersDb, calculatedParameters);
         }
-        log.info(String.format("Data for save=%s", calculatedParameters.values()));
         repository.saveAll(calculatedParameters.values());
     }
 

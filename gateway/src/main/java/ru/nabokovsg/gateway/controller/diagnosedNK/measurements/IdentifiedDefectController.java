@@ -53,7 +53,8 @@ public class IdentifiedDefectController {
 
     @Operation(summary = "Удалить измеренный дефект")
     @DeleteMapping("/{id}")
-    public Mono<String> delete(@PathVariable @NotNull @Positive @Parameter(name = "Идентификатор") Long id) {
-        return client.delete(id);
+    public Mono<String> delete(@PathVariable @NotNull @Positive @Parameter(name = "Идентификатор") Long id
+                             , @RequestParam(required = false) @Parameter(name = "Количество") Integer quantity) {
+        return client.delete(id, quantity);
     }
 }

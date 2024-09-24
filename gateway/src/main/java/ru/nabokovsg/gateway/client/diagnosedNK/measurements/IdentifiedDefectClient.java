@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 import ru.nabokovsg.gateway.client.BaseClient;
 import ru.nabokovsg.gateway.dto.diagnosedNK.identifiedDefect.NewIdentifiedDefectDto;
 import ru.nabokovsg.gateway.dto.diagnosedNK.identifiedDefect.UpdateIdentifiedDefectDto;
+import ru.nabokovsg.gateway.exceptions.BadRequestException;
 
 @Service
 public class IdentifiedDefectClient extends BaseClient {
@@ -35,7 +36,14 @@ public class IdentifiedDefectClient extends BaseClient {
         return getAll(String.join(DELIMITER, API_PREFIX, "all", String.valueOf(equipmentId)));
     }
 
-    public Mono<String> delete(Long id) {
-        return delete(String.join(DELIMITER, API_PREFIX, String.valueOf(id)));
+    public Mono<String> delete(Long id, Integer quantity) {
+        if (quantity != null && (quantity == 0 || quantity < 0)) {
+            throw new BadRequestException(String.format("Parameter quantity=%s can only be positive", quantity));
+        }
+        if (quantity == null) {
+            return delete(String.join(DELIMITER, API_PREFIX, String.valueOf(id)));
+        }
+        return delete(String.join(DELIMITER, API_PREFIX, String.valueOf(id))
+                ,"quantity", String.valueOf(quantity));
     }
 }
