@@ -112,16 +112,4 @@ public class BaseClient {
                         response -> response.bodyToMono(String.class).map(NotFoundException::new))
                 .bodyToMono(String.class);
     }
-
-    public Mono<String> delete(String path, String paramName, String param) {
-        return client.delete()
-                .uri(uriBuilder -> uriBuilder.path(path)
-                        .queryParam(paramName, param)
-                        .build())
-                .retrieve()
-                .onStatus(
-                        HttpStatus.NOT_FOUND::equals,
-                        response -> response.bodyToMono(String.class).map(NotFoundException::new))
-                .bodyToMono(String.class);
-    }
 }

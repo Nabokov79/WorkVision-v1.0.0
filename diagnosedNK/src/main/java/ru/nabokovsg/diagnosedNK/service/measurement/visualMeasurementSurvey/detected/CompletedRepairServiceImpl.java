@@ -7,13 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.CompletedRepairDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.completedRepair.ResponseCompletedRepairDto;
+import ru.nabokovsg.diagnosedNK.dto.measurement.parameterMeasurement.ParameterMeasurementDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.CompletedRepairMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.builders.ParameterMeasurementBuilder;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.QCompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.CompletedRepairRepository;
@@ -43,18 +43,9 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     public ResponseCompletedRepairDto save(CompletedRepairDto repairDto) {
         ElementRepair elementRepair = elementRepairService.getById(repairDto.getRepairId());
         Set<CompletedRepair> repairs = getAllByPredicate(repairDto);
-        CompletedRepair repair = searchDuplicate(repairDto, elementRepair, repairs);
+        CompletedRepair repair = searchDuplicate(repairDto, repairs);
         if (repair == null) {
-            EquipmentElement element = elementService.get(repairDto.getElementId());
-            repair = mapper.mapToCompletedRepair(repairDto, elementRepair, element);
-            if (repairDto.getPartElementId() != null) {
-                EquipmentPartElement partElement = element.getPartsElement()
-                        .stream()
-                        .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
-                        .get(repairDto.getPartElementId());
-                mapper.mapWithEquipmentPartElement(repair, partElement);
-            }
-            repair = repository.save(repair);
+            repair = repository.save(createCompletedRepair(repairDto, elementRepair));
             repair.setParameterMeasurements(parameterService.save(
                     new ParameterMeasurementBuilder.Builder()
                                                    .repair(repair)
@@ -72,26 +63,17 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
         Map<Long, CompletedRepair> repairs = getAllByPredicate(repairDto)
                                                             .stream()
                                                             .collect(Collectors.toMap(CompletedRepair::getId, d -> d));
-        CompletedRepair repairDb = repairs.get(repairDto.getId());
-        if (repairDb == null) {
-            EquipmentElement element = elementService.get(repairDto.getElementId());
-            repairDb = mapper.mapToCompletedRepair(repairDto, elementRepair, element);
-            if (repairDto.getPartElementId() != null) {
-                EquipmentPartElement partElement = element.getPartsElement()
-                        .stream()
-                        .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
-                        .get(repairDto.getPartElementId());
-                mapper.mapWithEquipmentPartElement(repairDb, partElement);
-                repairDb = repository.save(repairDb);
-                repairDb.setParameterMeasurements(parameterService.update(repairDb.getParameterMeasurements()
+        CompletedRepair repair = repairs.get(repairDto.getId());
+        if (repair == null) {
+                repair = repository.save(createCompletedRepair(repairDto, elementRepair));
+                repair.setParameterMeasurements(parameterService.update(repair.getParameterMeasurements()
                                                                        , repairDto.getParameterMeasurements()));
-            }
 
         } else {
             delete(repairDto.getId());
         }
-        calculatedRepairService.update(new HashSet<>(repairs.values()), repairDb, elementRepair);
-        return mapper.mapToResponseCompletedRepairDto(repairDb);
+        calculatedRepairService.update(new HashSet<>(repairs.values()), repair, elementRepair);
+        return mapper.mapToResponseCompletedRepairDto(repair);
     }
 
     @Override
@@ -114,19 +96,15 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
             .orElseThrow(() -> new NotFoundException(String.format("CompletedRepair defect with id=%s not found", id)));
     }
 
-    private CompletedRepair searchDuplicate(CompletedRepairDto repairDto
-                                          , ElementRepair elementRepair
-                                          , Set<CompletedRepair> repairs) {
+    private CompletedRepair searchDuplicate(CompletedRepairDto repairDto, Set<CompletedRepair> repairs) {
         Map<Long, CompletedRepair> repairsDb = repairs.stream()
                                                       .collect(Collectors.toMap(CompletedRepair::getId, d -> d));
-        Map<String, ParameterMeasurement> parameters = parameterService.map(repairDto.getParameterMeasurements()
-                                                                          , elementRepair.getMeasuredParameters())
+        Map<Long, ParameterMeasurementDto> parametersDto = repairDto.getParameterMeasurements()
                 .stream()
-                .collect(Collectors.toMap(ParameterMeasurement::getParameterName, p -> p));
+                .collect(Collectors.toMap(ParameterMeasurementDto::getParameterId, p -> p));
         boolean flag;
         for (CompletedRepair repair : repairsDb.values()) {
-            flag = parameterService.searchParameterDuplicate(repair.getParameterMeasurements()
-                    , parameters);
+            flag = parameterService.searchParameterDuplicate(repair.getParameterMeasurements(), parametersDto);
             if (flag) {
                 return repair;
             }
@@ -134,7 +112,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
         return null;
     }
 
-    public Set<CompletedRepair> getAllByPredicate(CompletedRepairDto repairDto) {
+    private Set<CompletedRepair> getAllByPredicate(CompletedRepairDto repairDto) {
         QCompletedRepair repair = QCompletedRepair.completedRepair;
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(repair.equipmentId.eq(repairDto.getEquipmentId()));
@@ -147,5 +125,18 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
                 .select(repair)
                 .where(builder)
                 .fetch());
+    }
+
+    private CompletedRepair createCompletedRepair(CompletedRepairDto repairDto, ElementRepair elementRepair) {
+        EquipmentElement element = elementService.get(repairDto.getElementId());
+        CompletedRepair repair = mapper.mapToCompletedRepair(repairDto, elementRepair, element);
+        if (repairDto.getPartElementId() != null) {
+            EquipmentPartElement partElement = element.getPartsElement()
+                    .stream()
+                    .collect(Collectors.toMap(EquipmentPartElement::getPartElementId, p -> p))
+                    .get(repairDto.getPartElementId());
+            mapper.mapWithEquipmentPartElement(repair, partElement);
+        }
+        return repair;
     }
 }

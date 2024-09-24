@@ -20,7 +20,8 @@ public class ParameterMeasurementFactoryImpl implements ParameterMeasurementFact
 
     @Override
     public List<ParameterMeasurement> get(ParameterMeasurementBuilder builder) {
-        List<ParameterMeasurement> parameterMeasurements = convert(builder.getParameterMeasurement(), builder.getMeasuredParameters());
+        List<ParameterMeasurement> parameterMeasurements = convert(builder.getParameterMeasurement()
+                                                                 , builder.getMeasuredParameters());
         switch (builder.getTypeData()) {
             case DEFECT -> {
                 return getForIdentifiedDefect(parameterMeasurements, builder);
@@ -73,7 +74,7 @@ public class ParameterMeasurementFactoryImpl implements ParameterMeasurementFact
     }
 
     private List<ParameterMeasurement> sumQuantity(List<ParameterMeasurementDto> parametersDto
-            , Set<ParameterMeasurement> parametersDb) {
+                                                 , Set<ParameterMeasurement> parametersDb) {
         Map<Long, ParameterMeasurementDto> parameters = parametersDto
                 .stream()
                 .collect(Collectors.toMap(ParameterMeasurementDto::getParameterId, p -> p));

@@ -51,9 +51,8 @@ public class IdentifiedDefectController {
 
     @Operation(summary = "Удалить измеренный дефект")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable @Parameter(name = "Идентификатор") Long id
-                    , @RequestParam(required = false) @Parameter(name = "Количество") Integer quantity) {
-        service.delete(id, quantity);
+    public ResponseEntity<String> delete(@PathVariable @Parameter(name = "Идентификатор") Long id) {
+        service.delete(id);
         return ResponseEntity.ok("Данные дефекта успешно удалены.");
     }
 }
