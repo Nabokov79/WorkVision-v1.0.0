@@ -8,5 +8,8 @@ import java.util.Set;
 public interface IdentifiedDefectRepository extends JpaRepository<IdentifiedDefect, Long> {
 
     Set<IdentifiedDefect> findAllByEquipmentId(Long equipmentId);
-    Set<IdentifiedDefect> findAllByEquipmentIdAndDefectId(Long equipmentId, Long defectId);
+
+    Set<IdentifiedDefect> findAllByEquipmentIdAndElementIdAndDefectId(Long equipmentId, Long elementId, Long defectId);
+
+    Set<IdentifiedDefect> findAllByEquipmentIdAndElementIdAndPartElementIdAndDefectId(Long equipmentId, Long elementId, Long partElementId, Long defectId);
 }

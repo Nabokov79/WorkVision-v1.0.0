@@ -6,6 +6,7 @@ import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.Respons
 import ru.nabokovsg.diagnosedNK.dto.measurement.visualMeasurementControl.VisualMeasurementControlDto;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.VisualMeasurementControlMapper;
+import ru.nabokovsg.diagnosedNK.model.measurement.enums.TypeVMSData;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementControl.VisualMeasurementControl;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.builders.ParameterMeasurementBuilder;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
@@ -33,6 +34,7 @@ public class VisualMeasurementControlServiceImpl implements VisualMeasurementCon
                                                                             , getEstimation(defectDto.isEstimation()));
         vmControl.setParameterMeasurements(parameterService.save(
                              new ParameterMeasurementBuilder.Builder()
+                                                            .typeData(TypeVMSData.VM_CONTROL)
                                                             .vmControl(vmControl)
                                                             .measuredParameter(defect.getMeasuredParameters())
                                                             .parameterMeasurements(defectDto.getParameterMeasurements())

@@ -16,7 +16,5 @@ public interface ParameterMeasurementService {
 
     void deleteAll(Set<ParameterMeasurement> parameters);
 
-    Set<ParameterMeasurement> updateQuantity(Set<ParameterMeasurement> parameterMeasurements, Integer quantity);
-
     boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements, Map<Long, ParameterMeasurementDto> parameters);
 }

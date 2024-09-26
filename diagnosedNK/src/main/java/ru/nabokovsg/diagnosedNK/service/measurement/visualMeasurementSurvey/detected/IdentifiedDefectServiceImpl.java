@@ -1,10 +1,6 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.detected;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.IdentifiedDefectDto;
 import ru.nabokovsg.diagnosedNK.dto.measurement.identifiedDefect.ResponseIdentifiedDefectDto;
@@ -13,23 +9,20 @@ import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.detected.IdentifiedDefectMapper;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentElement;
 import ru.nabokovsg.diagnosedNK.model.equipment.EquipmentPartElement;
+import ru.nabokovsg.diagnosedNK.model.measurement.enums.TypeVMSData;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.builders.ParameterMeasurementBuilder;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.QIdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.IdentifiedDefectRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedDefectService;
 import ru.nabokovsg.diagnosedNK.service.norms.DefectService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     private final IdentifiedDefectRepository repository;
@@ -38,52 +31,51 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
     private final ParameterMeasurementService parameterService;
     private final EquipmentElementService elementService;
     private final CalculatedDefectService calculatedDefectService;
-    private final EntityManager em;
 
     @Override
     public ResponseIdentifiedDefectDto save(IdentifiedDefectDto defectDto) {
         Defect defect = defectsService.getById(defectDto.getDefectId());
-        Map<Long, IdentifiedDefect> defects = getAllByPredicate(defectDto);
-        IdentifiedDefect defectDb = searchDuplicate(defectDto, defects);
-        if (defectDb == null) {
-            defectDb = repository.save(createIdentifiedDefect(defectDto, defect));
-            defectDb.setParameterMeasurements(
-                    parameterService.save(new ParameterMeasurementBuilder.Builder()
-                            .defect(defectDb)
-                            .measuredParameter(defect.getMeasuredParameters())
-                            .parameterMeasurements(defectDto.getParameterMeasurements())
-                            .build()));
-            defects.put(defectDb.getId(), defectDb);
-        }
-        calculatedDefectService.save(new HashSet<>(defects.values()), defectDb, defect);
-        return mapper.mapToResponseIdentifiedDefectDto(defectDb);
+        IdentifiedDefect identifiedDefect = repository.save(createIdentifiedDefect(defectDto, defect));
+        Map<Long, IdentifiedDefect> defects = getAllByPredicate(identifiedDefect);
+
+        identifiedDefect.setParameterMeasurements(
+                parameterService.save(new ParameterMeasurementBuilder.Builder()
+                        .typeData(TypeVMSData.DEFECT)
+                        .defect(identifiedDefect)
+                        .measuredParameter(defect.getMeasuredParameters())
+                        .parameterMeasurements(defectDto.getParameterMeasurements())
+                        .build()));
+        defects.put(identifiedDefect.getId(), identifiedDefect);
+        calculatedDefectService.save(new HashSet<>(defects.values()), identifiedDefect, defect);
+        return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
     }
 
     @Override
     public ResponseIdentifiedDefectDto update(IdentifiedDefectDto defectDto) {
         Defect defect = defectsService.getById(defectDto.getDefectId());
-        Map<Long, IdentifiedDefect> defects = getAllByPredicate(defectDto);
-        IdentifiedDefect identifiedDefect = getIdentifiedDefect(defectDto, defects);
-        identifiedDefect.setParameterMeasurements(parameterService.update(identifiedDefect.getParameterMeasurements()
-                , defectDto.getParameterMeasurements()));
-        defects.put(identifiedDefect.getId(), identifiedDefect);
+        Map<Long, IdentifiedDefect> defects = getAllByPredicate(createIdentifiedDefect(defectDto, defect));
+        IdentifiedDefect identifiedDefect = searchDuplicate(defectDto, defects);
+        if (identifiedDefect != null) {
+            defects.remove(defectDto.getId());
+            delete(defectDto.getId());
+            identifiedDefect.setParameterMeasurements(
+                    parameterService.save(new ParameterMeasurementBuilder.Builder()
+                            .typeData(TypeVMSData.DEFECT)
+                            .defect(identifiedDefect)
+                            .measuredParameter(defect.getMeasuredParameters())
+                            .parameterMeasurements(defectDto.getParameterMeasurements())
+                            .build()));
+        } else {
+            identifiedDefect = defects.get(defectDto.getId());
+            if (identifiedDefect == null) {
+                throw new NotFoundException(String.format("Identified defect with id=%s not found for update", defectDto.getDefectId()));
+            }
+            identifiedDefect.setParameterMeasurements(parameterService.update(identifiedDefect.getParameterMeasurements()
+                    , defectDto.getParameterMeasurements()));
+            defects.put(identifiedDefect.getId(), identifiedDefect);
+        }
         calculatedDefectService.update(new HashSet<>(defects.values()), identifiedDefect, defect);
         return mapper.mapToResponseIdentifiedDefectDto(identifiedDefect);
-    }
-
-    private IdentifiedDefect getIdentifiedDefect(IdentifiedDefectDto defectDto, Map<Long, IdentifiedDefect> defects) {
-        if (defects.size() < 1) {
-            throw new NotFoundException(String.format("IdentifiedDefect with id=%s not found for update", defectDto.getId()));
-        }
-        if (defects.size() > 1) {
-            IdentifiedDefect identifiedDefect = searchDuplicate(defectDto, defects);
-            if (identifiedDefect != null) {
-                deleteById(defects.get(defectDto.getId()));
-            }
-            return identifiedDefect;
-        } else {
-            return defects.get(defectDto.getId());
-        }
     }
 
     @Override
@@ -96,12 +88,10 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
 
     @Override
     public void delete(Long id) {
-        deleteById(get(id));
-    }
-
-    private void deleteById(IdentifiedDefect defect) {
+        IdentifiedDefect defect = get(id);
         parameterService.deleteAll(defect.getParameterMeasurements());
         repository.deleteById(defect.getId());
+        calculatedDefectService.update(new HashSet<>(getAllByPredicate(defect).values()), defect, defectsService.getById(defect.getDefectId()));
     }
 
     private IdentifiedDefect get(Long id) {
@@ -123,21 +113,15 @@ public class IdentifiedDefectServiceImpl implements IdentifiedDefectService {
         return null;
     }
 
-    private Map<Long, IdentifiedDefect> getAllByPredicate(IdentifiedDefectDto defectDto) {
-        QIdentifiedDefect defect = QIdentifiedDefect.identifiedDefect;
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(defect.equipmentId.eq(defectDto.getEquipmentId()));
-        builder.and(defect.defectId.eq(defectDto.getDefectId()));
-        builder.and(defect.elementId.eq(defectDto.getElementId()));
+    private Map<Long, IdentifiedDefect> getAllByPredicate(IdentifiedDefect defectDto) {
+        Set<IdentifiedDefect> defects;
         if (defectDto.getPartElementId() != null) {
-            builder.and(defect.partElementId.eq(defectDto.getPartElementId()));
+            defects = repository.findAllByEquipmentIdAndElementIdAndPartElementIdAndDefectId(defectDto.getEquipmentId(),defectDto.getElementId(), defectDto.getPartElementId(), defectDto.getDefectId());
+        } else {
+            defects = repository.findAllByEquipmentIdAndElementIdAndDefectId(defectDto.getEquipmentId(), defectDto.getElementId(), defectDto.getDefectId());
         }
-        return new HashSet<>(new JPAQueryFactory(em).from(defect)
-                .select(defect)
-                .where(builder)
-                .fetch())
-                .stream()
-                .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
+        return defects.stream()
+                      .collect(Collectors.toMap(IdentifiedDefect::getId, d -> d));
     }
 
     private IdentifiedDefect createIdentifiedDefect(IdentifiedDefectDto defectDto, Defect defect) {

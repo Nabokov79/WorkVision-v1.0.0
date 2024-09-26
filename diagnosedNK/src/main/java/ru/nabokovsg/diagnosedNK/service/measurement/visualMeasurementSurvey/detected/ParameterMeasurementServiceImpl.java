@@ -43,38 +43,24 @@ public class ParameterMeasurementServiceImpl implements ParameterMeasurementServ
     }
 
     @Override
-    public Set<ParameterMeasurement> updateQuantity(Set<ParameterMeasurement> parameterMeasurements, Integer quantity) {
-        parameterMeasurements.addAll(parameterMeasurements.stream().peek(p -> {
-                    if (p.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
-                        p.setValue(p.getValue() - quantity);
-                    }
-                })
-                .toList());
-        return parameterMeasurements;
-    }
-
-    @Override
     public boolean searchParameterDuplicate(Set<ParameterMeasurement> parameterMeasurements
             , Map<Long, ParameterMeasurementDto> parameters) {
         String quantityName = MeasuredParameterType.valueOf("QUANTITY").label;
         int coincidences = 0;
-        Map<String, Double> quantity = new HashMap<>(1);
+        Map<ParameterMeasurement, ParameterMeasurementDto> quantity = new HashMap<>(1);
         for (ParameterMeasurement parameterDb : parameterMeasurements) {
             ParameterMeasurementDto parameter = parameters.get(parameterDb.getParameterId());
             if (parameterDb.getParameterName().equals(quantityName)) {
-                quantity.put(parameterDb.getParameterName(), parameter.getValue());
-            }
-            if (parameter != null) {
-                if (parameterDb.getParameterName().equals(quantityName) || parameterDb.getValue().equals(parameter.getValue())) {
-                    coincidences++;
-                }
+                quantity.put(parameterDb,parameter);
+                coincidences++;
+            } else if (parameterDb.getValue().equals(parameter.getValue())) {
+                coincidences++;
             }
         }
         if (coincidences == parameters.size()) {
-            parameterMeasurements.forEach(v -> {
-                if (v.getParameterName().equals(quantityName)) {
-                    mapper.mapToUpdateQuantity(v, v.getValue() + quantity.get(quantityName));
-                }
+            quantity.forEach((k, v) -> {
+                parameterMeasurements.remove(k);
+                parameterMeasurements.add(mapper.mapToUpdateQuantity(k, v.getValue() + k.getValue()));
             });
             return true;
         }

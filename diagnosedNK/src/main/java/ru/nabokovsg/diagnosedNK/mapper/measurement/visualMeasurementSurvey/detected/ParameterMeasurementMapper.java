@@ -48,5 +48,5 @@ public interface ParameterMeasurementMapper {
 
     @Mapping(source = "quantity", target = "value")
     @Mapping(target = "id", ignore = true)
-    void mapToUpdateQuantity(@MappingTarget ParameterMeasurement parameter, Double quantity);
+    ParameterMeasurement mapToUpdateQuantity(@MappingTarget ParameterMeasurement parameter, Double quantity);
 }

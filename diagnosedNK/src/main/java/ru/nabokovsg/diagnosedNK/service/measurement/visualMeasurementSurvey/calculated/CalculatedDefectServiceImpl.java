@@ -4,7 +4,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedDefectMapper;
@@ -18,7 +17,6 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     private final CalculatedDefectRepository repository;
@@ -52,10 +50,6 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
 
     @Override
     public void update(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect) {
-        log.info(" update INPUT:");
-        log.info(" defects={}", defects);
-        log.info(" identifiedDefect={}", identifiedDefect);
-        log.info(" defect={}", defect);
         CalculatedDefect calculatedDefect = getByPredicate(identifiedDefect);
         if (calculatedDefect == null) {
             throw new NotFoundException(
