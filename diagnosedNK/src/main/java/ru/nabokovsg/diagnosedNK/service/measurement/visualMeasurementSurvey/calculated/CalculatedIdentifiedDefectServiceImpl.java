@@ -17,12 +17,12 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class CalculatedDefectServiceImpl implements CalculatedDefectService {
+public class CalculatedIdentifiedDefectServiceImpl implements CalculatedIdentifiedDefectService {
 
     private final CalculatedDefectRepository repository;
     private final CalculatedDefectMapper mapper;
     private final EntityManager em;
-    private final CalculatedParameterService parameterService;
+    private final CalculateParameterMeasurementService parameterService;
     private final CalculatedElementService elementService;
     private final CalculatedPartElementService partElementService;
 
@@ -80,5 +80,13 @@ public class CalculatedDefectServiceImpl implements CalculatedDefectService {
                 .innerJoin(defect.element, element)
                 .innerJoin(element.partElements, partElement)
                 .fetchOne();
+    }
+
+    public void calculateOneByOne(CalculatedParameterData parameterData) {
+
+    }
+
+    public void calculateAll(CalculatedParameterData parameterData) {
+
     }
 }

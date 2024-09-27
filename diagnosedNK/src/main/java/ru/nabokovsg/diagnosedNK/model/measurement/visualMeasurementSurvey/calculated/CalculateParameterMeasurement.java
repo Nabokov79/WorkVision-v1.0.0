@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "calculated_parameters")
-public class CalculatedParameter {
+public class CalculateParameterMeasurement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +58,7 @@ public class CalculatedParameter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CalculatedParameter parameter = (CalculatedParameter) o;
+        CalculateParameterMeasurement parameter = (CalculateParameterMeasurement) o;
         return Objects.equals(parameterName, parameter.parameterName)
                 && Objects.equals(minValue, parameter.minValue)
                 && Objects.equals(maxValue, parameter.maxValue)

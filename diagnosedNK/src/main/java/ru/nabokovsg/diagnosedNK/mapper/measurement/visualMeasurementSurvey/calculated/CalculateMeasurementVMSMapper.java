@@ -2,7 +2,7 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calc
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 
 @Mapper(componentModel = "spring")
@@ -17,7 +17,7 @@ public interface CalculateMeasurementVMSMapper {
     @Mapping(target = "maxValue", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToSquare(String parameterName, String unitMeasurement, Double minValue);
+    CalculateParameterMeasurement mapToSquare(String parameterName, String unitMeasurement, Double minValue);
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
@@ -28,7 +28,7 @@ public interface CalculateMeasurementVMSMapper {
     @Mapping(target = "maxValue", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToMinValue(ParameterMeasurement parameter);
+    CalculateParameterMeasurement mapToMinValue(ParameterMeasurement parameter);
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
@@ -39,7 +39,7 @@ public interface CalculateMeasurementVMSMapper {
     @Mapping(target = "minValue", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToMaxValue(ParameterMeasurement parameter);
+    CalculateParameterMeasurement mapToMaxValue(ParameterMeasurement parameter);
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
@@ -50,7 +50,7 @@ public interface CalculateMeasurementVMSMapper {
     @Mapping(target = "parameterNumber", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToMaxMinValue(ParameterMeasurement parameter);
+    CalculateParameterMeasurement mapToMaxMinValue(ParameterMeasurement parameter);
 
     @Mapping(source = "parameter.parameterName", target = "parameterName")
     @Mapping(source = "parameter.unitMeasurement", target = "unitMeasurement")
@@ -60,5 +60,5 @@ public interface CalculateMeasurementVMSMapper {
     @Mapping(target = "parameterNumber", ignore = true)
     @Mapping(target = "defect", ignore = true)
     @Mapping(target = "repair", ignore = true)
-    CalculatedParameter mapToQuantity(ParameterMeasurement parameter);
+    CalculateParameterMeasurement mapToQuantity(ParameterMeasurement parameter);
 }

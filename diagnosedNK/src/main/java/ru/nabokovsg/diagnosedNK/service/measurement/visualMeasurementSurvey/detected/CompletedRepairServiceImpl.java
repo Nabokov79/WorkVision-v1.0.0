@@ -19,7 +19,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.detected.CompletedRepairRepository;
 import ru.nabokovsg.diagnosedNK.service.equipment.EquipmentElementService;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedRepairService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.CalculatedCompletedRepairService;
 import ru.nabokovsg.diagnosedNK.service.norms.ElementRepairService;
 
 import java.util.HashSet;
@@ -37,7 +37,7 @@ public class CompletedRepairServiceImpl implements CompletedRepairService {
     private final ElementRepairService elementRepairService;
     private final ParameterMeasurementService parameterService;
     private final EquipmentElementService elementService;
-    private final CalculatedRepairService calculatedRepairService;
+    private final CalculatedCompletedRepairService calculatedRepairService;
     private final EntityManager em;
 
     @Override

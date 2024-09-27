@@ -5,7 +5,7 @@ import ru.nabokovsg.diagnosedNK.model.norms.Defect;
 
 import java.util.Set;
 
-public interface CalculatedDefectService {
+public interface CalculatedIdentifiedDefectService {
 
     void save(Set<IdentifiedDefect> defects, IdentifiedDefect identifiedDefect, Defect defect);
 

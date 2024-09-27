@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculateMeasurementVMSMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
@@ -17,37 +17,35 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementVMSService {
-
+public class MethodsCalculateParameterMeasurementServiceImpl implements MethodsCalculateParameterMeasurementService {
     private final CalculateMeasurementVMSMapper mapper;
 
     @Override
-    public Map<String, CalculatedParameter> calculationByCalculationType(Set<ParameterMeasurement> measurements, ParameterCalculationType calculation) {
-        Map<String, CalculatedParameter> calculatedParameters = new HashMap<>();
-        switch (calculation) {
+    public Map<String, CalculateParameterMeasurement> calculationByCalculationType(Set<CalculateParameterMeasurement> measurements, ParameterCalculationType calculationType) {
+        Map<String, CalculateParameterMeasurement> calculatedParameters = new HashMap<>();
+        switch (calculationType) {
             case SQUARE -> countSquare(calculatedParameters, measurements);
             case MIN -> countMin(calculatedParameters, measurements);
             case MAX -> countMax(calculatedParameters, measurements);
             case MAX_MIN -> countMaxMin(calculatedParameters, measurements);
             default -> measurements.forEach(parameter ->
-                    calculatedParameters.put(parameter.getParameterName(), map(parameter, calculation))
+                    calculatedParameters.put(parameter.getParameterName(), map(parameter, calculationType))
             );
         }
         return calculatedParameters;
     }
 
     @Override
-    public void countQuantity(Map<String, CalculatedParameter> calculatedParameters, Set<ParameterMeasurement> measurements) {
+    public void countQuantity(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements) {
         String parameterName = MeasuredParameterType.valueOf("QUANTITY").label;
-        Map<String, CalculatedParameter> calculatedParameter = new HashMap<>(1);
+        Map<String, CalculateParameterMeasurement> calculatedParameter = new HashMap<>(1);
         measurements.forEach(v -> {
             if (v.getParameterName().equals(parameterName)) {
-                CalculatedParameter parameter = calculatedParameter.get(parameterName);
+                CalculateParameterMeasurement parameter = calculatedParameter.get(parameterName);
                 if (parameter == null) {
                     calculatedParameter.put(parameterName, mapper.mapToQuantity(v));
                 } else {
-                    double value = v.getValue();
-                    parameter.setIntegerValue(parameter.getIntegerValue() + (int) value);
+                    parameter.setIntegerValue(parameter.getIntegerValue() + v.getIntegerValue());
                     calculatedParameters.put(parameterName, parameter);
                 }
             }
@@ -59,10 +57,10 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
         });
     }
 
-    private void countMin(Map<String, CalculatedParameter> calculatedParameters, Set<ParameterMeasurement> measurements) {
+    private void countMin(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements) {
         measurements.forEach(p -> {
             if (!p.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
-                CalculatedParameter parameter = calculatedParameters.get(p.getParameterName());
+                CalculateParameterMeasurement parameter = calculatedParameters.get(p.getParameterName());
                 if (parameter == null) {
                     calculatedParameters.put(p.getParameterName(), map(p, ParameterCalculationType.MIN));
                 } else {
@@ -72,10 +70,10 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
         });
     }
 
-   private void countMax(Map<String, CalculatedParameter> calculatedParameters, Set<ParameterMeasurement> measurements) {
+   private void countMax(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements) {
         measurements.forEach(p -> {
             if (!p.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
-                CalculatedParameter parameter = calculatedParameters.get(p.getParameterName());
+                CalculateParameterMeasurement parameter = calculatedParameters.get(p.getParameterName());
                 if (parameter == null) {
                     calculatedParameters.put(p.getParameterName(), map(p, ParameterCalculationType.MAX));
                 } else {
@@ -85,10 +83,10 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
         });
     }
 
-    private void countMaxMin(Map<String, CalculatedParameter> calculatedParameters, Set<ParameterMeasurement> measurements) {
+    private void countMaxMin(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements) {
         measurements.forEach(p -> {
             if (!p.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
-                CalculatedParameter parameter = calculatedParameters.get(p.getParameterName());
+                CalculateParameterMeasurement parameter = calculatedParameters.get(p.getParameterName());
                 if (parameter == null) {
                     calculatedParameters.put(p.getParameterName(), map(p, ParameterCalculationType.MAX_MIN));
                 } else {
@@ -102,18 +100,18 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
         });
     }
 
-    private void countSquare(Map<String, CalculatedParameter> calculatedParameters, Set<ParameterMeasurement> measurements) {
-        Map<String, ParameterMeasurement> parameters = measurements.stream()
-                .collect(Collectors.toMap(ParameterMeasurement::getParameterName, p -> p));
+    private void countSquare(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements) {
+        Map<String, CalculateParameterMeasurement> parameters = measurements.stream()
+                .collect(Collectors.toMap(CalculateParameterMeasurement::getParameterName, p -> p));
         String length = MeasuredParameterType.valueOf("LENGTH").label;
         String width = MeasuredParameterType.valueOf("WIDTH").label;
         String diameter = MeasuredParameterType.valueOf("DIAMETER").label;
         double calculatedSquare = 0.0;
         if (parameters.get(length) != null) {
-            calculatedSquare = parameters.get(length).getValue() * parameters.get(width).getValue();
+            calculatedSquare = parameters.get(length).getMinValue() * parameters.get(width).getMinValue();
         }
         if (parameters.get(length) == null && parameters.get(diameter) != null) {
-            double rad = parameters.get(diameter).getValue() / 2;
+            double rad = parameters.get(diameter).getMinValue() / 2;
             calculatedSquare = Math.PI * rad * rad * 100 / 100;
         }
         calculatedSquare /= 1000000;
@@ -123,7 +121,7 @@ public class CalculateMeasurementVMSServiceImpl implements CalculateMeasurementV
                                                   , calculatedSquare));
     }
 
-    private CalculatedParameter map(ParameterMeasurement parameter, ParameterCalculationType calculation) {
+    private CalculateParameterMeasurement map(ParameterMeasurement parameter, ParameterCalculationType calculation) {
         if (parameter.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
             return mapper.mapToQuantity(parameter);
         }

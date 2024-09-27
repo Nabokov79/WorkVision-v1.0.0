@@ -1,10 +1,9 @@
 package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameterData;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
@@ -17,14 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CalculateAllParametersServiceImpl implements CalculateAllParametersService {
 
-    private final CalculateMeasurementVMSService measurementVMSService;
+    private final MethodsCalculateParameterMeasurementService measurementVMSService;
     private final SequentialParameterNumberService sequentialParameterNumberService;
 
     @Override
-    public void calculateAll(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+    public void calculateAll(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
         switch (parameterData.getTypeData()) {
             case DEFECT -> calculateIdentifiedDefectAllParameters(parameterData, parameters);
             case REPAIR -> calculateCompletedRepairAllParameter(parameterData, parameters);
@@ -34,7 +32,7 @@ public class CalculateAllParametersServiceImpl implements CalculateAllParameters
         sequentialParameterNumberService.setSequentialParameterNumber(parameters, 1);
     }
 
-    private void calculateIdentifiedDefectAllParameters(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+    private void calculateIdentifiedDefectAllParameters(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
         Set<ParameterMeasurement> calculatedParameters =
                 parameterData.getDefects()
                         .stream()
@@ -45,7 +43,7 @@ public class CalculateAllParametersServiceImpl implements CalculateAllParameters
         measurementVMSService.countQuantity(parameters, calculatedParameters);
     }
 
-    private void calculateCompletedRepairAllParameter(CalculatedParameterData parameterData, Map<String, CalculatedParameter> parameters) {
+    private void calculateCompletedRepairAllParameter(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
         Set<ParameterMeasurement> calculatedParameters = parameterData.getRepairs()
                 .stream()
                 .map(CompletedRepair::getParameterMeasurements)

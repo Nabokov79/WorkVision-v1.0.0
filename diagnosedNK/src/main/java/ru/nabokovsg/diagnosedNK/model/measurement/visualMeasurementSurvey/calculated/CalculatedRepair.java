@@ -23,7 +23,7 @@ public class CalculatedRepair {
     @Column(name = "repair_name")
     private String repairName;
     @OneToMany(mappedBy = "repair", fetch = FetchType.LAZY)
-    private Set<CalculatedParameter> parameters;
+    private Set<CalculateParameterMeasurement> parameters;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "element_id", nullable = false)
     private CalculatedElement element;

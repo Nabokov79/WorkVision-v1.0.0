@@ -5,7 +5,7 @@ import ru.nabokovsg.diagnosedNK.model.norms.ElementRepair;
 
 import java.util.Set;
 
-public interface CalculatedRepairService {
+public interface CalculatedCompletedRepairService {
 
     void save(Set<CompletedRepair> repairs, CompletedRepair repair, ElementRepair elementRepair);
 

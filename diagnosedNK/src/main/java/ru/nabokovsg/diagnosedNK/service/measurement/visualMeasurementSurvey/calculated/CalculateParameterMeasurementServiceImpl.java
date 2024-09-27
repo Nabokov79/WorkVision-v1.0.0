@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameterData;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedParameterRepository;
 import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.CalculateAllParametersService;
@@ -14,7 +14,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class CalculatedParameterServiceImpl implements CalculatedParameterService {
+public class CalculateParameterMeasurementServiceImpl implements CalculateParameterMeasurementService {
 
     private final CalculatedParameterRepository repository;
     private final CalculatedParameterMapper mapper;
@@ -23,21 +23,22 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
 
     @Override
     public void save(CalculatedParameterData parameterData) {
-        Set<CalculatedParameter> parametersDb = getAll(parameterData);
-        Map<String, CalculatedParameter> calculatedParameters = calculate(parameterData);
-        mapTo(parameterData, calculatedParameters);
-        if (parametersDb != null) {
-            update(parametersDb, calculatedParameters);
+        Map<String, CalculateParameterMeasurement> calculatedParameters = new HashMap<>();
+        Set<CalculateParameterMeasurement> parameters = getAll(parameterData);
+        Map<String, CalculateParameterMeasurement> calculatedParameters = calculate(parameterData);
+        mapWith(parameterData, calculatedParameters);
+        if (parameters != null) {
+            update(parameters, calculatedParameters);
         }
         repository.saveAll(calculatedParameters.values());
     }
 
-    private void update(Set<CalculatedParameter> parametersDb, Map<String, CalculatedParameter> calculatedParameters) {
-        parametersDb.forEach(parameter -> calculatedParameters.put(parameter.getParameterName()
+    private void update(Set<CalculateParameterMeasurement> parameters, Map<String, CalculateParameterMeasurement> calculatedParameters) {
+        parameters.forEach(parameter -> calculatedParameters.put(parameter.getParameterName()
                       , mapper.mapToUpdateCalculatedParameter(parameter, calculatedParameters.get(parameter.getParameterName()))));
     }
 
-    private void mapTo(CalculatedParameterData parameterData, Map<String, CalculatedParameter> calculatedParameters) {
+    private void mapWith(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> calculatedParameters) {
         switch (parameterData.getTypeData()) {
             case DEFECT ->
                 calculatedParameters.forEach((k,v) ->
@@ -46,12 +47,12 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
             case REPAIR -> calculatedParameters.forEach((k,v) ->
                     calculatedParameters.put(k, mapper.mapWithRepair(v, parameterData.getRepair()))
             );
-            default -> throw new NotFoundException(String.format("Completed repair calculation type=%s not supported"
+            default -> throw new NotFoundException(String.format("Type data=%s not supported"
                     , parameterData.getCalculationType()));
         }
     }
 
-    private Set<CalculatedParameter> getAll(CalculatedParameterData parameterData) {
+    private Set<CalculateParameterMeasurement> getAll(CalculatedParameterData parameterData) {
         switch (parameterData.getTypeData()) {
             case DEFECT -> {
                 return parameterData.getDefect().getParameters();
@@ -64,8 +65,8 @@ public class CalculatedParameterServiceImpl implements CalculatedParameterServic
         }
     }
 
-    private Map<String, CalculatedParameter> calculate(CalculatedParameterData parameterData) {
-        Map<String, CalculatedParameter> parameters = new HashMap<>();
+    private Map<String, CalculateParameterMeasurement> calculate(CalculatedParameterData parameterData) {
+        Map<String, CalculateParameterMeasurement> parameters = new HashMap<>();
         switch (parameterData.getCalculationType()) {
             case SQUARE -> calculateOneByOneParametersService.calculateOneByOne(parameterData, parameters);
             case MIN, MAX, MAX_MIN -> calculateAllParametersService.calculateAll(parameterData, parameters);

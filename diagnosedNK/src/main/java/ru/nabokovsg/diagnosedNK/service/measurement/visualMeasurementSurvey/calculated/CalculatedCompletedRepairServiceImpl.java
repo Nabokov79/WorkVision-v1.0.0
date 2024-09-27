@@ -17,12 +17,12 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class CalculatedRepairServiceImpl implements CalculatedRepairService {
+public class CalculatedCompletedRepairServiceImpl implements CalculatedCompletedRepairService {
 
     private final CalculatedRepairRepository repository;
     private final CalculatedRepairMapper mapper;
     private final EntityManager em;
-    private final CalculatedParameterService parameterService;
+    private final CalculateParameterMeasurementService parameterService;
     private final CalculatedElementService elementService;
     private final CalculatedPartElementService partElementService;
 

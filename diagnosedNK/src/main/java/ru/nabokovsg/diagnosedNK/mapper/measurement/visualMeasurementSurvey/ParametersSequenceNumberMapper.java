@@ -3,12 +3,12 @@ package ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 
 @Mapper(componentModel = "spring")
 public interface ParametersSequenceNumberMapper {
 
     @Mapping(source = "measurementNumber", target = "measurementNumber")
     @Mapping(source = "parameterNumber", target = "parameterNumber")
-    CalculatedParameter map(@MappingTarget CalculatedParameter parameter, Integer measurementNumber, Integer parameterNumber);
+    CalculateParameterMeasurement map(@MappingTarget CalculateParameterMeasurement parameter, Integer measurementNumber, Integer parameterNumber);
 }

@@ -1,7 +1,7 @@
 package ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 
-public interface CalculatedParameterRepository extends JpaRepository<CalculatedParameter, Long> {
+public interface CalculatedParameterRepository extends JpaRepository<CalculateParameterMeasurement, Long> {
 }

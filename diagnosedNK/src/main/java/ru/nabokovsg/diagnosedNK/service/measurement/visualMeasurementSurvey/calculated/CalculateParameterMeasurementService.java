@@ -2,7 +2,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.cal
 
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameterData;
 
-public interface CalculatedParameterService {
+public interface CalculateParameterMeasurementService {
 
     void save(CalculatedParameterData parameterData);
 }

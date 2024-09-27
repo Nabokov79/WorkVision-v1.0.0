@@ -30,7 +30,7 @@ public class CalculatedDefect {
     @Column(name = "use_calculate_thickness")
     private Boolean useCalculateThickness;
     @OneToMany(mappedBy = "defect", fetch = FetchType.LAZY)
-    private Set<CalculatedParameter> parameters;
+    private Set<CalculateParameterMeasurement> parameters;
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "element_id", nullable = false)
     private CalculatedElement element;

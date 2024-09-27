@@ -3,7 +3,7 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.cal
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.ParameterCalculationManagerMapper;
-import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculatedParameter;
+import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 
 import java.util.*;
@@ -15,11 +15,11 @@ public class SequentialParameterNumberServiceImpl implements SequentialParameter
     private final ParameterCalculationManagerMapper mapper;
 
     @Override
-    public void setSequentialParameterNumber(Map<String, CalculatedParameter> parameters
+    public void setSequentialParameterNumber(Map<String, CalculateParameterMeasurement> parameters
             , Integer measurementNumber) {
         int sequentialNumber = 1;
         int size = parameters.size();
-        for (CalculatedParameter parameter : parameters.values()) {
+        for (CalculateParameterMeasurement parameter : parameters.values()) {
             if (parameter.getMeasurementNumber() == null) {
                 if (parameter.getParameterName().equals(MeasuredParameterType.valueOf("SQUARE").label)) {
                     mapper.mapWithSequenceNumber(parameter, measurementNumber, sequentialNumber);
