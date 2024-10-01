@@ -64,7 +64,7 @@ public class MethodsCalculateParameterMeasurementServiceImpl implements MethodsC
                 if (parameter == null) {
                     calculatedParameters.put(p.getParameterName(), map(p, ParameterCalculationType.MIN));
                 } else {
-                    parameter.setMinValue(Math.min(p.getValue(), parameter.getMinValue()));
+                    parameter.setMinValue(Math.min(p.getMinValue(), parameter.getMinValue()));
                 }
             }
         });
@@ -77,7 +77,7 @@ public class MethodsCalculateParameterMeasurementServiceImpl implements MethodsC
                 if (parameter == null) {
                     calculatedParameters.put(p.getParameterName(), map(p, ParameterCalculationType.MAX));
                 } else {
-                    parameter.setMaxValue(Math.max(p.getValue(), parameter.getMaxValue()));
+                    parameter.setMaxValue(Math.max(p.getMaxValue(), parameter.getMaxValue()));
                 }
             }
         });
@@ -90,8 +90,8 @@ public class MethodsCalculateParameterMeasurementServiceImpl implements MethodsC
                 if (parameter == null) {
                     calculatedParameters.put(p.getParameterName(), map(p, ParameterCalculationType.MAX_MIN));
                 } else {
-                    parameter.setMinValue(Math.min(p.getValue(), parameter.getMinValue()));
-                    parameter.setMaxValue(Math.max(p.getValue(), parameter.getMaxValue()));
+                    parameter.setMinValue(Math.min(p.getMinValue(), parameter.getMinValue()));
+                    parameter.setMaxValue(Math.max(p.getMaxValue(), parameter.getMaxValue()));
                     if (Objects.equals(parameter.getMinValue(), parameter.getMaxValue())) {
                         parameter.setMinValue(null);
                     }

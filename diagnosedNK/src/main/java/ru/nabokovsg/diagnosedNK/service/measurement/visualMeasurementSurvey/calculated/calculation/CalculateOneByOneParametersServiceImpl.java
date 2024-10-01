@@ -8,6 +8,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calcul
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.CompletedRepair;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.IdentifiedDefect;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
+import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 
 import java.util.*;
 
@@ -28,21 +29,22 @@ public class CalculateOneByOneParametersServiceImpl implements CalculateOneByOne
         }
     }
 
-    private void calculateIdentifiedDefectOneByOneParameters(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
+    @Override
+    public void calculateOneByOneParameters(Map<Long, Set<CalculateParameterMeasurement>> calculatedParameters, ParameterCalculationType calculationType, Map<String, CalculateParameterMeasurement> parameters) {
         int measurementNumber = 1;
-        for (IdentifiedDefect defect : parameterData.getDefects()) {
-            compareParameters(parameters, measurementVMSService.calculationByCalculationType(defect.getParameterMeasurements()
-                    , parameterData.getCalculationType()));
+        for (Set<CalculateParameterMeasurement> calculationParameters : calculatedParameters.values()) {
+            compareParameters(parameters, measurementVMSService.calculationByCalculationType(calculationParameters, calculationType));
             sequentialParameterNumberService.setSequentialParameterNumber(parameters, measurementNumber);
             measurementNumber++;
         }
     }
 
-    private void calculateCompletedRepairOneByOneParameters(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
+
+    @Override
+    public void calculateCompletedRepairOneByOneParameters(Set<CompletedRepair> repairs, ParameterCalculationType calculationType, Map<String, CalculateParameterMeasurement> parameters) {
         int measurementNumber = 1;
-        for (CompletedRepair repair : parameterData.getRepairs()) {
-            compareParameters(parameters, measurementVMSService.calculationByCalculationType(repair.getParameterMeasurements()
-                    , parameterData.getCalculationType()));
+        for (CompletedRepair repair : repairs) {
+            compareParameters(parameters, measurementVMSService.calculationByCalculationType(repair.getParameterMeasurements(), calculationType));
             sequentialParameterNumberService.setSequentialParameterNumber(parameters, measurementNumber);
             measurementNumber++;
         }
