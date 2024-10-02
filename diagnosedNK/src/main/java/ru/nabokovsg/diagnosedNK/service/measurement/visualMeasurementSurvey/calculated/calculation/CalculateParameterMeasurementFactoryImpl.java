@@ -12,6 +12,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detected.ParameterMeasurement;
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
+import ru.nabokovsg.diagnosedNK.model.norms.UnitMeasurementType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,102 +22,54 @@ import java.util.stream.Collectors;
 public class CalculateParameterMeasurementFactoryImpl implements CalculateParameterMeasurementFactory {
 
     private final CalculateParameterMeasurementFactoryMapper mapper;
-    private final CalculateOneByOneParametersService calculateOneByOneParametersService;
-    private final CalculateAllParametersService calculateAllParametersService;
     private final MethodsCalculateParameterMeasurementService methodsCalculate;
 
-    private List<CalculateParameterMeasurement> calculateByCalculationType(CalculatedParameterData parameterData) {
-        int measurementNumber = 1;
-        Map<String, CalculateParameterMeasurement> parameters = new HashMap<>();
-        switch (parameterData.getCalculationType()) {
-            case SQUARE -> calculateParametersOneByOne(parameterData, parameters);
-            case MIN, MAX, MAX_MIN -> calculateAllParameters(parameterData, parameters);
-            case NO_ACTION -> getAllParameters(parameterData);
-            default -> throw new NotFoundException(String.format("Calculation type=%s not supported"
-                    , parameterData.getCalculationType()));
-        }
-        return new ArrayList<>(parameters.values());
-    }
-
-    public void calculateParametersOneByOne(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
-        switch (parameterData.getTypeData()) {
-            case DEFECT ->
-                calculateOneByOneParametersService.calculateOneByOneParameters(parameterData.getDefects(), parameterData.getCalculationType(), parameters);
-            case REPAIR ->
-                calculateOneByOneParametersService.calculateCompletedRepairOneByOneParameters(parameterData.getRepairs(), parameterData.getCalculationType(), parameters);
-            default -> throw new NotFoundException(String.format("Type data=%s not supported"
-                    , parameterData.getCalculationType()));
-        }
-    }
-
-    public void calculateAllParameters(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
-        calculateAllParametersService.calculateAllParameters(getAllParameters(parameterData), parameterData.getCalculationType(), parameters);
-    }
-
-    private Set<CalculateParameterMeasurement> getAllParameters(CalculatedParameterData parameterData) {
-        switch (parameterData.getTypeData()) {
-            case DEFECT -> {
-                return parameterData.getDefects()
-                        .stream()
-                        .map(IdentifiedDefect::getParameterMeasurements)
-                        .flatMap(Collection::stream)
-                        .map(parameter -> mapTo(parameter, parameterData.getCalculationType()))
-                        .collect(Collectors.toSet());
+    @Override
+    public List<CalculateParameterMeasurement> calculateOneByOne(Map<Long, Set<CalculateParameterMeasurement>> parameterMeasurements, ParameterCalculationType calculationType) {
+        Map<String, Set<CalculateParameterMeasurement>> calculateParameters = new HashMap<>();
+        parameterMeasurements.forEach((k,v) -> {
+            if (calculationType == ParameterCalculationType.SQUARE) {
+                createSquareParameter(v, calculateParameters);
+            } else {
+                throw new NotFoundException(String.format("Calculation type=%s not supported", calculationType));
             }
-            case REPAIR -> {
-                return parameterData.getRepairs()
-                        .stream()
-                        .map(CompletedRepair::getParameterMeasurements)
-                        .flatMap(Collection::stream)
-                        .map(parameter -> mapTo(parameter, parameterData.getCalculationType()))
-                        .collect(Collectors.toSet());
-            }
-            default -> throw new NotFoundException(String.format("Type data=%s not supported"
-                    , parameterData.getCalculationType()));
-        }
+        });
+        return calculateParameters.values().stream().toList();
     }
 
-    private CalculateParameterMeasurement mapTo(ParameterMeasurement parameter, ParameterCalculationType calculation) {
-        if (parameter.getParameterName().equals(MeasuredParameterType.valueOf("QUANTITY").label)) {
-            return mapper.mapToQuantity(parameter);
-        }
-        switch (calculation) {
-            case NO_ACTION, MIN, SQUARE -> {
-                return mapper.mapToMinValue(parameter);
-            }
-            case MAX -> {
-                return mapper.mapToMaxValue(parameter);
-            }
-            case MAX_MIN -> {
-                return mapper.mapToMaxMinValue(parameter);
-            }
-            default ->
-                    throw new BadRequestException(String.format("Mapping for calculationType=%s is not supported", calculation));
-        }
+    private void createSquareParameter(Set<CalculateParameterMeasurement> parameterMeasurements, Map<String, CalculateParameterMeasurement> calculateParameters) {
+        Map<String, CalculateParameterMeasurement> parameters = parameterMeasurements.stream().collect(Collectors.toMap(CalculateParameterMeasurement::getParameterName, p -> p));
+        String parameterName = MeasuredParameterType.valueOf("SQUARE").label;
+        String unitMeasurement = UnitMeasurementType.valueOf("M_2").label;
+        double parameterValue = methodsCalculate.countSquare(parameterMeasurements);
+        CalculateParameterMeasurement square = mapper.mapToCalculateParameterMeasurement(parameterName, unitMeasurement, parameterValue);
+        compareParameters(calculateParameters, square);
     }
 
-    private void mapWith(CalculatedParameterData parameterData, Map<String, CalculateParameterMeasurement> parameters) {
-        switch (parameterData.getTypeData()) {
-            case DEFECT -> parameters.forEach((k,v) -> parameters.put(k, mapper.mapWithDefect(v, parameterData.getDefect())));
-            case REPAIR -> parameters.forEach((k,v) -> parameters.put(k, mapper.mapWithRepair(v, parameterData.getRepair())));
-            default -> throw new NotFoundException(String.format("Type data=%s not supported"
-                    , parameterData.getCalculationType()));
-        }
+    @Override
+    public List<CalculateParameterMeasurement> calculateAll(Map<Long, Set<CalculateParameterMeasurement>> parameterMeasurements, ParameterCalculationType calculationType) {
+        Map<String, CalculateParameterMeasurement> calculateParameters = new HashMap<>();
+        parameterMeasurements.forEach((k,v) -> {
+            switch (calculationType) {
+                case MIN -> methodsCalculate.countMin(calculateParameters, v);
+                case MAX -> methodsCalculate.countMax(calculateParameters, v);
+                case MAX_MIN -> methodsCalculate.countMaxMin(calculateParameters, v);
+                default -> throw new NotFoundException(String.format("Calculation type=%s not supported", calculationType));
+            }
+        });
+        return calculateParameters.values().stream().toList();
     }
 
-    private void compareParameters(Map<String, CalculateParameterMeasurement> parameters, Map<String, CalculateParameterMeasurement> calculatedParameters) {
-        if (parameters.isEmpty()) {
-            parameters.putAll(calculatedParameters);
+    private void compareParameters(Map<String, CalculateParameterMeasurement> calculateParameters, CalculateParameterMeasurement parameter, CalculateParameterMeasurement quantity, Long id) {
+        if (calculateParameters.isEmpty()) {
+            calculateParameters.put(parameter.getParameterName(), parameter);
             return;
         }
         String quantityName = MeasuredParameterType.valueOf("QUANTITY").label;
         Map<Integer, Integer> coincidences = calculationNumberOfMatches(calculatedParameters, parameters);
-        parameters.forEach((k, v) -> {
-            if (quantityName.equals(v.getParameterName()) && coincidences.get(v.getMeasurementNumber()) == parameters.size()) {
-                CalculateParameterMeasurement calculatedParameter = calculatedParameters.get(quantityName);
-                CalculateParameterMeasurement parameter = parameters.get(quantityName);
-                calculatedParameter.setIntegerValue(calculatedParameter.getIntegerValue() + parameter.getIntegerValue());
-                calculatedParameters.put(quantityName, calculatedParameter);
+        calculateParameters.forEach((k, v) -> {
+            if (quantityName.equals(parameter.getParameterName()) && parameter.getMinValue().equals(v.getMinValue())) {
+
             }
         });
     }
