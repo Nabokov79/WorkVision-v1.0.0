@@ -58,18 +58,15 @@ public class CalculateParameterMeasurement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CalculateParameterMeasurement parameter = (CalculateParameterMeasurement) o;
-        return Objects.equals(parameterName, parameter.parameterName)
-                && Objects.equals(minValue, parameter.minValue)
-                && Objects.equals(maxValue, parameter.maxValue)
-                && Objects.equals(integerValue, parameter.integerValue)
-                && Objects.equals(unitMeasurement, parameter.unitMeasurement)
-                && Objects.equals(defect, parameter.defect)
-                && Objects.equals(repair, parameter.repair);
+        CalculateParameterMeasurement that = (CalculateParameterMeasurement) o;
+        return Objects.equals(parameterName, that.parameterName)
+                && Objects.equals(minValue, that.minValue)
+                && Objects.equals(maxValue, that.maxValue)
+                && Objects.equals(integerValue, that.integerValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, measurementNumber, parameterNumber, parameterName, minValue, maxValue, integerValue, unitMeasurement, defect, repair);
+        return Objects.hash(parameterName, minValue, maxValue, integerValue);
     }
 }

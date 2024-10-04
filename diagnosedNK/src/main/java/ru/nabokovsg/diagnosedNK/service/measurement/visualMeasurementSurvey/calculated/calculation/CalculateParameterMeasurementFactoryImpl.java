@@ -34,12 +34,21 @@ public class CalculateParameterMeasurementFactoryImpl implements CalculateParame
         String parameterName = MeasuredParameterType.valueOf("SQUARE").label;
         String unitMeasurement = UnitMeasurementType.valueOf("M_2").label;
         parameterMeasurements.forEach((k,v) -> {
+            Set<CalculateParameterMeasurement> parameters = new HashSet<>(2);
             CalculateParameterMeasurement square = mapper.mapToCalculateParameterMeasurement(parameterName, unitMeasurement, methodsCalculate.countSquare(v));
+            CalculateParameterMeasurement quantity = getQuantityParameter(v);
+            parameters.add(square);
+            if (quantity != null) {
+                parameters.add(quantity);
+            }
             if (!calculateParameters.isEmpty()) {
-                calculateParameters.forEach((key,values) ->
-                              calculateParameters.put(key, compareByMinValue(values, square, getQuantityParameter(v))));
+                compare(calculateParameters, parameters).forEach((key, values) -> {
+                    if (values) {
+                        countQuantity(calculateParameters.get(key), quantity);
+                    }
+                });
             } else {
-                calculateParameters.put(k, Set.of(square));
+                calculateParameters.put(k, parameters);
             }
         });
     }
@@ -47,25 +56,21 @@ public class CalculateParameterMeasurementFactoryImpl implements CalculateParame
     private CalculateParameterMeasurement getQuantityParameter(Set<CalculateParameterMeasurement> calculateParameters) {
         String parameterName = MeasuredParameterType.valueOf("QUANTITY").label;
         for (CalculateParameterMeasurement parameter : calculateParameters) {
-            if (parameterName.equals(parameter.getParameterName())) {
+            if (parameterName.equals(parameter.getParameterName()) && parameter.getIntegerValue() > 1) {
                 return parameter;
             }
         }
-        throw new NotFoundException(String.format("Parameter measurement =%s not found", parameterName));
+        return null;
     }
 
-    private Set<CalculateParameterMeasurement> compareByMinValue(Set<CalculateParameterMeasurement> calculateParameters, CalculateParameterMeasurement parameter, CalculateParameterMeasurement quantity) {
+    private Map<Long, Boolean> compare(Map<Long, Set<CalculateParameterMeasurement>> calculateParameters, Set<CalculateParameterMeasurement> parameters) {
         String parameterName = MeasuredParameterType.valueOf("QUANTITY").label;
-        Map<String, CalculateParameterMeasurement> parameters = calculateParameters.stream().collect(Collectors.toMap(CalculateParameterMeasurement::getParameterName, c -> c));
-        calculateParameters.forEach(v -> {
-             if (v.getMinValue().equals(parameter.getMinValue())) {
-                 CalculateParameterMeasurement calculateQuantity = parameters.get(parameterName);
-                 calculateQuantity.setIntegerValue(calculateQuantity.getIntegerValue() + quantity.getIntegerValue());
-                 parameters.put(parameterName, calculateQuantity);
-
-            }
-        });
-        return new HashSet<>(parameters.values());
+        Map<Long, Boolean> equals = new HashMap<>(1);
+        calculateParameters.forEach((k,v) ->
+            equals.put(k, Objects.equals(v.stream().filter(p -> !p.getParameterName().equals(parameterName)).toList()
+                               , parameters.stream().filter(p -> !p.getParameterName().equals(parameterName)).toList()))
+        );
+        return equals;
     }
 
     @Override
@@ -119,7 +124,14 @@ public class CalculateParameterMeasurementFactoryImpl implements CalculateParame
         }
     }
 
-    private void countQuantity(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements) {
+    private void countQuantity(Set<CalculateParameterMeasurement> calculatedParameters, CalculateParameterMeasurement quantity) {
+        String parameterName = MeasuredParameterType.valueOf("QUANTITY").label;
+        calculatedParameters.forEach(v -> {
+            if (v.getParameterName().equals(parameterName)) {
+                v.setIntegerValue(v.getIntegerValue() + quantity.getIntegerValue());
+            }
+
+        });
         String parameterName = MeasuredParameterType.valueOf("QUANTITY").label;
         Map<String, CalculateParameterMeasurement> calculatedParameter = new HashMap<>(1);
         measurements.forEach(v -> {
