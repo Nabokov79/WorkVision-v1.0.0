@@ -7,7 +7,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.enums.GeodesicPointType;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.*;
 import ru.nabokovsg.diagnosedNK.model.norms.AcceptableDeviationsGeodesy;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.PointDifferenceRepository;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common.QueryDSLRequestService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.QueryDSLRequestService;
 
 import java.util.*;
 import java.util.stream.Collectors;

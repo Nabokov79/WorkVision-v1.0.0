@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
 
@@ -13,5 +13,5 @@ public interface MethodsCalculateParameterMeasurementService {
 
     void countMaxMin(Map<String, CalculateParameterMeasurement> calculatedParameters, Set<CalculateParameterMeasurement> measurements);
 
-    double countSquare(Set<CalculateParameterMeasurement> measurements);
+    Double countArea(Set<CalculateParameterMeasurement> measurements);
 }

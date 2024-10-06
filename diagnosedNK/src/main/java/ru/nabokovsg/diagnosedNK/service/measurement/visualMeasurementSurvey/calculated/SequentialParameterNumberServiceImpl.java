@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -2,7 +2,6 @@ package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.cal
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.nabokovsg.diagnosedNK.exceptions.BadRequestException;
 import ru.nabokovsg.diagnosedNK.exceptions.NotFoundException;
 import ru.nabokovsg.diagnosedNK.mapper.measurement.visualMeasurementSurvey.calculated.CalculatedParameterMapper;
 import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.calculated.CalculateParameterMeasurement;
@@ -13,9 +12,6 @@ import ru.nabokovsg.diagnosedNK.model.measurement.visualMeasurementSurvey.detect
 import ru.nabokovsg.diagnosedNK.model.norms.MeasuredParameterType;
 import ru.nabokovsg.diagnosedNK.model.norms.ParameterCalculationType;
 import ru.nabokovsg.diagnosedNK.repository.measurement.visualMeasurementSurvey.calculated.CalculatedParameterRepository;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.CalculateAllParametersService;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.CalculateOneByOneParametersService;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.calculation.CalculateParameterMeasurementFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,11 +24,9 @@ public class CalculateParameterMeasurementServiceImpl implements CalculateParame
     private final CalculatedParameterMapper mapper;
     private final CalculateParameterMeasurementFactory factory;
     private final CalculateOneByOneParametersService calculateOneByOneParametersService;
-    private final CalculateAllParametersService calculateAllParametersService;
 
     @Override
     public void save(CalculatedParameterData parameterData) {
-        Map<String, CalculateParameterMeasurement> calculatedParameters = new HashMap<>();
         Set<CalculateParameterMeasurement> parameters = getAll(parameterData);
         Map<String, CalculateParameterMeasurement> calculatedParameters = calculate(parameterData);
         mapWith(parameterData, calculatedParameters);

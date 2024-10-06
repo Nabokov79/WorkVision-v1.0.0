@@ -7,7 +7,7 @@ import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.EquipmentGeodesicMeasurements;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.GeodesicMeasurementsPoint;
 import ru.nabokovsg.diagnosedNK.repository.measurement.geodesy.ControlPointMeasurementRepository;
-import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common.QueryDSLRequestService;
+import ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.QueryDSLRequestService;
 
 import java.util.HashSet;
 import java.util.List;

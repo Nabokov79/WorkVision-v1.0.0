@@ -26,7 +26,7 @@ public class VisualMeasurementControlDto {
     private String standardSize;
     @Schema(description = "Координаты расположения дефекта")
     private String coordinates;
-    @Schema(description = "Заключение о годности сварного соеднинения")
+    @Schema(description = "Заключение о годности сварного соединения")
     private boolean estimation;
     @Schema(description = "Измеренные параметры дефекта")
     private List<ParameterMeasurementDto> parameterMeasurements;

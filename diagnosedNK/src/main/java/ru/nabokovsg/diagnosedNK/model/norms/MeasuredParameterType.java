@@ -7,7 +7,7 @@ public enum MeasuredParameterType {
     HEIGHT("высота"),
     DEPTH("глубина"),
     DIAMETER("диаметр"),
-    SQUARE("площадь"),
+    AREA("площадь"),
     QUANTITY("количество"),
     DIRECTION("направление");
 

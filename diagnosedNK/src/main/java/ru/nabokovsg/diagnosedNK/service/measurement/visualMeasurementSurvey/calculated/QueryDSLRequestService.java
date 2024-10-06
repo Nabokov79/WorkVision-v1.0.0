@@ -1,4 +1,4 @@
-package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated.common;
+package ru.nabokovsg.diagnosedNK.service.measurement.visualMeasurementSurvey.calculated;
 
 import ru.nabokovsg.diagnosedNK.dto.measurement.ultrasonicThicknessMeasurement.UltrasonicThicknessMeasurementDto;
 import ru.nabokovsg.diagnosedNK.model.measurement.geodesy.ControlPoint;

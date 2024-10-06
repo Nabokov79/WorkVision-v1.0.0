@@ -22,7 +22,7 @@ public class CalculatedIdentifiedDefectServiceImpl implements CalculatedIdentifi
     private final CalculatedDefectRepository repository;
     private final CalculatedDefectMapper mapper;
     private final EntityManager em;
-    private final CalculateParameterMeasurementService parameterService;
+    private final CalculateParameterMeasurementService calculateService;
     private final CalculatedElementService elementService;
     private final CalculatedPartElementService partElementService;
 
@@ -40,7 +40,7 @@ public class CalculatedIdentifiedDefectServiceImpl implements CalculatedIdentifi
             calculatedDefect = repository.save(calculatedDefect);
         }
         defects.add(identifiedDefect);
-        parameterService.save(new CalculatedParameterData.Builder()
+        calculateService.save(new CalculatedParameterData.Builder()
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())
@@ -55,7 +55,7 @@ public class CalculatedIdentifiedDefectServiceImpl implements CalculatedIdentifi
             throw new NotFoundException(
                     String.format("Calculated defect=%s not found for update", identifiedDefect.getDefectName()));
         }
-        parameterService.save(new CalculatedParameterData.Builder()
+        calculateService.save(new CalculatedParameterData.Builder()
                                                          .defects(defects)
                                                          .defect(calculatedDefect)
                                                          .calculationType(defect.getCalculation())

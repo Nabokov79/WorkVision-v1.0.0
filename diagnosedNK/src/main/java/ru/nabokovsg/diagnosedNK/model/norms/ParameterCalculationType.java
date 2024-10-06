@@ -5,7 +5,7 @@ import java.util.Optional;
 public enum ParameterCalculationType {
 
     QUANTITY,
-    SQUARE,
+    AREA,
     MAX,
     MIN,
     MAX_MIN,
